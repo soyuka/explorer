@@ -6,7 +6,6 @@
   "scripts": {
     "test": "mocha --compilers js:babel/register",
     "coverage": "istanbul cover _mocha -- --compilers js:babel/register",
-    "prepublish": "bash deploy.sh prepublish",
     "postpublish": "git stash && rm -r lib.bak routes.bak",
     "postinstall": "bash deploy.sh postinstall"
   },

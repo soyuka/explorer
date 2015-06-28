@@ -1,7 +1,6 @@
 #!/bin/bash
 DEBUG=''
-version=$1
-previous=$(jq -r .version package.json)
+cmd=$1
 
 babelize() {
   babel routes/* lib/* index.js server.js --out-dir build/ &>/dev/null
@@ -11,11 +10,22 @@ babelize() {
   rm -r build
 }
 
-if [[ $version == 'postinstall' ]]; then
+if [[ $cmd == 'postinstall' ]]; then
   [ ! -f data/users ] && cp users.default data/
   [ ! -f config.yml ] && cp config.example.yml config.yml
   exit 0
 fi
+
+if [[ $cmd == 'prepublish' ]]; then
+  babelize && exit 0 || exit 1
+fi
+
+if [[ $cmd != 'tag' ]]; then
+  exit 1
+fi
+
+version=$2
+previous=$(jq -r .version package.json)
 
 if [ ! -d bower_components ]; then
   echo "Run bower"
@@ -33,10 +43,6 @@ fi
 
 if [ -z $version ]; then
   version='patch'
-fi
-
-if [[ $version == 'prepublish' ]]; then
-  babelize && exit 0 || exit 1
 fi
 
 git checkout -b deploy
