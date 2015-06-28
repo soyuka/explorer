@@ -9,6 +9,7 @@ var session = require('express-session')
 var flash = require('connect-flash')
 var methodOverride = require('method-override')
 var debug = require('debug')('explorer:server')
+var Promise = require('bluebird')
 
 import {Users} from './lib/users.js'
 import * as routes from './routes'

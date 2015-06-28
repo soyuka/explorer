@@ -1,3 +1,4 @@
+var Promise = require('bluebird')
 
 import {User} from '../lib/users.js'
 

@@ -1,4 +1,5 @@
 var debug = require('debug')('explorer:router:admin')
+var Promise = require('bluebird')
 
 import {extend} from '../lib/utils.js'
 import {User} from '../lib/users.js'
