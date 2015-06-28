@@ -1,4 +1,4 @@
-# Directory Listings
+# Directory Listings [![Build Status](https://travis-ci.org/soyuka/explorer.svg?branch=master)](https://travis-ci.org/soyuka/explorer)
 
 Explore and share
 
