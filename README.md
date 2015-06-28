@@ -72,6 +72,14 @@ server {
 }
 ```
 
+## Update
+
+```
+cd /path/to/your/explorer
+curl -L https://github.com/soyuka/explorer/archive/v1.0.6.tar.gz | tar xz --strip-components 1
+npm rebuild
+```
+
 ## Tests
 
 ```bash
