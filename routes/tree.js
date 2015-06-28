@@ -127,14 +127,14 @@ function download(req, res) {
   let path = higherPath(req.user.home, req.query.path)
 
   if(path === req.user.home) {
-    return res.send(401, 'Unauthorized') 
+    return res.status(401).send('Unauthorized') 
   }
 
   return res.download(path, p.basename(path), function(err) {
     if(err) {
       console.error('Error %o', err)
       console.error('With headers %o', res.headersSent)
-      return res.send(500, 'Error while downloading') 
+      return res.status(500).send('Error while downloading') 
     } 
   })
 } 
