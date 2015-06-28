@@ -6,7 +6,15 @@ Explore and share
 
 ## Requirements
 
-- nodejs (> 0.11 with harmony support)
+- nodejs (> 0.11 with harmony support) 
+
+### Installing nodejs with [https://github.com/creationix/nvm](nvm)
+
+```bash
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash
+nvm install 0.12 #nvm ls-remote to see available versions
+nvm alias default 0.12
+```
 
 ## Install
 
@@ -53,7 +61,12 @@ port: 4859
 ### Daemonize with pm2
 ```bash
 npm i pm2 -g
-pm2 ---next-gen-js start directory-listings/index.js
+pm2 start --node-args="--harmony" --name explorer index.js
+```
+
+With iojs you can run:
+```
+pm2 ---next-gen-js --name explorer start index.js
 ```
 
 ### Nginx
