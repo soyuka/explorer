@@ -24,13 +24,16 @@ nvm alias default 0.12
 npm i pm2 -g
 pm2 install directory-listings
 ```
+Go to IP:4859, login with `admin:admin` Don't forget to change the password.
+
+With pm2 configuration file is located in `~/.pm2/node_modules/directory-listings`
 
 ### Manual 
 Download, unpack, configure, launch :
 
 ```bash
-curl -L https://github.com/soyuka/explorer/archive/v1.0.6.tar.gz | tar xz
-cd explorer-1.0.6
+curl -L https://github.com/soyuka/explorer/archive/v1.0.11.tar.gz | tar xz
+cd explorer-1.0.11
 cp config.example.yml config.yml #copy default configuration
 cp users.default data/users #copy default database
 npm rebuild
@@ -40,14 +43,14 @@ node --harmony index.js #see below to run as a daemon
 #### Mirror
 
 ```bash
-curl -L http://lab.wareziens.net/soyuka/explorer/repository/archive.tar.gz?ref=v1.0.6 | tar xz
+curl -L http://lab.wareziens.net/soyuka/explorer/repository/archive.tar.gz?ref=v1.0.11 | tar xz
 ```
 
 Check `IP:4859`, login with `admin:admin`. Don't forget to change the password!
 
 ## Run
 
-Installed as a pm2 module it'll already be daemonized. 
+Installed as a pm2 module explorer will already be daemonized. 
 
 ### Daemonize with pm2
 ```bash
