@@ -68,8 +68,8 @@ module.exports = function(config) {
 
     let user = req.cookies.user
 
-    if(!user && req.query.key) {
-      req.user = users.getByKey(req.query.key) 
+    if((!user || !user.username) && req.query.key) {
+      user = req.user = users.getByKey(req.query.key) 
       
       if(!req.user) {
         return res.status(401).send('Key is not valid')
@@ -80,7 +80,7 @@ module.exports = function(config) {
       return res.redirect('/login') 
     } 
     
-    if(user && user.username) {
+    if(user && user.username && !req.user) {
       req.user = users.get(user.username)
 
       //has a bad cookie
