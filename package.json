@@ -7,8 +7,10 @@
     "test": "mocha --compilers js:babel/register",
     "coverage": "istanbul cover _mocha -- --compilers js:babel/register"
   },
-  "author": "",
-  "license": "ISC",
+  "engines": { "node": ">0.11.1" },
+  "repository": "http://github.com/soyuka/explorer",
+  "author": "soyuka",
+  "license": "MIT",
   "dependencies": {
     "archiver": "^0.14.4",
     "bcrypt": "^0.8.3",

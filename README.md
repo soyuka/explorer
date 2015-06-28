@@ -6,7 +6,7 @@ Explore and share
 
 ## Requirements
 
-- nodejs
+- nodejs (> 0.11 with harmony support)
 
 ## Install
 
