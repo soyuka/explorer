@@ -2,6 +2,8 @@
 
 Explore and share
 
+![Screenshot](https://raw.githubusercontent.com/soyuka/explorer/master/screen.png)
+
 ## Requirements
 
 - nodejs
