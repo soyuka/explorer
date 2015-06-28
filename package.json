@@ -1,13 +1,15 @@
 {
   "name": "directory-listings",
-  "version": "v1.0.5",
+  "version": "v1.0.6",
   "description": "Directory Listings - Explore and share ",
   "main": "index.js",
   "scripts": {
     "test": "mocha --compilers js:babel/register",
     "coverage": "istanbul cover _mocha -- --compilers js:babel/register"
   },
-  "engines": { "node": ">0.11.1" },
+  "engines": {
+    "node": ">0.11.1"
+  },
   "repository": "http://github.com/soyuka/explorer",
   "author": "soyuka",
   "license": "MIT",
