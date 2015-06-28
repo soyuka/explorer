@@ -1,0 +1,17 @@
+
+%form{method: 'POST', action: '/login'}
+  .row
+    .small-8.columns
+      .row
+        .small-3.columns
+          %label.right.inline{for: 'username'} Username
+        .small-9.columns
+          %input{type: 'text', id: 'username', name: 'username'}
+      .row
+        .small-3.columns
+          %label.right.inline{for: 'password'} Password
+        .small-9.columns
+          %input{type: 'password', id: 'password', name: 'password'}
+      .row
+        .small-3.small-offset-6.columns
+          %input.button.expand{type: 'submit'}

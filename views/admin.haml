@@ -1,0 +1,20 @@
+%a.button.tiny.right{href: '/a/create'} New user
+%h2 Users
+%table.table
+  %thead
+    %tr
+      %th Username
+      %th Home
+      %th Key
+      %th Admin
+      %th #
+  %tbody
+    - each item in users
+      %tr
+        %td= item.username
+        %td= item.home
+        %td= item.key
+        %td= item.admin
+        %td
+          %a{href: '/a/update/'+item.username} Edit
+          %a{href: '/a/delete/'+item.username} Delete

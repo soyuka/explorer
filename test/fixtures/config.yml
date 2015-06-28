@@ -1,0 +1,13 @@
+---
+search: 
+  method: 'native' 
+  maxScore: 0.5
+pagination:
+  limit: 10 # Default 100
+tree:
+  max_depth: 10 #Default 10
+  concurrency: 100 #Default 100
+database: './users' # don't touch if you don't know what you're doing
+app_root: '/' 
+session_secret: 'Some string here'
+port: 4859

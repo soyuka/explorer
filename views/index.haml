@@ -1,0 +1,42 @@
+!!! 5
+%head
+  %meta{charset: 'utf-8'}
+  %meta{name: 'viewport', content: 'width=device-width, initial-scale=1.0'}
+  %title Explorer
+  %link{rel: 'stylesheet', href: app_root + 'css/app.min.css'}
+
+%body
+  %nav.top-bar
+    %ul.title-area
+      %li.name
+        %h1
+          %a{href: '/'} Explorer 
+
+    %section.top-bar-section
+      - if(user.username)
+        %ul.right
+          %li
+            %a{href: '/settings'}= user.username
+          - if(user.admin)
+            %li
+              %a{href: '/a'}
+                %i.icon-cog
+          %li
+            %a{href: '/logout'}
+              %i.icon-logout
+
+  .row.container
+    .columns.large-12.x-large-12
+      - if(messages.info.length)
+        - each info in messages.info
+          .alert-box.info.radius= info
+      - else if(messages.error.length)
+        - each error in messages.error
+          .alert-box.alert.radius= error
+      != body
+
+  %footer.row
+    .columns.large-12.small-12
+      %p.small.text-center
+        %a{href: 'https://github.com/soyuka/explorer'} Github
+

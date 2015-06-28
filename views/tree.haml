@@ -1,0 +1,106 @@
+
+-# Sort
+.row
+  .columns.large-5
+    %form.row.collapse{method: 'GET', action: ''}
+      .columns.small-10
+        .row
+          .columns.small-5
+            %select{name: 'sort'}
+              %option{value: 'name', selected: sort == 'name'} Name
+              %option{value: 'time', selected: sort == 'time'} Time
+          .columns.small-7
+            %input{type: 'radio', id: 'order_asc', name: 'order', value: 'asc', checked: order == 'asc'} 
+            %label.inline{for: 'order_asc'} Asc
+            %input{type: 'radio', id: 'order_desc', name: 'order', value: 'desc', checked: order == 'desc'} 
+            %label.inline{for: 'order_desc'} Desc
+      .columns.small-2
+        %input.button.postfix.secondary{type: 'submit', value: 'Sort'}
+        %input{type: 'hidden', name: 'search', value: search}
+
+  .columns.large-5.large-offset-2
+    %form.row.collapse{action: '/search', method: 'GET'}
+      .columns.large-9
+        %input{type: 'search', name: 'search', value: search}
+      .columns.large-3
+        %button.button.postfix.primary{type: 'submit'} Search
+
+.row
+  .columns.large-2
+    - if(search)
+      %p= num + ' results'
+
+%ul.breadcrumbs
+  - each b in breadcrumb
+    %li
+      %a{href: '/?path=' + b.path}= b.name
+  
+-# Tree
+%form{method: 'POST', action: '/compress'}
+  %table
+    %thead
+      %tr
+        %th #
+        %th Name
+        %th Last Modified
+        %th Size
+    %tbody
+    - each item in tree
+      %tr
+        %td
+          %input{type: 'checkbox', value: item.path, name: 'zip'}
+        %td
+          - if (item.directory)
+            %a{href: '/?path='+item.path}
+              %i.icon-folder
+              = item.name
+          - else
+            %a{href: '/download?path='+item.path}
+              %i{class: 'icon-file-' + item.type}
+              = item.name
+              - if (search)
+                %a{href: '/?path='+item.dirname}
+                  %i.icon-folder.right{title: 'Jump to directory'}
+          -# - if(item.search)
+          -#   %i.icon-
+        %td= item.lastModified
+        %td= item.humanSize
+
+  -# Archive button
+  .row
+    .large-4.small-12.columns
+      .row.collapse
+        .large-8.small-10.columns
+          %input{type: 'text', name: 'name', placeholder: 'archive' + new Date().getTime()}
+        .large-4.small-2.columns
+          %input.button.tiny.postfix{type: 'submit', value: 'Compress', style: 'margin:0;'}
+
+-# Pagination
+.pagination-centered
+  %ul.pagination
+
+    - if(page == 1)
+      %li.arrow.unavailable
+        %a{href: ''} &laquo;
+    - else
+      %li.arrow
+        - var options = {page: page-1, sort: sort, order: order}
+        %a{href: buildUrl(path, search, options)} &laquo;
+
+    - for (var i = 1; i <= pages; ++i)
+      - if(page == i)
+        %li.current
+          %a{href: ''}= i
+      - else
+        %li
+          - var options = {page: i, sort: sort, order: order}
+          %a{href: buildUrl(path, search, options)}= i
+
+    - if(page < pages)
+      %li.arrow
+        - var options = {page: page+1, sort: sort, order: order}
+        %a{href: buildUrl(path, search, options)} &raquo;
+    - else
+      %li.arrow.unavailable
+        %a{href: ''} &raquo;
+

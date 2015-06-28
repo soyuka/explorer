@@ -1,0 +1,27 @@
+%h2 Settings
+%form{method: 'POST', action: '/settings'}
+  .row
+    .columns.large-6
+      %label Username 
+      %input.disabled{type: 'text', disabled: true, value: user.username}
+      %input{type: 'hidden', name: 'username', value: user.username}
+    .columns.large-6
+      %label{for: 'password'} Password
+      %input{type: 'password', name: 'password', id: 'password', placeholder: 'Leave empty if you dont\'t want to change it'}
+  .row
+    .columns.large-6
+      %label{for: 'home'} Home
+      %input{type: 'text', name: 'home', id: 'home', placeholder: 'Be careful...', value: user.home}
+    .columns.large-6
+      %label &nbsp;
+      %input{type: 'checkbox', id: 'key', name: 'key', value: 1}
+      %label{for: 'key'} Generate new key
+      %input{type: 'checkbox', id: 'admin', name: 'admin', value: 1, checked: !!user.admin}
+      %label{for: 'admin'} Admin
+  .row
+    .columns.large-4
+      Your key:  
+      %pre= user.key
+    .columns.large-3.large-offset-5
+      %input{type: 'hidden', name: '_method', value: 'put'}
+      %input.button.expand{type: 'submit', value: 'Update'}
