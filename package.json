@@ -1,6 +1,6 @@
 {
   "name": "directory-listings",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Directory Listings - Explore and share ",
   "main": "index.js",
   "scripts": {
@@ -17,7 +17,9 @@
     {
       "script": "index.js",
       "node_args": "--harmony",
-      "env": { "DEBUG": "" }
+      "env": {
+        "DEBUG": ""
+      }
     }
   ],
   "repository": "http://github.com/soyuka/explorer",
