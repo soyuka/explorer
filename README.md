@@ -18,6 +18,14 @@ nvm alias default 0.12
 
 ## Install
 
+### As a pm2 module
+
+```bash
+npm i pm2 -g
+pm2 install directory-listings
+```
+
+### Manual 
 Download, unpack, configure, launch :
 
 ```bash
@@ -26,18 +34,40 @@ cd explorer-1.0.6
 cp config.example.yml config.yml #copy default configuration
 cp users.default data/users #copy default database
 npm rebuild
-node --harmony index.js
+node --harmony index.js #see below to run as a daemon
 ```
 
-Check `IP:4859`, login with `admin:admin`. Don't forget to change the password!
-
-### Mirror
+#### Mirror
 
 ```bash
 curl -L http://lab.wareziens.net/soyuka/explorer/repository/archive.tar.gz?ref=v1.0.6 | tar xz
 ```
 
-### Configuration
+Check `IP:4859`, login with `admin:admin`. Don't forget to change the password!
+
+## Run
+
+Installed as a pm2 module it'll already be daemonized. 
+
+### Daemonize with pm2
+```bash
+npm i pm2 -g
+pm2 start --node-args="--harmony" --name explorer index.js
+```
+
+With iojs you can run:
+```
+pm2 --next-gen-js --name explorer start index.js
+```
+
+Or with babel-node:
+
+```
+npm i pm2 babel-node -g
+pm2 --interpreter babel-node --name explorer start index.js
+```
+
+## Configuration
 
 ```yaml
 ---
@@ -64,29 +94,7 @@ session_secret: 'Some string here' #change this
 port: 4859
 ```
 
-### Daemonize with pm2
-```bash
-npm i pm2 -g
-pm2 start --node-args="--harmony" --name explorer index.js
-```
-
-With iojs you can run:
-```
-pm2 --next-gen-js --name explorer start index.js
-```
-
-Or with babel-node:
-
-```
-npm i pm2 babel-node -g
-pm2 --interpreter babel-node --name explorer start index.js
-```
-
-### Pm2 module 
-
-```
-pm2 install directory-listings
-```
+## Misc
 
 ### Nginx
 
@@ -106,16 +114,18 @@ server {
 
 ## Update
 
+### As a pm2 module
+
+```
+pm2 update directory-listings
+```
+
+### From tarball
+
 ```
 cd /path/to/your/explorer
 curl -L https://github.com/soyuka/explorer/archive/v1.0.6.tar.gz | tar xz --strip-components 1
 npm rebuild
-```
-
-## Tests
-
-```bash
-npm test
 ```
 
 ## Development
@@ -125,6 +135,12 @@ Must be compiled with babel for ES6 compatibility.
 ```bash
 gulp watch #scss
 DEBUG="explorer:*, explorer:routes:*" babel-node index.js
+```
+
+### Tests
+
+```bash
+npm test
 ```
 
 ## Thoughts and improvements

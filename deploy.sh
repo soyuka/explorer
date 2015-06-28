@@ -1,4 +1,4 @@
-#!bash
+#!/bin/bash
 DEBUG=''
 version=$1
 previous=$(jq -r .version package.json)
@@ -11,7 +11,7 @@ babelize() {
   rm -r build
 }
 
-if [ $version == 'postinstall' ]; then
+if [[ $version == 'postinstall' ]]; then
   [ ! -f data/users ] && cp users.default data/
   [ ! -f config.yml ] && cp config.example.yml config.yml
   exit 0
@@ -35,7 +35,7 @@ if [ -z $version ]; then
   version='patch'
 fi
 
-if [ $version == 'prepublish' ]; then
+if [[ $version == 'prepublish' ]]; then
   babelize && exit 0 || exit 1
 fi
 
