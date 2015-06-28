@@ -24,7 +24,7 @@ fi
 git checkout -b deploy
 
 jq -r '.dependencies|keys[]|.|= "node_modules/" + .' package.json|xargs git add -f
-babel routes/* lib/* index.js server.js --out-dir build/
+babel routes/* lib/* index.js server.js --out-dir build/ &>/dev/null
 rm -r lib routes
 mv build/* ./
 rm -r build
@@ -48,7 +48,6 @@ mv package.tmp.json package.json
 previous="${previous:1:${#previous}}"
 tag="${tag:1:${#tag}}"
 
-echo "Replacing $previous by $tag"
 perl -pi -e "s,$previous,$tag,g" README.md
 
 git add package.json README.md
