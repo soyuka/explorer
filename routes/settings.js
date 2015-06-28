@@ -1,65 +1,65 @@
-var Promise = require('bluebird')
+'use strict';
 
-import {User} from '../lib/users.js'
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _libUsersJs = require('../lib/users.js');
+
+var Promise = require('bluebird');
 
 function handleSystemError(req, res) {
   return function (err) {
-    console.error(err)
-    req.flash('error', err)
-    return res.redirect('back')
-  }
+    console.error(err);
+    req.flash('error', err);
+    return res.redirect('back');
+  };
 }
 
 function settings(req, res) {
-  return res.renderBody('settings.haml', {user: req.user})
+  return res.renderBody('settings.haml', { user: req.user });
 }
 
 function updateSettings(req, res) {
 
-  if(!req.body.username == req.user.username)
-    return handleSystemError(req, res)("Can't update another user")
+  if (!req.body.username == req.user.username) return handleSystemError(req, res)('Can\'t update another user');
 
-  let u = req.users.get(req.user.username)
+  var u = req.users.get(req.user.username);
 
-  if(!u) {
-    return handleSystemError(req,res)('User not found')
+  if (!u) {
+    return handleSystemError(req, res)('User not found');
   }
-  
-  let user = req.body
 
-  for(var i in u) {
+  var user = req.body;
+
+  for (var i in u) {
     //                waiting for privates
-    if(user[i] && typeof u[i] !== 'function') {
-      u[i] = user[i]
+    if (user[i] && typeof u[i] !== 'function') {
+      u[i] = user[i];
     }
   }
-  
-  if(user.admin !== undefined) {
-    u.admin = !!parseInt(user.admin)
+
+  if (user.admin !== undefined) {
+    u.admin = !!parseInt(user.admin);
   }
 
-  user = new User(u, !!req.body.password)
-  .then(function(user) {
-    if(''+user.key === '1') 
-      return user.generateKey()
+  user = new _libUsersJs.User(u, !!req.body.password).then(function (user) {
+    if ('' + user.key === '1') return user.generateKey();
 
-    return Promise.resolve(user)
-  })
-  .then(function(user) {
-    return req.users.put(user)
-    .then(function() {
-      req.flash('info', `Settings updated`)
-      return res.redirect('/settings')
-    })
-  })
-  .catch(handleSystemError(req, res))
+    return Promise.resolve(user);
+  }).then(function (user) {
+    return req.users.put(user).then(function () {
+      req.flash('info', 'Settings updated');
+      return res.redirect('/settings');
+    });
+  })['catch'](handleSystemError(req, res));
 }
 
-var Settings = function(app) {
-  app.get('/settings', settings)
-  app.put('/settings', updateSettings)
+var Settings = function Settings(app) {
+  app.get('/settings', settings);
+  app.put('/settings', updateSettings);
 
-  return app
-}
+  return app;
+};
 
-export {Settings}
+exports.Settings = Settings;
