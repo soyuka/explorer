@@ -1,5 +1,5 @@
 {
-  "name": "explorer",
+  "name": "directory-listings",
   "version": "v1.0.2",
   "description": "Directory Listings - Explore and share ",
   "main": "index.js",
