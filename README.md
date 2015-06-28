@@ -31,6 +31,12 @@ node --harmony index.js
 
 Check `IP:4859`, login with `admin:admin`. Don't forget to change the password!
 
+### Mirror
+
+```bash
+curl -L http://lab.wareziens.net/soyuka/explorer/repository/archive.tar.gz?ref=v1.0.6 | tar xz
+```
+
 ### Configuration
 
 ```yaml
