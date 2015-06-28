@@ -3,6 +3,12 @@ DEBUG=''
 version=$1
 previous=$(jq -r .version package.json)
 
+if [ $version == 'postinstall' ]; then
+  [ ! -f data/users ] && cp users.default data/
+  [ ! -f config.yml ] && cp config.example.yml config.yml
+  exit 0
+fi
+
 if [ ! -d bower_components ]; then
   echo "Run bower"
   exit 1
@@ -21,13 +27,23 @@ if [ -z $version ]; then
   version='patch'
 fi
 
+if [ $version == 'prepublish' ]; then
+  babelize && exit 0 || exit 1
+fi
+
+babelize() {
+  babel routes/* lib/* index.js server.js --out-dir build/ &>/dev/null
+  cp -r lib lib.bak 
+  cp -r routes routes.bak
+  mv build/* ./
+  rm -r build
+}
+
 git checkout -b deploy
 
 jq -r '.dependencies|keys[]|.|= "node_modules/" + .' package.json|xargs git add -f
-babel routes/* lib/* index.js server.js --out-dir build/ &>/dev/null
-rm -r lib routes
-mv build/* ./
-rm -r build
+babelize
+rm -r lib.bak routes.bak
 git add .
 git add client/css -f
 git commit -q -m 'Compile dependencies'

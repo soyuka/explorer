@@ -1,0 +1,8 @@
+coverage
+bower_components
+node_modules
+config.yml
+!test/fixtures/config.yml
+backup
+data/users
+!data/.gitkeep
