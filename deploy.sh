@@ -3,6 +3,14 @@ DEBUG=''
 version=$1
 previous=$(jq -r .version package.json)
 
+babelize() {
+  babel routes/* lib/* index.js server.js --out-dir build/ &>/dev/null
+  mv lib lib.bak 
+  mv routes routes.bak
+  mv build/* ./
+  rm -r build
+}
+
 if [ $version == 'postinstall' ]; then
   [ ! -f data/users ] && cp users.default data/
   [ ! -f config.yml ] && cp config.example.yml config.yml
@@ -30,14 +38,6 @@ fi
 if [ $version == 'prepublish' ]; then
   babelize && exit 0 || exit 1
 fi
-
-babelize() {
-  babel routes/* lib/* index.js server.js --out-dir build/ &>/dev/null
-  cp -r lib lib.bak 
-  cp -r routes routes.bak
-  mv build/* ./
-  rm -r build
-}
 
 git checkout -b deploy
 

@@ -82,6 +82,12 @@ npm i pm2 babel-node -g
 pm2 --interpreter babel-node --name explorer start index.js
 ```
 
+### Pm2 module 
+
+```
+pm2 install directory-listings
+```
+
 ### Nginx
 
 ```nginx
