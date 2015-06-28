@@ -11,7 +11,7 @@ babelize() {
 }
 
 if [[ $cmd == 'postinstall' ]]; then
-  [ ! -f data/users ] && cp users.default data/
+  [ ! -f data/users ] && cp users.default data/users
   [ ! -f config.yml ] && cp config.example.yml config.yml
   exit 0
 fi
