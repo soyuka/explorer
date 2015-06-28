@@ -8,7 +8,7 @@ Explore and share
 
 - nodejs (> 0.11 with harmony support) 
 
-### Installing nodejs with [https://github.com/creationix/nvm](nvm)
+### Installing nodejs with [nvm](https://github.com/creationix/nvm)
 
 ```bash
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash
