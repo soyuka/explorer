@@ -5,11 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --compilers js:babel/register",
-    "coverage": "istanbul cover _mocha -- --compilers js:babel/register"
+    "coverage": "istanbul cover _mocha -- --compilers js:babel/register",
+    "prepublish": "bash deploy.sh prepublish",
+    "postinstall": "bash deploy.sh postinstall"
   },
   "engines": {
     "node": ">0.11.1"
   },
+  "apps": [{
+    "script": "index.js",
+    "node_args" : "--harmony"
+  }],
   "repository": "http://github.com/soyuka/explorer",
   "author": "soyuka",
   "license": "MIT",
