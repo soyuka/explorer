@@ -66,7 +66,14 @@ pm2 start --node-args="--harmony" --name explorer index.js
 
 With iojs you can run:
 ```
-pm2 ---next-gen-js --name explorer start index.js
+pm2 --next-gen-js --name explorer start index.js
+```
+
+Or with babel-node:
+
+```
+npm i pm2 babel-node -g
+pm2 --interpreter babel-node --name explorer start index.js
 ```
 
 ### Nginx
