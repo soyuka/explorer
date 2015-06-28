@@ -107,3 +107,11 @@ Must be compiled with babel for ES6 compatibility.
 gulp watch #scss
 DEBUG="explorer:*, explorer:routes:*" babel-node index.js
 ```
+
+## Thoughts and improvements
+
+I did this because I could not find a light file explorer. I tried pydio but it's heavy and long to install.
+Features like in-place text editing, images viewer could be nice but they will add some significant overload.
+An unarchiver could be a nice feature too but will require some dependencies (unrar, unzip).
+
+KISS.
