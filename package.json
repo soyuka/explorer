@@ -1,6 +1,6 @@
 {
   "name": "directory-listings",
-  "version": "v1.0.6",
+  "version": "1.0.7",
   "description": "Directory Listings - Explore and share ",
   "main": "index.js",
   "scripts": {
@@ -12,10 +12,12 @@
   "engines": {
     "node": ">0.11.1"
   },
-  "apps": [{
-    "script": "index.js",
-    "node_args" : "--harmony"
-  }],
+  "apps": [
+    {
+      "script": "index.js",
+      "node_args": "--harmony"
+    }
+  ],
   "repository": "http://github.com/soyuka/explorer",
   "author": "soyuka",
   "license": "MIT",
