@@ -65,7 +65,7 @@ upstream directorylistings {
 server {
   listen 80;
 
-  location / { #if you want to change this, change `app_route` in the config.yml
+  location / { #if you want to change this, change `app_root` in the config.yml
     proxy_pass http://directorylistings/ 
   }
 }
@@ -79,7 +79,7 @@ npm test
 
 ## Development
 
-Must be compiled with babel for ES6 compat.
+Must be compiled with babel for ES6 compatibility.
 
 ```bash
 gulp watch #scss
