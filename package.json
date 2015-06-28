@@ -1,6 +1,6 @@
 {
   "name": "explorer",
-  "version": "v0.0.0",
+  "version": "1.0.0",
   "description": "Directory Listings - Explore and share ",
   "main": "index.js",
   "scripts": {
