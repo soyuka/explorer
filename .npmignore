@@ -6,3 +6,4 @@ config.yml
 backup
 data/users
 !data/.gitkeep
+*.bak
