@@ -13,8 +13,8 @@ Explore and share
 Download, unpack, configure, launch :
 
 ```bash
-curl -L https://github.com/soyuka/explorer/archive/v1.0.3.tar.gz | tar xz
-cd explorer-1.0.3
+curl -L https://github.com/soyuka/explorer/archive/v1.0.4.tar.gz | tar xz
+cd explorer-1.0.4
 cp config.example.yml config.yml #copy default configuration
 cp users.default data/users #copy default database
 node --harmony index.js
