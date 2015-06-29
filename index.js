@@ -1,9 +1,24 @@
+var p = require('path')
+
+import {firstExistingPath} from './lib/utils.js'
+
 try {
-  var config = require('yamljs').load('./config.yml')
+  var config_path = firstExistingPath([
+    p.join(process.env.HOME, './.config/explorer/config.yml'), 
+    p.join(__dirname, './config.yml')
+  ])
+
+  var config = require('yamljs').load(config_path)
 
   if(!config.search) {
     config.search = {} 
   } 
+
+  config.database = p.resolve(p.dirname(config_path), config.database)
+
+  if(!config.port)
+    config.port = 4859
+
 } catch(e) {
   console.log('No config file!')
   throw e
@@ -11,5 +26,5 @@ try {
 
 require('./server.js')(config)
 .then(function(app) {
-  return app.listen(config.port || 4859, e => console.log(config.port))
+  return app.listen(config.port, e => console.log(config.port))
 }) 
