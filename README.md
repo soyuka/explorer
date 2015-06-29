@@ -120,7 +120,7 @@ server {
 ### As a pm2 module
 
 ```
-pm2 update directory-listings
+pm2 install directory-listings
 ```
 
 ### From tarball
