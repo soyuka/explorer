@@ -18,3 +18,8 @@
         %td
           %a{href: '/a/update/'+item.username} Edit
           %a{href: '/a/delete/'+item.username} Delete
+
+- if(remove)
+  %form{method: 'post', action: '/a/trash'}.row
+    .columns.large-4.small-8
+      %input.button.warning.tiny.left{type: 'submit', value: 'Empty trash (' + trash_size + ')', onclick: 'return confirmDeletion(event)'}
