@@ -37,7 +37,7 @@
       %a{href: '/?path=' + b.path}= b.name
   
 -# Tree
-%form{method: 'POST', action: '/compress'}
+%form{method: 'POST', action: '/action'}
   %table
     %thead
       %tr
@@ -45,6 +45,8 @@
         %th Name
         %th Last Modified
         %th Size
+        - if(remove)
+          %th 
     %tbody
     - each item in tree
       %tr
@@ -64,8 +66,14 @@
                 - var options = {page: 1, sort: sort, order: order}
                 %a{href: buildUrl(item.dirname, '', options)}
                   %i.icon-folder.right{title: 'Jump to directory'}
+
         %td= item.lastModified
         %td= item.humanSize
+        - if(remove)
+          %td
+            - if(!item.directory)
+              %a{onclick: 'return confirmDeletion(event)', style: 'margin:0;', href: '/remove?path=' + item.path}
+                %i.icon-trash
 
   -# Archive button
   .row
@@ -74,7 +82,7 @@
         .large-8.small-10.columns
           %input{type: 'text', name: 'name', placeholder: 'archive' + new Date().getTime()}
         .large-4.small-2.columns
-          %input.button.tiny.postfix{type: 'submit', value: 'Compress', style: 'margin:0;'}
+          %input.button.postfix.tiny{type: 'submit', value: 'Compress', style: 'margin:0;'}
 
 -# Pagination
 .pagination-centered

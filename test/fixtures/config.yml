@@ -7,6 +7,7 @@ pagination:
 tree:
   max_depth: 10 #Default 10
   concurrency: 100 #Default 100
+remove: false
 database: './users' # don't touch if you don't know what you're doing
 app_root: '/' 
 session_secret: 'Some string here'

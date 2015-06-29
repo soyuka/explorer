@@ -26,13 +26,23 @@ try {
     config.https = {}
   }
   
+  config.https.key = p.resolve(config_path, config.https.key || './certs/key.pem')
+  config.https.cert = p.resolve(config_path, config.https.cert || './certs/cert.pem')
+
   config.https = util._extend({
-    key: p.resolve(config_path, config.https.key || './certs/key.pem'),
-    cert: p.resolve(config_path, config.https.cert || './certs/cert.pem'),
     port: 6859,
     enabled: true
   }, config.https)
+
+  if(!config.remove) {
+    config.remove = {}
+  }
+
+  config.remove.trash = p.resolve(config_path, config.remove.trash || './trash')
   
+  config.remove = util._extend({
+    method: 'mv',
+  }, config.remove)
 
   if(!config.port)
     config.port = 4859
