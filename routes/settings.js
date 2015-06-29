@@ -34,10 +34,6 @@ function updateSettings(req, res) {
     }
   }
   
-  if(user.admin !== undefined) {
-    u.admin = !!parseInt(user.admin)
-  }
-
   user = new User(u, !!req.body.password)
   .then(function(user) {
     if(''+user.key === '1') 
