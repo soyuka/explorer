@@ -14,7 +14,7 @@ describe('admin', function() {
     }) 
   })
 
-  it('should have access', function(cb) {
+  it('should be granted', function(cb) {
     request.get('/a')
     .end(cb)
   })
@@ -30,11 +30,32 @@ describe('admin', function() {
     .end(cb)
   })
 
+  it('should login as test', function(cb) {
+    agent.post('/login') 
+    .send({username: 'test', password: 'test'})
+    .expect(302)
+    .expect(function(res) {
+      expect(res.headers['set-cookie']).not.to.be.undefined
+    })
+    .end(cb)
+  })
+
+  it('should be granted', function(cb) {
+    agent.get('/a')
+    .end(cb)
+  })
+
+  it('should logout from test', function(cb) {
+    agent.get('/logout')  
+    .expect(302)
+    .end(cb)
+  })
+
   it('should get update page', function(cb) {
      request.get('/a/update/test').end(cb)
   })
 
-  it('should update user', function(cb) {
+  it('should update user (admin = 0)', function(cb) {
     user.admin = 0
     request.put('/a/users') 
     .expect(302)

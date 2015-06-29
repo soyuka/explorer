@@ -94,15 +94,12 @@ var Admin = function(app) {
     let user = req.body
 
     for(var i in u) {
-      //                waiting for privates
-      if(user[i] && typeof u[i] !== 'function') {
+      // waiting for private class variable o/
+      if(typeof u[i] !== 'function') {
         u[i] = user[i]
       }
     }
     
-    if(user.admin !== undefined)
-      u.admin = !!parseInt(user.admin)
-
     user = new User(u, !!req.body.password)
     .then(function(user) {
       if(''+user.key === '1') 
