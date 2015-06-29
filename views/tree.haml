@@ -52,7 +52,8 @@
           %input{type: 'checkbox', value: item.path, name: 'zip'}
         %td
           - if (item.directory)
-            %a{href: '/?path='+item.path}
+            - var options = {page: 1, sort: sort, order: order}
+            %a{href: buildUrl(item.path, '', options)}
               %i.icon-folder
               = item.name
           - else
@@ -60,10 +61,9 @@
               %i{class: 'icon-file-' + item.type}
               = item.name
               - if (search)
-                %a{href: '/?path='+item.dirname}
+                - var options = {page: 1, sort: sort, order: order}
+                %a{href: buildUrl(item.dirname, '', options)}
                   %i.icon-folder.right{title: 'Jump to directory'}
-          -# - if(item.search)
-          -#   %i.icon-
         %td= item.lastModified
         %td= item.humanSize
 
