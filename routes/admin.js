@@ -1,8 +1,11 @@
 var debug = require('debug')('explorer:router:admin')
 var Promise = require('bluebird')
+var unlinkAsync = Promise.promisify(require('fs').unlink)
+var prettyBytes = require('pretty-bytes')
 
 import {extend} from '../lib/utils.js'
 import {User} from '../lib/users.js'
+import {tree} from '../lib/tree.js'
 
 function handleSystemError(req, res) {
   return function (err) {
@@ -35,10 +38,39 @@ function isAdmin(req, res, next) {
 
 var Admin = function(app) {
   let admin = require('express').Router()
+  let config = app.get('config')
   admin.use(isAdmin)
 
   admin.get('/', function(req, res) {
-    return res.renderBody('admin', {users: req.users.users})
+
+    if(config.remove.method !== 'mv')
+      return res.renderBody('admin', {users: req.users.users, remove: false, trash_size: '0 B'})
+
+    tree(config.remove.trash, {maxDepth: 1})
+    .then(function(tree) {
+
+      if(tree.tree.length == 0)
+        return res.renderBody('admin', {users: req.users.users, remove: true, trash_size: '0 B'})
+        
+      let size = tree.tree.reduce(function(a, b) { return a.size + b.size })
+
+      return res.renderBody('admin', {users: req.users.users, remove: true, trash_size: prettyBytes(size)})
+    })
+
+  })
+
+  admin.post('/trash', function(req, res) {
+    tree(config.remove.trash, {maxDepth: 1})
+    .then(function(tree) {
+      Promise.all(tree.tree.map(function(e) {
+        return unlinkAsync(e.path)
+      }))
+      .then(function() {
+        return res.redirect('back')
+      })
+      .catch(handleSystemError)
+    })
+     
   })
 
   admin.get('/create', function(req, res) {

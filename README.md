@@ -93,6 +93,12 @@ tree:
   # When calculating directory size we stop at the max_depth
   max_depth: 10 #Default 10
   concurrency: 100 #Default 100
+remove: 
+  # mv will move files to a trash directory
+  # rm will delete them
+  # empty to disable deletion
+  method: 'mv'
+  trash: './trash'
 database: './data/users' # don't touch if you don't know what you're doing
 app_root: '/' 
 session_secret: 'Some string here'

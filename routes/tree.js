@@ -1,7 +1,8 @@
-
+var fs = require('fs')
 var archiver = require('archiver')
 var p = require('path')
 var debug = require('debug')('explorer:routes:tree')
+var moment = require('moment')
 
 import {higherPath, extend, buildUrl, secureString} from '../lib/utils.js'
 import {sort} from '../lib/sort.js'
@@ -46,13 +47,15 @@ function prepareTree(config) {
       root: p.resolve(req.user.home),
       path: higherPath(req.user.home, req.query.path),
       parent: higherPath(req.user.home, p.resolve(req.query.path, '..')),
-      buildUrl: buildUrl
+      buildUrl: buildUrl,
+      remove: config.remove && config.remove.method ? true : false
     })
 
     req.options = extend(
       res.locals,
       config.tree, 
-      config.pagination
+      config.pagination,
+      {remove: config.remove}
     )
 
     if(res.locals.sort)
@@ -158,6 +161,35 @@ function getTree(req, res) {
 }
 
 /**
+ * Deletes or moves a file
+ */
+function deletePath(req, res) {
+  let path = higherPath(req.user.home, req.query.path)
+
+  let next = function(err) {
+    if(err) {
+      console.error(err) 
+      req.flash('error', 'Delete failed')
+    }
+
+    return res.redirect('back')
+  }
+
+  if(path === req.user.home) {
+    return res.status(401).send('Unauthorized') 
+  }
+
+  if(req.options.remove.method == 'mv') {
+    let t = p.join(req.options.remove.trash, p.basename(path) + '.' + moment().format('YYYYMMDDHHmmss'))
+    fs.rename(path, t, next) 
+  } else if(req.options.remove.method == 'rm') {
+    fs.unlink(path, next) 
+  } else {
+    return res.status(403).send('Forbidden')
+  }
+}
+
+/**
  * Search through config search method
  * @route /search
  */
@@ -183,6 +215,7 @@ var Tree = function(app) {
   app.get('/search', pt, search)
   app.get('/download', download)
   app.post('/compress', compress)
+  app.get('/remove', pt, deletePath)
 
   return app
 }
