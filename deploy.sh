@@ -11,7 +11,15 @@ babelize() {
 }
 
 if [[ $cmd == 'postinstall' ]]; then
-  config_path="~/.config/explorer"
+
+  if [ ! -z $HOME ]; then
+    config_path="$HOME/.config/explorer"
+  elif [ ! -z $PM2_HOME ]; then
+    config_path="$PM2_HOME/.config/explorer"
+  else
+    config_path="./"
+  fi
+
   [ ! -d $config_path ] && mkdir -p $config_path/data
   [ ! -f $config_path/data/users ] && cp users.default $config_path/data/users
   [ ! -f $config_path/config.yml ] && cp config.example.yml $config_path/config.yml
