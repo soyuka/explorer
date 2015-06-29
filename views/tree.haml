@@ -17,6 +17,7 @@
       .columns.small-2
         %input.button.postfix.secondary{type: 'submit', value: 'Sort'}
         %input{type: 'hidden', name: 'search', value: search}
+        %input{type: 'hidden', name: 'path', value: path}
 
   .columns.large-5.large-offset-2
     %form.row.collapse{action: '/search', method: 'GET'}
