@@ -11,8 +11,10 @@ babelize() {
 }
 
 if [[ $cmd == 'postinstall' ]]; then
-  [ ! -f data/users ] && cp users.default data/users
-  [ ! -f config.yml ] && cp config.example.yml config.yml
+  config_path="~/.config/explorer"
+  [ ! -d $config_path ] && mkdir -p $config_path/data
+  [ ! -f $config_path/data/users ] && cp users.default $config_path/data/users
+  [ ! -f $config_path/config.yml ] && cp config.example.yml $config_path/config.yml
   exit 0
 fi
 

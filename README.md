@@ -26,7 +26,7 @@ pm2 install directory-listings
 ```
 Go to IP:4859, login with `admin:admin` Don't forget to change the password.
 
-With pm2 configuration file is located in `~/.pm2/node_modules/directory-listings`
+With pm2 configuration file is located in `~/.config/explorer`
 
 ### Manual 
 Download, unpack, configure, launch :
