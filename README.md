@@ -28,6 +28,8 @@ Go to IP:4859, login with `admin:admin` Don't forget to change the password.
 
 With pm2 configuration file is located in `~/.config/explorer`
 
+You may want to create your own HTTPS certs or disable it ([see below](#certs)).
+
 ### Manual 
 Download, unpack, configure, launch :
 
@@ -76,7 +78,7 @@ pm2 --interpreter babel-node --name explorer start index.js
 ---
 search: 
   # Available: pt, ack, find, mdfind, custom, native
-  method: 'custom' 
+  method: 'native' 
   # Custom search command (${search} will be replaced by the string) 
   command: "pt --nocolor --nogroup -l -i '${search}' ." # not used by native
   max_depth: 10 # Default 10
@@ -92,12 +94,21 @@ tree:
   max_depth: 10 #Default 10
   concurrency: 100 #Default 100
 database: './data/users' # don't touch if you don't know what you're doing
-app_root: '/' # see below about nginx location
-session_secret: 'Some string here' #change this
+app_root: '/' 
+session_secret: 'Some string here'
 port: 4859
+https:
+  port: 6859
+  enabled: true #default option!
+  key: './certs/key.pem' #see below
+  cert: './certs/cert.pem'
 ```
 
-## Misc
+The `config.yml` will be searched in:
+- `~/.config/explorer/config.yml`
+- `./config/explorer/config.yml` (relative to the script directory!)
+
+## HTTP(S)
 
 ### Nginx
 
@@ -114,6 +125,10 @@ server {
   }
 }
 ```
+
+### Certs
+
+You can either change the paths in the `config.yml`, or replace those located in your configuration path (see [Configuration](#configuration)).
 
 ## Update
 
