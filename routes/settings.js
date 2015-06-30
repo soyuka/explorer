@@ -28,8 +28,11 @@ function updateSettings(req, res) {
   let user = req.body
 
   for(var i in u) {
-    //                waiting for privates
-    if(user[i] && typeof u[i] !== 'function') {
+    if(i == 'home' || i == 'admin')
+      continue;
+
+    //                          waiting for privates
+    if(typeof u[i] !== 'function') {
       u[i] = user[i]
     }
   }
