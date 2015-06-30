@@ -34,8 +34,8 @@ You may want to create your own HTTPS certs or disable it ([see below](#certs)).
 Download, unpack, configure, launch :
 
 ```bash
-curl -L https://github.com/soyuka/explorer/archive/v1.0.17.tar.gz | tar xz
-cd explorer-1.0.17
+curl -L https://github.com/soyuka/explorer/archive/v1.1.0.tar.gz | tar xz
+cd explorer-1.1.0
 cp config.example.yml config.yml #copy default configuration
 cp users.default data/users #copy default database
 npm rebuild
@@ -45,7 +45,7 @@ node --harmony index.js #see below to run as a daemon
 #### Mirror
 
 ```bash
-curl -L http://lab.wareziens.net/soyuka/explorer/repository/archive.tar.gz?ref=v1.0.17 | tar xz
+curl -L http://lab.wareziens.net/soyuka/explorer/repository/archive.tar.gz?ref=v1.1.0 | tar xz
 ```
 
 Check `IP:4859`, login with `admin:admin`. Don't forget to change the password!
