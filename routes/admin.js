@@ -5,7 +5,7 @@ var prettyBytes = require('pretty-bytes')
 var fs = Promise.promisifyAll(require('fs'))
 var p = require('path')
 
-import {extend} from '../lib/utils.js'
+import {noDotFiles, extend} from '../lib/utils.js'
 import {User} from '../lib/users.js'
 import {tree} from '../lib/tree.js'
 
@@ -72,6 +72,7 @@ var Admin = function(app) {
     debug('Empty trash %s', config.remove.trash)
 
     fs.readdirAsync(config.remove.trash)
+    .filter(noDotFiles)
     .map(function(filename) {
       return rimraf(p.resolve(config.remove.trash, filename))
     })
