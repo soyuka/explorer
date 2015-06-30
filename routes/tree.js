@@ -1,5 +1,6 @@
 var fs = require('fs')
 var archiver = require('archiver')
+var rimraf = require('rimraf')
 var p = require('path')
 var debug = require('debug')('explorer:routes:tree')
 var moment = require('moment')
@@ -166,6 +167,8 @@ function getTree(req, res) {
 function deletePath(req, res) {
   let path = higherPath(req.user.home, req.query.path)
 
+  debug('Deleting %s', path)
+
   let next = function(err) {
     if(err) {
       console.error(err) 
@@ -181,9 +184,9 @@ function deletePath(req, res) {
 
   if(req.options.remove.method == 'mv') {
     let t = p.join(req.options.remove.trash, p.basename(path) + '.' + moment().format('YYYYMMDDHHmmss'))
-    fs.rename(path, t, next) 
+    return fs.rename(path, t, next) 
   } else if(req.options.remove.method == 'rm') {
-    fs.unlink(path, next) 
+    return rimraf(path, next)
   } else {
     return res.status(403).send('Forbidden')
   }

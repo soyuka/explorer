@@ -1,3 +1,6 @@
+var fs = require('fs')
+var minimatch = require('minimatch')
+
 describe('tree', function(cb) {
   
   before(login)
@@ -14,6 +17,26 @@ describe('tree', function(cb) {
     .end(cb)
   })
 
-  after(logout)
+  it('should trash a file', function(cb) {
+    request.get('/remove?path=./tobedeleted')
+    .expect(302)
+    .end(function() {
+      let l = fs.readdirSync('test/fixtures/trash/')
+      expect(minimatch(l[0], 'tobedeleted.*')).to.be.true
+      return cb()
+    })
+  })
 
+  it('should empty trash', function(cb) {
+    // request.post('/a/trash') 
+    // .send({})
+    // .end(function() {
+    //   let l = fs.readdirSync('test/fixtures/trash/')
+    //   expect(l).to.have.length.of(0)
+    //
+      fs.mkdir('test/fixtures/tree/tobedeleted', cb)
+    // })
+  })
+
+  after(logout)
 })
