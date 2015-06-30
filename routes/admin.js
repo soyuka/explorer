@@ -135,9 +135,12 @@ var Admin = function(app) {
     
     let user = req.body
 
+    if(!req.body.admin)
+      req.body.admin = 0
+
     for(var i in u) {
       // waiting for private class variable o/
-      if(typeof u[i] !== 'function') {
+      if(typeof(user[i]) !== 'undefined' && typeof u[i] !== 'function') {
         u[i] = user[i]
       }
     }
