@@ -1,7 +1,9 @@
-var debug = require('debug')('explorer:router:admin')
+var debug = require('debug')('explorer:routes:admin')
 var Promise = require('bluebird')
-var unlinkAsync = Promise.promisify(require('fs').unlink)
+var rimraf = Promise.promisify(require('rimraf'))
 var prettyBytes = require('pretty-bytes')
+var fs = Promise.promisifyAll(require('fs'))
+var p = require('path')
 
 import {extend} from '../lib/utils.js'
 import {User} from '../lib/users.js'
@@ -52,7 +54,13 @@ var Admin = function(app) {
       if(tree.tree.length == 0)
         return res.renderBody('admin', {users: req.users.users, remove: true, trash_size: '0 B'})
         
-      let size = tree.tree.reduce(function(a, b) { return a.size + b.size })
+      let size = 0;
+
+      for(var i in tree.tree) {
+        size += tree.tree[i].size
+      }
+
+      debug('Trash size %s', size)
 
       return res.renderBody('admin', {users: req.users.users, remove: true, trash_size: prettyBytes(size)})
     })
@@ -60,16 +68,17 @@ var Admin = function(app) {
   })
 
   admin.post('/trash', function(req, res) {
-    tree(config.remove.trash, {maxDepth: 1})
-    .then(function(tree) {
-      Promise.all(tree.tree.map(function(e) {
-        return unlinkAsync(e.path)
-      }))
-      .then(function() {
-        return res.redirect('back')
-      })
-      .catch(handleSystemError)
+
+    debug('Empty trash %s', config.remove.trash)
+
+    fs.readdirAsync(config.remove.trash)
+    .map(function(filename) {
+      return rimraf(p.resolve(config.remove.trash, filename))
     })
+    .then(function() {
+      return res.redirect('back')
+    })
+    .catch(handleSystemError)
      
   })
 

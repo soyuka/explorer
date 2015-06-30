@@ -9,7 +9,7 @@ describe('tree', function() {
   it('should get the tree', function(cb) {
     tree(fixture, {root: __dirname})
     .then(function(o) {
-      expect(o.tree).to.have.length.of(4)
+      expect(o.tree).to.have.length.of.at.least(4)
 
       var dir = o.tree.find(e => e.name == 'dir')
       expect(dir.depth).to.equal(1)
@@ -35,12 +35,12 @@ describe('tree', function() {
     tree(fixture, {page: 1, limit: 2, root: __dirname}) 
     .then(function(o) {
       expect(o.tree).to.have.length.of(2)
-      expect(o.pages).to.equal(2)
+      expect(o.pages).to.be.at.least(2)
 
       tree(fixture, {page: 2, limit: 2})
       .then(function(o) {
         expect(o.tree).to.have.length.of(2)
-        expect(o.pages).to.equal(2)
+        expect(o.pages).to.be.at.least(2)
         cb()
       })
       .catch(cb)

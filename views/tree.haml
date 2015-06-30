@@ -71,9 +71,8 @@
         %td= item.humanSize
         - if(remove)
           %td
-            - if(!item.directory)
-              %a{onclick: 'return confirmDeletion(event)', style: 'margin:0;', href: '/remove?path=' + item.path}
-                %i.icon-trash
+            %a{onclick: 'return confirmDeletion(event)', style: 'margin:0;', href: '/remove?path=' + item.path}
+              %i.icon-trash
 
   -# Archive button
   .row
