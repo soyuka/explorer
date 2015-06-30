@@ -22,7 +22,7 @@ if [[ $cmd == 'postinstall' ]]; then
   [ ! -f $config_path/data/users ] && cp users.default $config_path/data/users
   [ ! -f $config_path/config.yml ] && cp config.example.yml $config_path/config.yml
   [ ! -d $config_path/certs ] && cp -r ./certs $config_path/certs
-  [ ! -d $config_path/trash ] && $config_path/trash
+  [ ! -d $config_path/trash ] && mkdir $config_path/trash
   exit 0
 fi
 
