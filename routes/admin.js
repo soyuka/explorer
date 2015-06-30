@@ -22,7 +22,7 @@ function validUser(req, res, next) {
     return handleSystemError(req, res)('User is not valid')
 
   try {
-    new User(req.body) 
+    new User(req.body, false) 
   } catch(e) {
     console.error(e)  
     return handleSystemError(req, res)('User is not valid')
@@ -134,18 +134,25 @@ var Admin = function(app) {
     }
     
     let user = req.body
+    let nocrypt
 
-    if(!req.body.admin)
-      req.body.admin = 0
+    if(!user.admin)
+      user.admin = 0
+    
+    if(user.password == '' || typeof user.password == 'undefined') {
+      nocrypt = false 
+      user.password = u.password
+    }
 
     for(var i in u) {
+
       // waiting for private class variable o/
       if(typeof(user[i]) !== 'undefined' && typeof u[i] !== 'function') {
         u[i] = user[i]
       }
     }
-    
-    user = new User(u, !!req.body.password)
+
+    user = new User(u, nocrypt)
     .then(function(user) {
       if(''+user.key === '1') 
         return user.generateKey()

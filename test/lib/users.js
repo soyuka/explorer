@@ -77,7 +77,7 @@ describe('users', function() {
 
   it('should update user', function(cb) {
     user.home = '/home/test'
-    new User(user).then(function(u) {
+    new User(user, false).then(function(u) {
       return users.put(u)
     }) 
     .then(cb)
