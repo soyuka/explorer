@@ -26,18 +26,25 @@ function updateSettings(req, res) {
   }
   
   let user = req.body
+  let nocrypt
+    
+  if(user.password == '' || typeof user.password == 'undefined') {
+    user.password = u.password
+    nocrypt = false
+  
+  }
 
   for(var i in u) {
     if(i == 'home' || i == 'admin')
       continue;
 
     //                          waiting for privates
-    if(typeof u[i] !== 'function') {
+    if(user[i] !== undefined && typeof u[i] !== 'function') {
       u[i] = user[i]
     }
   }
   
-  user = new User(u, !!req.body.password)
+  user = new User(u, nocrypt)
   .then(function(user) {
     if(''+user.key === '1') 
       return user.generateKey()
