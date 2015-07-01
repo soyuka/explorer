@@ -32,7 +32,6 @@ module.exports = function(config) {
   //sessions are only used for flash
   app.use(session({secret: config.session_secret, resave: false, saveUninitialized: false}))
   app.use(flash())
-  app.use(express.static('bower_components'))
   app.use(express.static('client'))
   app.set('config', config)
   app.set('view engine','haml' )
