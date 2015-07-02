@@ -1,4 +1,6 @@
 # Changelog
+1.1.4
+- Add size sort (directory size calculated before pagination)
 1.1.3
 - remove `bower_components` static
 - add order and sort cookie 
