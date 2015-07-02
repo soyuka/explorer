@@ -32,7 +32,6 @@ module.exports = function(config) {
   //sessions are only used for flash
   app.use(session({secret: config.session_secret, resave: false, saveUninitialized: false}))
   app.use(flash())
-  app.use(express.static('bower_components'))
   app.use(express.static('client'))
   app.set('config', config)
   app.set('view engine','haml' )
@@ -94,6 +93,29 @@ module.exports = function(config) {
     res.locals.user = req.user || {}
 
     debug('User %o', user)
+
+    return next()
+  })
+
+  app.use(function(req, res, next) {
+      
+    function isString(v) {return typeof v == 'string'}
+
+    if(isString(req.query.sort) && req.query.sort != req.cookies.sort) {
+      res.cookie('sort', req.query.sort, {httpOnly: false}) 
+    }
+
+    if(isString(req.query.sort) && req.query.order != req.cookies.order) {
+      res.cookie('order', req.query.order, {httpOnly: false}) 
+    }
+
+    if(isString(req.cookies.sort) && !req.query.sort) {
+      req.query.sort = req.cookies.sort
+    }
+
+    if(isString(req.cookies.order) && !req.query.order) {
+      req.query.order = req.cookies.order
+    }
 
     return next()
   })
