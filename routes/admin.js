@@ -129,36 +129,11 @@ var Admin = function(app) {
   admin.put('/users', function(req, res) {
     let u = req.users.get(req.body.username)
 
-    if(!u) {
+    if(!(u instanceof User)) {
       return handleSystemError(req,res)('User not found')
     }
     
-    let user = req.body
-    let nocrypt
-
-    if(!user.admin)
-      user.admin = 0
-    
-    if(user.password == '' || typeof user.password == 'undefined') {
-      nocrypt = false 
-      user.password = u.password
-    }
-
-    for(var i in u) {
-
-      // waiting for private class variable o/
-      if(typeof(user[i]) !== 'undefined' && typeof u[i] !== 'function') {
-        u[i] = user[i]
-      }
-    }
-
-    user = new User(u, nocrypt)
-    .then(function(user) {
-      if(''+user.key === '1') 
-        return user.generateKey()
-
-      return Promise.resolve(user)
-    })
+    u.update(req.body)
     .then(function(user) {
       return req.users.put(user)
       .then(function() {
