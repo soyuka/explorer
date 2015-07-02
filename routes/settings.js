@@ -24,33 +24,8 @@ function updateSettings(req, res) {
   if(!u) {
     return handleSystemError(req,res)('User not found')
   }
-  
-  let user = req.body
-  let nocrypt
     
-  if(user.password == '' || typeof user.password == 'undefined') {
-    user.password = u.password
-    nocrypt = false
-  
-  }
-
-  for(var i in u) {
-    if(i == 'home' || i == 'admin')
-      continue;
-
-    //                          waiting for privates
-    if(user[i] !== undefined && typeof u[i] !== 'function') {
-      u[i] = user[i]
-    }
-  }
-  
-  user = new User(u, nocrypt)
-  .then(function(user) {
-    if(''+user.key === '1') 
-      return user.generateKey()
-
-    return Promise.resolve(user)
-  })
+  u.update(req.body, ['home', 'admin'])
   .then(function(user) {
     return req.users.put(user)
     .then(function() {
