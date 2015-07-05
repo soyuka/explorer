@@ -170,6 +170,7 @@ function getTree(req, res) {
  * Deletes or moves a file
  */
 function deletePath(req, res) {
+
   let path = higherPath(req.user.home, req.query.path)
 
   debug('Deleting %s', path)
@@ -184,6 +185,10 @@ function deletePath(req, res) {
   }
 
   if(path === req.user.home) {
+    return res.status(401).send('Unauthorized') 
+  }
+
+  if(!req.user.readonly) {
     return res.status(401).send('Unauthorized') 
   }
 
