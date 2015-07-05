@@ -9,6 +9,7 @@
             %select{name: 'sort'}
               %option{value: 'name', selected: sort == 'name'} Name
               %option{value: 'time', selected: sort == 'time'} Time
+              %option{value: 'size', selected: sort == 'size'} Size
           .columns.small-7
             %input{type: 'radio', id: 'order_asc', name: 'order', value: 'asc', checked: order == 'asc'} 
             %label.inline{for: 'order_asc'} Asc
