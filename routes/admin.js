@@ -1,13 +1,13 @@
 var debug = require('debug')('explorer:routes:admin')
 var Promise = require('bluebird')
-var rimraf = Promise.promisify(require('rimraf'))
-var prettyBytes = require('pretty-bytes')
 var fs = Promise.promisifyAll(require('fs'))
 var p = require('path')
+var yaml = require('yamljs')
 
-import {noDotFiles, extend} from '../lib/utils.js'
+import {noDotFiles, extend, removeDirectoryContent} from '../lib/utils.js'
 import {User} from '../lib/users.js'
 import {tree} from '../lib/tree.js'
+import {trashSize} from './middlewares.js'
 
 function handleSystemError(req, res) {
   return function (err) {
@@ -31,56 +31,37 @@ function validUser(req, res, next) {
   return next()
 }
 
-function isAdmin(req, res, next) {
-  if(!req.user.admin)
-    return res.status(403).send('Forbidden')
+function isAdmin(config) {
+  return function(req, res, next) {
+    if(!req.user.admin)
+      return res.status(403).send('Forbidden')
 
-  return next()
+    res.locals.config = config
+    res.locals.ymlConfig = yaml.stringify(config, 2, 4) 
+
+    return next()
+  }
 }
 
 var Admin = function(app) {
   let admin = require('express').Router()
   let config = app.get('config')
-  admin.use(isAdmin)
 
-  admin.get('/', function(req, res) {
+  admin.use(isAdmin(config))
 
-    if(config.remove.method !== 'mv')
-      return res.renderBody('admin', {users: req.users.users, remove: false, trash_size: '0 B'})
-
-    tree(config.remove.trash, {maxDepth: 1})
-    .then(function(tree) {
-
-      if(tree.tree.length == 0)
-        return res.renderBody('admin', {users: req.users.users, remove: true, trash_size: '0 B'})
-        
-      let size = 0;
-
-      for(var i in tree.tree) {
-        size += tree.tree[i].size
-      }
-
-      debug('Trash size %s', size)
-
-      return res.renderBody('admin', {users: req.users.users, remove: true, trash_size: prettyBytes(size)})
-    })
-
+  admin.get('/', trashSize(config), function(req, res) {
+    return res.renderBody('admin', {users: req.users.users, remove: config.remove && config.remove.method == 'mv'})
   })
 
   admin.post('/trash', function(req, res) {
 
     debug('Empty trash %s', config.remove.trash)
 
-    fs.readdirAsync(config.remove.trash)
-    .filter(noDotFiles)
-    .map(function(filename) {
-      return rimraf(p.resolve(config.remove.trash, filename))
-    })
+    removeDirectoryContent(config.remove.trash)
     .then(function() {
       return res.redirect('back')
     })
     .catch(handleSystemError)
-     
   })
 
   admin.get('/create', function(req, res) {

@@ -10,7 +10,6 @@
 @import 'foundation/components/tables';
 @import 'foundation/components/top-bar';
 @import 'foundation/components/visibility';
-@import 'foundation/components/sub-nav.scss';
 @import 'foundation/components/alert-boxes.scss';
 
 .small {
@@ -23,7 +22,35 @@
 
 table {
   width: 100%;
+
+  td input[type="checkbox"] {
+    margin: 0.80rem 0;    
+  }
+
 }
+
+table.admin {
+    tr:nth-of-type(even) {
+        background-color: transparent !important;
+    }
+
+    tr.border-bottom {
+        border-bottom: 1px solid $gainsboro;
+    }
+
+    td.border-left {
+        border-left: 1px solid $gainsboro;
+    }
+
+    td.border-right {
+        border-right: 1px solid $gainsboro;
+    }
+
+    tr.header {
+        background: $table-even-row-bg !important; 
+        font-weight: bold;
+    }
+} 
 
 .columns > .postfix {
   padding: 0;
@@ -40,4 +67,8 @@ label.key {
     display: inline;  
   }
 
+}
+
+small > label {
+    font-size: inherit;
 }
