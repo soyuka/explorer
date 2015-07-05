@@ -118,6 +118,51 @@ describe('users', function() {
     })
   })
 
+  it('should update a multiline buffer', function(cb) {
+    let u = users.get('admin')
+    u.update({ignore: '/home/test/p0rn\n/home/test/incomplete\n'})
+    .then(function(u) {
+      expect(u.ignore).to.deep.equal(['/home/test/p0rn', '/home/test/incomplete'])
+      return users.put(u)
+    })
+    .then(cb)
+    .catch(cb)
+  })
+
+  it('should get the multiline buffer back after loading database', function(cb) {
+    let t = new Users({database: __dirname + '/../fixtures/users'})
+
+    t.load()
+    .then(function() {
+      expect(t.get('admin').ignore).to.deep.equal(['/home/test/p0rn', '/home/test/incomplete'])
+      cb()
+    })
+    .catch(cb)
+  })
+
+  it('should not update admin key', function(cb) {
+  
+    let u = users.get('admin')
+
+    u.update({key: 'nothing'})
+    .then(function(u) {
+      expect(u).not.to.equal('nothing')
+      cb()
+    })
+  })
+
+  it('should not update admin home because of ignored key', function(cb) {
+  
+    let u = users.get('admin')
+
+    u.update({home: 'some'}, ['home'])
+    .then(function(u) {
+      expect(u).not.to.equal('some')
+      cb()
+    })
+  })
+
+
   after(function(cb) {
     user.username = 'admin'
     user.password = 'admin'
