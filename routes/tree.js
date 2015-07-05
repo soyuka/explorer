@@ -48,9 +48,14 @@ function prepareTree(config) {
       root: p.resolve(req.user.home),
       path: higherPath(req.user.home, req.query.path),
       parent: higherPath(req.user.home, p.resolve(req.query.path, '..')),
-      buildUrl: buildUrl,
-      remove: config.remove && config.remove.method ? true : false
+      buildUrl: buildUrl
     })
+
+    if(req.user.readonly) {
+      res.locals.remove = false 
+    } else {
+      res.locals.remove = config.remove && config.remove.method ? true : false
+    }
 
     req.options = extend(
       res.locals,

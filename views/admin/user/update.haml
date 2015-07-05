@@ -19,6 +19,8 @@
       %label{for: 'key'} Generate new key
       %input{type: 'checkbox', id: 'admin', name: 'admin', value: 1, checked: !!user.admin}
       %label{for: 'admin'} Admin
+      %input{type: 'checkbox', id: 'readonly', name: 'readonly', value: 1, checked: !!user.readonly}
+      %label{for: 'readonly'} Readonly
   .row
     .columns.large-3.large-offset-9
       %input{type: 'hidden', name: '_method', value: 'put'}

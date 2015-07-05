@@ -25,7 +25,7 @@ function updateSettings(req, res) {
     return handleSystemError(req,res)('User not found')
   }
     
-  u.update(req.body, ['home', 'admin'])
+  u.update(req.body, ['home', 'admin', 'readonly'])
   .then(function(user) {
     return req.users.put(user)
     .then(function() {

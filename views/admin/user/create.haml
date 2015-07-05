@@ -13,11 +13,10 @@
       %label{for: 'home'} Home
       %input{type: 'text', name: 'home', id: 'home', placeholder: 'Be careful...'}
     .columns.large-6
-      %label Admin
-      %input{type: 'radio', id: 'admin', name: 'admin', value: 1}
-      %label{for: 'admin'} Yes
-      %input{type: 'radio', id: 'no-admin', name: 'admin', value: 0, checked: true}
-      %label{for: 'no-admin'} No
+      %input{type: 'checkbox', id: 'admin', name: 'admin', value: 1}
+      %label{for: 'admin'} Admin
+      %input{type: 'checkbox', id: 'readonly', name: 'readonly', value: 1}
+      %label{for: 'readonly'} Readonly
       %input{type: 'hidden', name: 'key', value: 1}
   .row
     .columns.large-3.large-offset-9

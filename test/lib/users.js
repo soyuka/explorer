@@ -3,7 +3,7 @@ import { Users, User } from '../../lib/users.js'
 describe('users', function() {
 
   var users = null
-  var user = {username: 'admin', password: 'admin', home: __dirname + '/../fixtures/tree', key: 'key', admin: true}
+  var user = {username: 'admin', password: 'admin', home: __dirname + '/../fixtures/tree', key: 'key', admin: true, readonly: false}
   var u
 
   before(function(cb) {
@@ -67,8 +67,8 @@ describe('users', function() {
     var str = u.toString().split(':')
     
     Object.keys(user).forEach(function(e, i) {
-      if(e == 'admin') {
-        expect(!!str[i]).to.equal(!!user[e])
+      if(e == 'admin' | e == 'readonly') {
+        expect(str[i]).to.equal(''+user[e])
       } else if(e != 'password') {
         expect(str[i]).to.equal(user[e])
       }
