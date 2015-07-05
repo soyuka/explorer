@@ -7,6 +7,7 @@
       %th Home
       %th Key
       %th Admin
+      %th Readonly
       %th #
   %tbody
     - each item in users
@@ -15,6 +16,7 @@
         %td= item.home
         %td= item.key
         %td= item.admin
+        %td= item.readonly
         %td
           %a{href: '/a/update/'+item.username} Edit
           %a{href: '/a/delete/'+item.username} Delete
