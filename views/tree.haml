@@ -38,7 +38,7 @@
       %a{href: '/?path=' + b.path}= b.name
   
 -# Tree
-%form{method: 'POST', action: '/action'}
+%form{method: 'POST', action: '/compress'}
   %table
     %thead
       %tr
@@ -46,7 +46,7 @@
         %th Name
         %th Last Modified
         %th Size
-        - if(remove)
+        - if(canRemove)
           %th 
     %tbody
     - each item in tree
@@ -70,7 +70,7 @@
 
         %td= item.lastModified
         %td= item.humanSize
-        - if(remove)
+        - if(canRemove)
           %td
             %a{onclick: 'return confirmDeletion(event)', style: 'margin:0;', href: '/remove?path=' + item.path}
               %i.icon-trash
@@ -82,7 +82,14 @@
         .large-8.small-10.columns
           %input{type: 'text', name: 'name', placeholder: 'archive' + new Date().getTime()}
         .large-4.small-2.columns
-          %input.button.postfix.tiny{type: 'submit', value: 'Compress', style: 'margin:0;'}
+          %button.button.postfix.tiny{type: 'submit', style: 'margin:0;'}
+            Compress
+      - if(archive.keep == true)
+        .row
+          .large-12.columns{style: 'margin-top:-20px;'}
+            %small
+              %input{type: 'checkbox', name: 'download', id: 'download', checked: true, value: 1}
+              %label{for: 'download'} Download
 
 -# Pagination
 .pagination-centered

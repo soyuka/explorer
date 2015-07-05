@@ -21,3 +21,8 @@
       %label.key
         Your key:  
         %pre= user.key
+
+- if(canRemove && remove.method == 'mv' && user.trash)
+  %form{method: 'post', action: '/trash'}.right
+    %input.button.warning.tiny{type: 'submit', value: 'Empty trash (' + trashSize + ')', onclick: 'return confirmDeletion(event)'}
+

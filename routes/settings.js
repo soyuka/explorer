@@ -1,6 +1,7 @@
 var Promise = require('bluebird')
 
 import {User} from '../lib/users.js'
+import {trashSize, prepareTree} from './middlewares.js'
 
 function handleSystemError(req, res) {
   return function (err) {
@@ -24,8 +25,14 @@ function updateSettings(req, res) {
   if(!u) {
     return handleSystemError(req,res)('User not found')
   }
+
+  let ignore = ['home', 'admin', 'readonly', 'ignore']
+
+  if(req.user.readonly) {
+    ignore.concat(['trash', 'archive'])
+  }
     
-  u.update(req.body, ['home', 'admin', 'readonly'])
+  u.update(req.body, ignore)
   .then(function(user) {
     return req.users.put(user)
     .then(function() {
@@ -37,7 +44,9 @@ function updateSettings(req, res) {
 }
 
 var Settings = function(app) {
-  app.get('/settings', settings)
+  let config = app.get('config')
+
+  app.get('/settings', trashSize(config), prepareTree(config), settings)
   app.put('/settings', updateSettings)
 
   return app

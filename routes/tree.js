@@ -4,74 +4,12 @@ var rimraf = require('rimraf')
 var p = require('path')
 var debug = require('debug')('explorer:routes:tree')
 var moment = require('moment')
+var prettyBytes = require('pretty-bytes')
 
-import {higherPath, extend, buildUrl, secureString} from '../lib/utils.js'
-import {sort} from '../lib/sort.js'
-import { tree } from '../lib/tree.js'
-import { searchMethod } from '../lib/search.js'
-
-/**
- * Prepare tree locals et validate queries 
- * @param config
- * @return function middleware(req, res, next)
- */
-function prepareTree(config) {
-  return function(req, res, next) {
-    //should be an app.param
-    if(!req.query.page || req.query.page < 0)
-      req.query.page = 1
-
-    req.query.page = parseInt(req.query.page)
-
-    if(req.query.sort) {
-      if(!sort.hasOwnProperty(req.query.sort)) {
-        req.query.sort = null 
-      }
-    }
-
-    if(!~['asc', 'desc'].indexOf(req.query.order)) {
-      req.query.order = 'asc' 
-    }
-
-    if(!req.query.path)
-      req.query.path = './'
-    
-    if(req.query.search && config.search.method !== 'native') {
-      req.query.search = secureString(req.query.search)
-    }
-
-    res.locals = extend(res.locals, {
-      search: req.query.search,
-      sort: req.query.sort || '',
-      order: req.query.order || '',
-      page: req.query.page,
-      root: p.resolve(req.user.home),
-      path: higherPath(req.user.home, req.query.path),
-      parent: higherPath(req.user.home, p.resolve(req.query.path, '..')),
-      buildUrl: buildUrl
-    })
-
-    if(req.user.readonly) {
-      res.locals.remove = false 
-    } else {
-      res.locals.remove = config.remove && config.remove.method ? true : false
-    }
-
-    req.options = extend(
-      res.locals,
-      config.tree, 
-      config.pagination,
-      {remove: config.remove}
-    )
-
-    if(res.locals.sort)
-      req.options.sortMethod = sort[res.locals.sort](req.options)
-
-    debug('Options: %o', req.options)
-
-    return next()
-  }
-}
+import {higherPath, extend, removeDirectoryContent} from '../lib/utils.js'
+import {tree} from '../lib/tree.js'
+import {searchMethod} from '../lib/search.js'
+import {prepareTree} from './middlewares.js'
 
 /**
  * Compress paths with archiver
@@ -80,15 +18,16 @@ function prepareTree(config) {
 function compress(req, res) {
 
   let paths = []
+  let directories = []
 
   if(typeof req.body.zip == 'string')
     req.body.zip = [req.body.zip]
 
   //validating paths
   for(let i in req.body.zip) {
-    let path = higherPath(req.user.home, req.body.zip[i]) 
+    let path = higherPath(req.options.root, req.body.zip[i]) 
 
-    if(path != req.user.home) {
+    if(path != req.options.root) {
       try {
         var stat = fs.statSync(path)
       } catch(err) {
@@ -96,34 +35,53 @@ function compress(req, res) {
       }
 
       if(stat.isDirectory()) {
-        return res.status(501).send('Can not compress a directory')
+        directories.push(path)
+      } else {
+        paths.push(path)
       }
-
-      paths.push(path)
     }
   }
 
   let archive = archiver('zip') 
   let name = req.body.name || 'archive'+new Date().getTime()
+  let temp = p.join(req.options.archive.temp || './', `${name}.zip`)
 
   archive.on('error', function(err) {
+    archive.abort()
     return res.status(500).send({error: err.message})
   })
 
   //on stream closed we can end the request
-  res.on('close', function() {
-    console.log('Archive wrote %d bytes', archive.pointer())
-    return res.status(200).send('OK')
+  archive.on('end', function() {
+
+    let b = archive.pointer()
+    console.log('Archive wrote %d bytes', b)
+
+    if(req.body.download === undefined && req.options.archive.keep) {
+      req.flash('info', `${prettyBytes(b)} written in ${temp}`)
+      return res.redirect('back') 
+    }
   })
 
   //set the archive name
   res.attachment(`${name}.zip`)
 
   //this is the streaming magic
-  archive.pipe(res)
+  if(req.body.download !== undefined) {
+    archive.pipe(res)
+  }
+
+  if(req.options.archive.keep) {
+    archive.pipe(fs.createWriteStream(temp))
+  }
 
   for(let i in paths) {
     archive.append(fs.createReadStream(paths[i]), {name: p.basename(paths[i])}) 
+  }
+
+  for(let i in directories) {
+    debug('Path : ', directories[i].replace(req.options.root, ''))
+    archive.directory(directories[i], directories[i].replace(req.options.root, ''))
   }
 
   archive.finalize()
@@ -133,9 +91,9 @@ function compress(req, res) {
  * @route /download
  */
 function download(req, res) {
-  let path = higherPath(req.user.home, req.query.path)
+  let path = higherPath(req.options.root, req.query.path)
 
-  if(path === req.user.home) {
+  if(path === req.options.root) {
     return res.status(401).send('Unauthorized') 
   }
 
@@ -171,7 +129,7 @@ function getTree(req, res) {
  */
 function deletePath(req, res) {
 
-  let path = higherPath(req.user.home, req.query.path)
+  let path = higherPath(req.options.root, req.query.path)
 
   debug('Deleting %s', path)
 
@@ -184,11 +142,11 @@ function deletePath(req, res) {
     return res.redirect('back')
   }
 
-  if(path === req.user.home) {
+  if(path === req.options.root) {
     return res.status(401).send('Unauthorized') 
   }
 
-  if(!req.user.readonly) {
+  if(!!req.user.readonly === true) {
     return res.status(401).send('Unauthorized') 
   }
 
@@ -211,7 +169,7 @@ function search(req, res) {
 
   debug('Search with %s', config.search.method, req.options.search)
 
-  searchMethod(config.search.method, config)(req.options.search, req.user.home)
+  searchMethod(config.search.method, config)(req.options.search, req.options.root)
   .then(function(data) {
     data = data ? data : this.data.out
     return tree([].concat.apply([], data), req.options)
@@ -221,13 +179,37 @@ function search(req, res) {
   })
 }
 
+function emptyTrash(req, res, next) {
+
+  if(!req.options.remove || req.options.remove.method !== 'mv') {
+    return res.status(403).send('Forbidden') 
+  }
+
+  if(req.options.remove.trash == req.options.root) {
+    return res.status(417).send("Won't happend") 
+  }
+
+  debug('Empty trash %s', req.options.remove.trash)
+
+  removeDirectoryContent(req.options.remove.trash)
+  .then(function() {
+    return res.redirect('back')
+  })
+  .catch(function(err) {
+    console.error(err)
+    res.status(500, 'Error while emptying trash')
+  })
+}
+
 var Tree = function(app) {
-  let pt = prepareTree(app.get('config'))
+  let config = app.get('config')
+  let pt = prepareTree(config)
 
   app.get('/', pt, getTree)
   app.get('/search', pt, search)
-  app.get('/download', download)
-  app.post('/compress', compress)
+  app.get('/download', pt, download)
+  app.post('/compress', pt, compress)
+  app.post('/trash', pt, emptyTrash)
   app.get('/remove', pt, deletePath)
 
   return app
