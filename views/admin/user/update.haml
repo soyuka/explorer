@@ -4,7 +4,8 @@
   .row
     .columns.large-6
       %label{for: 'username'} Username 
-      %input{type: 'text', name: 'username', id: 'username', value: user.username}
+      %input.disabled{type: 'text', name: 'username-fake', id: 'username', value: user.username, disabled: true}
+      %input{type: 'hidden', name: 'username', value: user.username}
     .columns.large-6
       %label{for: 'password'} Password
       %input{type: 'password', name: 'password', id: 'password', placeholder: 'Leave empty if you dont\'t want to change it'}
