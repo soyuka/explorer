@@ -1,7 +1,11 @@
 var p = require('path')
 var app = require('../server.js')
 
-global.config = require('yamljs').load(p.join(__dirname, './fixtures/config.yml'))
+import {getConfiguration} from '../lib/config.js'
+
+let config_path = p.join(__dirname, './fixtures/config.yml')
+
+global.config = getConfiguration(config_path)
 global.config.database = p.join(__dirname, './fixtures/users')
 
 global.expect = require('chai').expect
