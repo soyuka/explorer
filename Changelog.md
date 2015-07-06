@@ -1,4 +1,6 @@
 # Changelog
+1.2.1
+- Fix issue while compressing and not keeping archives
 1.2.0
 - Trash directory by user (or global)
 - Save archives in a temp directory by user (or globa)
