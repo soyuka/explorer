@@ -67,7 +67,7 @@ function compress(req, res) {
   res.attachment(`${name}.zip`)
 
   //this is the streaming magic
-  if(req.body.download !== undefined) {
+  if(req.body.download !== undefined || !req.options.archive.keep) {
     archive.pipe(res)
   }
 
