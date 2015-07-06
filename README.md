@@ -94,19 +94,23 @@ tree:
   max_depth: 10 #Default 10
   concurrency: 100 #Default 100
 remove: 
-  # mv will move files to a trash directory
-  # rm will delete them
+  # 'mv' will move files to a trash directory
+  # 'rm' will delete files
   # empty to disable deletion
-  method: 'mv'
-  trash: './trash'
+  method: 'mv' #default is to move
+  trash: './trash' #will be created if non-existant
+archive:
+  keep: false #set to true to keep archives
+  temp: './tmp'
+#note that the trash or temp path will be overridden by the user path if set
 database: './data/users' # don't touch if you don't know what you're doing
-app_root: '/' 
-session_secret: 'Some string here'
+app_root: '/' # app root for client ressources
+session_secret: 'Some string here' #Change this
 port: 4859
 https:
   port: 6859
   enabled: true #default option!
-  key: './certs/key.pem' #see below
+  key: './certs/key.pem' #change those are dummies
   cert: './certs/cert.pem'
 ```
 
