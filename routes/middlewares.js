@@ -114,9 +114,16 @@ function prepareTree(config) {
       req.options.sortMethod = sort[res.locals.sort](req.options)
 
     if(req.user.ignore) {
+
+      for(let i in req.user.ignore) {
+        if(mm(req.options.path, req.user.ignore[i])) {
+          return next(new Error('Forbidden')) 
+        }
+      }
+
       req.options.skip = function(v) {
         for(let i in req.user.ignore)  {
-          if(req.user.ignore[i].indexOf(v) !== -1) {
+          if(mm(v, req.user.ignore[i])) {
             return false 
           }
         }
