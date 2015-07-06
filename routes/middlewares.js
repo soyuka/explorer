@@ -111,6 +111,18 @@ function prepareTree(config) {
     if(res.locals.sort)
       req.options.sortMethod = sort[res.locals.sort](req.options)
 
+    if(req.user.ignore) {
+      req.options.skip = function(v) {
+        for(let i in req.user.ignore)  {
+          if(req.user.ignore[i].indexOf(v) !== -1) {
+            return false 
+          }
+        }
+
+        return true
+      } 
+    }
+
     debug('Options: %o', req.options)
 
     return next()
