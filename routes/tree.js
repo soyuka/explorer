@@ -1,15 +1,16 @@
-var fs = require('fs')
-var archiver = require('archiver')
-var rimraf = require('rimraf')
-var p = require('path')
-var debug = require('debug')('explorer:routes:tree')
-var moment = require('moment')
-var prettyBytes = require('pretty-bytes')
+import fs from 'fs'
+import archiver from 'archiver'
+import rimraf from 'rimraf'
+import p from 'path'
+import moment from 'moment'
+import prettyBytes from 'pretty-bytes'
 
 import {higherPath, extend, removeDirectoryContent} from '../lib/utils.js'
 import {tree} from '../lib/tree.js'
 import {searchMethod} from '../lib/search.js'
 import {prepareTree} from './middlewares.js'
+
+let debug = require('debug')('explorer:routes:tree')
 
 /**
  * Compress paths with archiver
@@ -201,7 +202,7 @@ function emptyTrash(req, res, next) {
   })
 }
 
-var Tree = function(app) {
+let Tree = function(app) {
   let config = app.get('config')
   let pt = prepareTree(config)
 

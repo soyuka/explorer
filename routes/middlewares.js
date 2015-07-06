@@ -1,10 +1,12 @@
-var p = require('path')
-var debug = require('debug')('explorer:middlewares')
-var prettyBytes = require('pretty-bytes')
+import p from 'path'
+import prettyBytes from 'pretty-bytes'
+import mm from 'minimatch'
 
 import {tree} from '../lib/tree.js'
 import {sort} from '../lib/sort.js'
 import {extend, buildUrl, secureString, higherPath} from '../lib/utils.js'
+
+let debug = require('debug')('explorer:middlewares')
 
 function trashSize(config) {
 

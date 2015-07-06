@@ -1,5 +1,6 @@
-var debug = require('debug')('explorer:routes:user')
-var util = require('util')
+import util from 'util'
+
+let debug = require('debug')('explorer:routes:user')
 
 const cookieOptions = { httpOnly: false }
 
@@ -44,7 +45,7 @@ function login(req, res) {
   })  
 }
 
-var User = function(app) {
+let User = function(app) {
   app.get('/logout', logout)
   app.get('/login', home)
   app.post('/login', login)
