@@ -1,14 +1,15 @@
-var debug = require('debug')('explorer:routes:admin')
-var Promise = require('bluebird')
-var fs = Promise.promisifyAll(require('fs'))
-var p = require('path')
-var yaml = require('yamljs')
-
+import Promise from 'bluebird'
+import p from 'path'
+import yaml from 'yamljs'
 import {noDotFiles, extend, removeDirectoryContent} from '../lib/utils.js'
 import {User} from '../lib/users.js'
 import {tree} from '../lib/tree.js'
 import {trashSize} from './middlewares.js'
 
+let fs = Promise.promisifyAll(require('fs'))
+let debug = require('debug')('explorer:routes:admin')
+
+//@todo move this
 function handleSystemError(req, res) {
   return function (err) {
     console.error(err)
@@ -43,7 +44,7 @@ function isAdmin(config) {
   }
 }
 
-var Admin = function(app) {
+let Admin = function(app) {
   let admin = require('express').Router()
   let config = app.get('config')
 

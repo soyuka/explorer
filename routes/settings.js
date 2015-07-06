@@ -1,5 +1,4 @@
-var Promise = require('bluebird')
-
+import Promise from 'bluebird'
 import {User} from '../lib/users.js'
 import {trashSize, prepareTree} from './middlewares.js'
 
@@ -43,7 +42,7 @@ function updateSettings(req, res) {
   .catch(handleSystemError(req, res))
 }
 
-var Settings = function(app) {
+let Settings = function(app) {
   let config = app.get('config')
 
   app.get('/settings', trashSize(config), prepareTree(config), settings)
