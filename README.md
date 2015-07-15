@@ -98,10 +98,10 @@ remove:
   # 'rm' will delete files
   # empty to disable deletion
   method: 'mv' #default is to move
-  trash: './trash' #will be created if non-existant
+  trash: './trash' # will be created if non-existant /!\ must be writable
 archive:
   keep: false #set to true to keep archives
-  temp: './tmp'
+  temp: './tmp' # /!\ must be writable
 #note that the trash or temp path will be overridden by the user path if set
 database: './data/users' # don't touch if you don't know what you're doing
 app_root: '/' # app root for client ressources
