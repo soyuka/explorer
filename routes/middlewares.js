@@ -1,50 +1,66 @@
-import p from 'path'
-import prettyBytes from 'pretty-bytes'
-import mm from 'minimatch'
+'use strict';
 
-import {tree} from '../lib/tree.js'
-import {sort} from '../lib/sort.js'
-import {extend, buildUrl, secureString, higherPath} from '../lib/utils.js'
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
 
-let debug = require('debug')('explorer:middlewares')
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
+var _prettyBytes = require('pretty-bytes');
+
+var _prettyBytes2 = _interopRequireDefault(_prettyBytes);
+
+var _minimatch = require('minimatch');
+
+var _minimatch2 = _interopRequireDefault(_minimatch);
+
+var _libTreeJs = require('../lib/tree.js');
+
+var _libSortJs = require('../lib/sort.js');
+
+var _libUtilsJs = require('../lib/utils.js');
+
+var debug = require('debug')('explorer:middlewares');
 
 function trashSize(config) {
 
   return function (req, res, next) {
 
-    res.locals.trashSize = '0 B' 
+    res.locals.trashSize = '0 B';
 
-    if(!config.remove || !config.remove.method == 'mv') {
-      return next() 
+    if (!config.remove || !config.remove.method == 'mv') {
+      return next();
     }
 
-    let v = config.remove.trash
+    var v = config.remove.trash;
 
-    if(req.user.trash) {
-      v = p.resolve(req.user.home, req.user.trash)
+    if (req.user.trash) {
+      v = _path2['default'].resolve(req.user.home, req.user.trash);
     }
 
-    tree(v, {maxDepth: 1})
-    .then(function(tree) {
+    (0, _libTreeJs.tree)(v, { maxDepth: 1 }).then(function (tree) {
 
-      if(tree.tree.length == 0) {
-        return next()
-      }
-        
-      let size = 0;
-
-      for(var i in tree.tree) {
-        size += tree.tree[i].size
+      if (tree.tree.length == 0) {
+        return next();
       }
 
-      debug('Trash size %s', size)
+      var size = 0;
 
-      res.locals.trashSize = prettyBytes(size)
+      for (var i in tree.tree) {
+        size += tree.tree[i].size;
+      }
 
-      return next()
-    })
-    .catch(next)
-  }
+      debug('Trash size %s', size);
+
+      res.locals.trashSize = (0, _prettyBytes2['default'])(size);
+
+      return next();
+    })['catch'](next);
+  };
 }
 
 /**
@@ -53,90 +69,81 @@ function trashSize(config) {
  * @return function middleware(req, res, next)
  */
 function prepareTree(config) {
-  return function(req, res, next) {
+  return function (req, res, next) {
     //should be an app.param
-    if(!req.query.page || req.query.page < 0)
-      req.query.page = 1
+    if (!req.query.page || req.query.page < 0) req.query.page = 1;
 
-    req.query.page = parseInt(req.query.page)
+    req.query.page = parseInt(req.query.page);
 
-    if(req.query.sort) {
-      if(!sort.hasOwnProperty(req.query.sort)) {
-        req.query.sort = null 
+    if (req.query.sort) {
+      if (!_libSortJs.sort.hasOwnProperty(req.query.sort)) {
+        req.query.sort = null;
       }
     }
 
-    if(!~['asc', 'desc'].indexOf(req.query.order)) {
-      req.query.order = 'asc' 
+    if (! ~['asc', 'desc'].indexOf(req.query.order)) {
+      req.query.order = 'asc';
     }
 
-    if(!req.query.path)
-      req.query.path = './'
-    
-    if(req.query.search && config.search.method !== 'native') {
-      req.query.search = secureString(req.query.search)
+    if (!req.query.path) req.query.path = './';
+
+    if (req.query.search && config.search.method !== 'native') {
+      req.query.search = (0, _libUtilsJs.secureString)(req.query.search);
     }
 
-    res.locals = extend(res.locals, {
+    res.locals = (0, _libUtilsJs.extend)(res.locals, {
       search: req.query.search,
       sort: req.query.sort || '',
       order: req.query.order || '',
       page: req.query.page,
-      root: p.resolve(req.user.home),
-      path: higherPath(req.user.home, req.query.path),
-      parent: higherPath(req.user.home, p.resolve(req.query.path, '..')),
-      buildUrl: buildUrl
-    })
+      root: _path2['default'].resolve(req.user.home),
+      path: (0, _libUtilsJs.higherPath)(req.user.home, req.query.path),
+      parent: (0, _libUtilsJs.higherPath)(req.user.home, _path2['default'].resolve(req.query.path, '..')),
+      buildUrl: _libUtilsJs.buildUrl
+    });
 
-    req.options = extend(
-      res.locals,
-      config.tree, 
-      config.pagination,
-      {remove: config.remove},
-      {archive: config.archive}
-    )
+    req.options = (0, _libUtilsJs.extend)(res.locals, config.tree, config.pagination, { remove: config.remove }, { archive: config.archive });
 
-    if(req.user.trash) {
-      req.options.remove.trash = p.resolve(req.user.home, req.user.trash)
+    if (req.user.trash) {
+      req.options.remove.trash = _path2['default'].resolve(req.user.home, req.user.trash);
     }
 
-    if(!!req.user.readonly === true || req.options.path == req.options.remove.trash) {
-      res.locals.canRemove = false 
+    if (!!req.user.readonly === true || req.options.path == req.options.remove.trash) {
+      res.locals.canRemove = false;
     } else {
-      res.locals.canRemove = config.remove && config.remove.method ? true : false
+      res.locals.canRemove = config.remove && config.remove.method ? true : false;
     }
 
-    if(req.user.archive) {
-      req.options.archive.temp = p.resolve(req.user.home, req.user.archive)
+    if (req.user.archive) {
+      req.options.archive.temp = _path2['default'].resolve(req.user.home, req.user.archive);
     }
 
-    if(res.locals.sort)
-      req.options.sortMethod = sort[res.locals.sort](req.options)
+    if (res.locals.sort) req.options.sortMethod = _libSortJs.sort[res.locals.sort](req.options);
 
-    if(req.user.ignore) {
+    if (req.user.ignore) {
 
-      for(let i in req.user.ignore) {
-        if(mm(req.options.path, req.user.ignore[i])) {
-          return next(new Error('Forbidden')) 
+      for (var i in req.user.ignore) {
+        if ((0, _minimatch2['default'])(req.options.path, req.user.ignore[i])) {
+          return next(new Error('Forbidden'));
         }
       }
 
-      req.options.skip = function(v) {
-        for(let i in req.user.ignore)  {
-          if(mm(v, req.user.ignore[i])) {
-            return false 
+      req.options.skip = function (v) {
+        for (var i in req.user.ignore) {
+          if ((0, _minimatch2['default'])(v, req.user.ignore[i])) {
+            return false;
           }
         }
 
-        return true
-      } 
+        return true;
+      };
     }
 
-    debug('Options: %o', req.options)
+    debug('Options: %o', req.options);
 
-    return next()
-  }
+    return next();
+  };
 }
 
-
-export {trashSize, prepareTree}
+exports.trashSize = trashSize;
+exports.prepareTree = prepareTree;
