@@ -67,13 +67,23 @@ function compress(req, res) {
   //set the archive name
   res.attachment(`${name}.zip`)
 
-  //this is the streaming magic
-  if(req.body.download !== undefined || !req.options.archive.keep) {
-    archive.pipe(res)
-  }
+  /**
+   * @TODO
+   * res.send(201)
+   * queue this somewhere so that we can have a progression somewhere so that
+   * we don't need to wait for big archives
+   */
+  if(req.options.archive.keep && !req.body.download) {
+    fs.access(temp, fs.R_OK | fs.W_OK, function(err) {
+      if(err) {
+        req.flash('error', `No write access to ${temp}`)
+        return res.redirect('back')
+      }
 
-  if(req.options.archive.keep) {
-    archive.pipe(fs.createWriteStream(temp))
+      archive.pipe(fs.createWriteStream(temp))
+    })
+  } else {
+    archive.pipe(res) 
   }
 
   for(let i in paths) {
