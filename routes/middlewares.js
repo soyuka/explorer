@@ -4,7 +4,8 @@ import mm from 'minimatch'
 
 import {tree} from '../lib/tree.js'
 import {sort} from '../lib/sort.js'
-import {extend, buildUrl, secureString, higherPath} from '../lib/utils.js'
+import {extend, buildUrl, secureString, higherPath, handleSystemError} from '../lib/utils.js'
+import HTTPError from '../lib/HTTPError.js'
 
 let debug = require('debug')('explorer:middlewares')
 
@@ -43,7 +44,7 @@ function trashSize(config) {
 
       return next()
     })
-    .catch(next)
+    .catch(handleSystemError(next))
   }
 }
 
@@ -113,11 +114,15 @@ function prepareTree(config) {
     if(res.locals.sort)
       req.options.sortMethod = sort[res.locals.sort](req.options)
 
+    if(req.query.limit) {
+      req.options.limit = !!parseInt(req.query.limit) ? req.query.limit : req.options.limit
+    }
+
     if(req.user.ignore) {
 
       for(let i in req.user.ignore) {
         if(mm(req.options.path, req.user.ignore[i])) {
-          return next(new Error('Forbidden')) 
+          return next(new HTTPError('Forbidden', 403)) 
         }
       }
 
