@@ -12,6 +12,9 @@
 @import 'foundation/components/visibility';
 @import 'foundation/components/alert-boxes.scss';
 
+body {
+}
+
 .small {
   font-size: 0.87rem;
 }
@@ -71,4 +74,26 @@ label.key {
 
 small > label {
     font-size: inherit;
+}
+
+.login-box {
+  color: #333;
+  background: url('../login.png') no-repeat;
+  background-size: contain;
+  margin: 100px 0;
+  padding: 130px 20px 40px 20px;
+
+  input {
+    border:0; 
+  }
+
+  form {
+    margin: 0;
+  }
+
+  .button.expand {
+    margin-bottom: 0; 
+    background: #8EB2C5;
+  }
+
 }

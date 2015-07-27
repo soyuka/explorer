@@ -4,6 +4,8 @@
   %meta{name: 'viewport', content: 'width=device-width, initial-scale=1.0'}
   %title Explorer
   %link{rel: 'stylesheet', href: app_root + 'css/app.min.css'}
+  %link{rel: 'icon', type: 'image/png', href: app_root + 'favicon-32x32.png', sizes: '32x32'}
+  %link{rel: 'icon', type: 'image/png', href: app_root + 'favicon-16x16.png', sizes: '16x16'}
 
 %body
   %nav.top-bar
@@ -27,15 +29,14 @@
             %a{href: '/logout'}
               %i.icon-logout
 
-  .row.container
-    .columns.large-12.x-large-12
-      - if(messages.info.length)
-        - each info in messages.info
-          .alert-box.info.radius= info
-      - else if(messages.error.length)
-        - each error in messages.error
-          .alert-box.alert.radius= error
-      != body
+  .large-6.container.large-centered.columns
+    - if(messages.info.length)
+      - each info in messages.info
+        .alert-box.info.radius= info
+    - else if(messages.error.length)
+      - each error in messages.error
+        .alert-box.alert.radius= error
+  != body
 
   %footer.row
     .columns.large-12.small-12
