@@ -1,46 +1,47 @@
-%a.button.tiny.right{href: '/a/create'} New user
-%h2 Users
-%table.admin
-  %thead
-    %tr.border-bottom
-      %th{colspan: 6} Username
-  %tbody
-    - each item in users
-      %tr.header
-        %td.border-right{rowspan: 4}= item.username
-        %th Home
-        %th Key
-        %th Admin
-        %th Readonly
-        %td.text-center.border-left{rowspan: 4}
-          %a{href: '/a/update/'+item.username} Edit
-          %a{href: '/a/delete/'+item.username} Delete
-      %tr
-        %td= item.home
-        %td= item.key
-        %td= item.admin ? '✓' : '✗'
-        %td= item.readonly ? '✓' : '✗'
-      %tr.header
-        %th Trash
-        %th Archive
-        %th{colspan: 2} Ignore
+.large-12.columns
+  %a.button.tiny.right{href: '/a/create'} New user
+  %h2 Users
+  %table.admin
+    %thead
       %tr.border-bottom
-        - if(remove)
-          %td= item.trash || config.remove.trash
-        - else
-          %td ∅
-        - if(config.archive.keep)
-          %td= item.archive || config.archive.temp
-        - else
-          %td ∅
-        %td{colspan: 2}= item.ignore || '∅'
+        %th{colspan: 6} Username
+    %tbody
+      - each item in users
+        %tr.header
+          %td.border-right{rowspan: 4}= item.username
+          %th Home
+          %th Key
+          %th Admin
+          %th Readonly
+          %td.text-center.border-left{rowspan: 4}
+            %a{href: '/a/update/'+item.username} Edit
+            %a{href: '/a/delete/'+item.username} Delete
+        %tr
+          %td= item.home
+          %td= item.key
+          %td= item.admin ? '✓' : '✗'
+          %td= item.readonly ? '✓' : '✗'
+        %tr.header
+          %th Trash
+          %th Archive
+          %th{colspan: 2} Ignore
+        %tr.border-bottom
+          - if(remove)
+            %td= item.trash || config.remove.trash
+          - else
+            %td ∅
+          - if(config.archive.keep)
+            %td= item.archive || config.archive.temp
+          - else
+            %td ∅
+          %td{colspan: 2}= item.ignore || '∅'
 
-- if(remove)
-  %form{method: 'post', action: '/a/trash'}.row
-    .columns.large-4.small-8
-      %input.button.warning.tiny.left{type: 'submit', value: 'Empty trash (' + trashSize + ')', onclick: 'return confirmDeletion(event)'}
+  - if(remove)
+    %form{method: 'post', action: '/a/trash'}.row
+      .columns.large-4.small-8
+        %input.button.warning.tiny.left{type: 'submit', value: 'Empty trash (' + trashSize + ')', onclick: 'return confirmDeletion(event)'}
 
-%h2 Configuration
+  %h2 Configuration
 
-%textarea.disabled{rows: 20, readonly: true}= ymlConfig
+  %textarea.disabled{rows: 20, readonly: true}= ymlConfig
 

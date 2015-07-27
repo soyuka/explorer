@@ -1,122 +1,123 @@
+.row.container
+  .large-12.xlarge-12.columns
+    -# Sort
+    .row
+      .columns.large-5
+        %form.row.collapse{method: 'GET', action: ''}
+          .columns.small-10
+            .row
+              .columns.small-5
+                %select{name: 'sort'}
+                  %option{value: 'name', selected: sort == 'name'} Name
+                  %option{value: 'time', selected: sort == 'time'} Time
+                  %option{value: 'size', selected: sort == 'size'} Size
+              .columns.small-7
+                %input{type: 'radio', id: 'order_asc', name: 'order', value: 'asc', checked: order == 'asc'} 
+                %label.inline{for: 'order_asc'} Asc
+                %input{type: 'radio', id: 'order_desc', name: 'order', value: 'desc', checked: order == 'desc'} 
+                %label.inline{for: 'order_desc'} Desc
+          .columns.small-2
+            %input.button.postfix.secondary{type: 'submit', value: 'Sort'}
+            %input{type: 'hidden', name: 'search', value: search}
+            %input{type: 'hidden', name: 'path', value: path}
 
--# Sort
-.row
-  .columns.large-5
-    %form.row.collapse{method: 'GET', action: ''}
-      .columns.small-10
-        .row
-          .columns.small-5
-            %select{name: 'sort'}
-              %option{value: 'name', selected: sort == 'name'} Name
-              %option{value: 'time', selected: sort == 'time'} Time
-              %option{value: 'size', selected: sort == 'size'} Size
-          .columns.small-7
-            %input{type: 'radio', id: 'order_asc', name: 'order', value: 'asc', checked: order == 'asc'} 
-            %label.inline{for: 'order_asc'} Asc
-            %input{type: 'radio', id: 'order_desc', name: 'order', value: 'desc', checked: order == 'desc'} 
-            %label.inline{for: 'order_desc'} Desc
-      .columns.small-2
-        %input.button.postfix.secondary{type: 'submit', value: 'Sort'}
-        %input{type: 'hidden', name: 'search', value: search}
-        %input{type: 'hidden', name: 'path', value: path}
+      .columns.large-5.large-offset-2
+        %form.row.collapse{action: '/search', method: 'GET'}
+          .columns.large-9
+            %input{type: 'search', name: 'search', value: search}
+          .columns.large-3
+            %button.button.postfix.primary{type: 'submit'} Search
 
-  .columns.large-5.large-offset-2
-    %form.row.collapse{action: '/search', method: 'GET'}
-      .columns.large-9
-        %input{type: 'search', name: 'search', value: search}
-      .columns.large-3
-        %button.button.postfix.primary{type: 'submit'} Search
+    .row
+      .columns.large-2
+        - if(search)
+          %p= num + ' results'
 
-.row
-  .columns.large-2
-    - if(search)
-      %p= num + ' results'
-
-%ul.breadcrumbs
-  - each b in breadcrumb
-    %li
-      %a{href: '/?path=' + b.path}= b.name
-  
--# Tree
-%form{method: 'POST', action: '/compress'}
-  %table
-    %thead
-      %tr
-        %th #
-        %th Name
-        %th Last Modified
-        %th Size
-        - if(canRemove)
-          %th 
-    %tbody
-    - each item in tree
-      %tr
-        %td
-          %input{type: 'checkbox', value: item.path, name: 'zip'}
-        %td
-          - if (item.directory)
-            - var options = {page: 1, sort: sort, order: order}
-            %a{href: buildUrl(item.path, '', options)}
-              %i.icon-folder
-              = item.name
-          - else
-            %a{href: '/download?path='+item.path+'&key='+user.key}
-              %i{class: 'icon-file-' + item.type}
-              = item.name
-              - if (search)
-                - var options = {page: 1, sort: sort, order: order}
-                %a{href: buildUrl(item.dirname, '', options)}
-                  %i.icon-folder.right{title: 'Jump to directory'}
-
-        %td= item.lastModified
-        %td= item.humanSize
-        - if(canRemove)
-          %td
-            %a{onclick: 'return confirmDeletion(event)', style: 'margin:0;', href: '/remove?path=' + item.path}
-              %i.icon-trash
-
-  -# Archive button
-  .row
-    .large-4.small-12.columns
-      .row.collapse
-        .large-8.small-10.columns
-          %input{type: 'text', name: 'name', placeholder: 'archive' + new Date().getTime()}
-        .large-4.small-2.columns
-          %button.button.postfix.tiny{type: 'submit', style: 'margin:0;'}
-            Compress
-      - if(archive.keep == true)
-        .row
-          .large-12.columns{style: 'margin-top:-20px;'}
-            %small
-              %input{type: 'checkbox', name: 'download', id: 'download', checked: true, value: 1}
-              %label{for: 'download'} Download
-
--# Pagination
-.pagination-centered
-  %ul.pagination
-
-    - if(page == 1)
-      %li.arrow.unavailable
-        %a{href: ''} &laquo;
-    - else
-      %li.arrow
-        - var options = {page: page-1, sort: sort, order: order}
-        %a{href: buildUrl(path, search, options)} &laquo;
-
-    - for (var i = 1; i <= pages; ++i)
-      - if(page == i)
-        %li.current
-          %a{href: ''}= i
-      - else
+    %ul.breadcrumbs
+      - each b in breadcrumb
         %li
-          - var options = {page: i, sort: sort, order: order}
-          %a{href: buildUrl(path, search, options)}= i
+          %a{href: '/?path=' + b.path}= b.name
+      
+    -# Tree
+    %form{method: 'POST', action: '/compress'}
+      %table
+        %thead
+          %tr
+            %th #
+            %th Name
+            %th Last Modified
+            %th Size
+            - if(canRemove)
+              %th 
+        %tbody
+        - each item in tree
+          %tr
+            %td
+              %input{type: 'checkbox', value: item.path, name: 'zip'}
+            %td
+              - if (item.directory)
+                - var options = {page: 1, sort: sort, order: order}
+                %a{href: buildUrl(item.path, '', options)}
+                  %i.icon-folder
+                  = item.name
+              - else
+                %a{href: '/download?path='+item.path+'&key='+user.key}
+                  %i{class: 'icon-file-' + item.type}
+                  = item.name
+                  - if (search)
+                    - var options = {page: 1, sort: sort, order: order}
+                    %a{href: buildUrl(item.dirname, '', options)}
+                      %i.icon-folder.right{title: 'Jump to directory'}
 
-    - if(page < pages)
-      %li.arrow
-        - var options = {page: page+1, sort: sort, order: order}
-        %a{href: buildUrl(path, search, options)} &raquo;
-    - else
-      %li.arrow.unavailable
-        %a{href: ''} &raquo;
+            %td= item.lastModified
+            %td= item.humanSize
+            - if(canRemove)
+              %td
+                %a{onclick: 'return confirmDeletion(event)', style: 'margin:0;', href: '/remove?path=' + item.path}
+                  %i.icon-trash
+
+      -# Archive button
+      .row
+        .large-4.small-12.columns
+          .row.collapse
+            .large-8.small-10.columns
+              %input{type: 'text', name: 'name', placeholder: 'archive' + new Date().getTime()}
+            .large-4.small-2.columns
+              %button.button.postfix.tiny{type: 'submit', style: 'margin:0;'}
+                Compress
+          - if(archive.keep == true)
+            .row
+              .large-12.columns{style: 'margin-top:-20px;'}
+                %small
+                  %input{type: 'checkbox', name: 'download', id: 'download', checked: true, value: 1}
+                  %label{for: 'download'} Download
+
+    -# Pagination
+    .pagination-centered
+      %ul.pagination
+
+        - if(page == 1)
+          %li.arrow.unavailable
+            %a{href: ''} &laquo;
+        - else
+          %li.arrow
+            - var options = {page: page-1, sort: sort, order: order}
+            %a{href: buildUrl(path, search, options)} &laquo;
+
+        - for (var i = 1; i <= pages; ++i)
+          - if(page == i)
+            %li.current
+              %a{href: ''}= i
+          - else
+            %li
+              - var options = {page: i, sort: sort, order: order}
+              %a{href: buildUrl(path, search, options)}= i
+
+        - if(page < pages)
+          %li.arrow
+            - var options = {page: page+1, sort: sort, order: order}
+            %a{href: buildUrl(path, search, options)} &raquo;
+        - else
+          %li.arrow.unavailable
+            %a{href: ''} &raquo;
 

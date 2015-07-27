@@ -1,17 +1,19 @@
-
-%form{method: 'POST', action: '/login'}
-  .row
-    .small-8.columns
-      .row
-        .small-3.columns
-          %label.right.inline{for: 'username'} Username
-        .small-9.columns
-          %input{type: 'text', id: 'username', name: 'username'}
-      .row
-        .small-3.columns
-          %label.right.inline{for: 'password'} Password
-        .small-9.columns
-          %input{type: 'password', id: 'password', name: 'password'}
-      .row
-        .small-3.small-offset-6.columns
-          %input.button.expand{type: 'submit'}
+.large-4.large-centered.columns
+  .login-box
+    .row
+      %form{method: 'POST', action: '/login'}
+        .row
+          .small-12.columns
+            %label{for: 'username'} Username
+        .row
+          .small-12.columns
+            %input{type: 'text', id: 'username', name: 'username'}
+        .row
+          .small-12.columns
+            %label{for: 'password'} Password
+        .row
+          .small-12.columns
+            %input{type: 'password', id: 'password', name: 'password'}
+        .row
+          .small-12.large-centered.columns
+            %input.button.expand{type: 'submit'}
