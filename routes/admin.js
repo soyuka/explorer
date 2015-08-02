@@ -1,32 +1,20 @@
 import Promise from 'bluebird'
 import p from 'path'
 import yaml from 'yamljs'
-import {noDotFiles, extend, removeDirectoryContent} from '../lib/utils.js'
+import {noDotFiles, extend, removeDirectoryContent, handleSystemError} from '../lib/utils.js'
 import {User} from '../lib/users.js'
 import {tree} from '../lib/tree.js'
-import {trashSize} from './middlewares.js'
+import {trashSize} from '../middlewares'
+import HTTPError from '../lib/HTTPError.js'
 
 let fs = Promise.promisifyAll(require('fs'))
 let debug = require('debug')('explorer:routes:admin')
 
-//@todo move this
-function handleSystemError(req, res) {
-  return function (err) {
-    console.error(err)
-    req.flash('error', err)
-    return res.redirect('back')
-  }
-}
-
 function validUser(req, res, next) {
-  if(!req.body.username)
-    return handleSystemError(req, res)('User is not valid')
-
   try {
     new User(req.body, false) 
   } catch(e) {
-    console.error(e)  
-    return handleSystemError(req, res)('User is not valid')
+    return next(new HTTPError('User is not valid', 400))
   }
 
   return next()
@@ -35,7 +23,7 @@ function validUser(req, res, next) {
 function isAdmin(config) {
   return function(req, res, next) {
     if(!req.user.admin)
-      return res.status(403).send('Forbidden')
+      return next(new HTTPError('Forbidden', 403))
 
     res.locals.config = config
     res.locals.ymlConfig = yaml.stringify(config, 2, 4) 
@@ -54,44 +42,44 @@ let Admin = function(app) {
     return res.renderBody('admin', {users: req.users.users, remove: config.remove && config.remove.method == 'mv'})
   })
 
-  admin.post('/trash', function(req, res) {
+  admin.post('/trash', function(req, res, next) {
 
     debug('Empty trash %s', config.remove.trash)
 
     removeDirectoryContent(config.remove.trash)
     .then(function() {
-      return res.redirect('back')
+      return res.handle('back')
     })
-    .catch(handleSystemError)
+    .catch(handleSystemError(next))
   })
 
   admin.get('/create', function(req, res) {
     return res.renderBody('admin/user/create.haml')
   })
 
-  admin.get('/update/:username', function(req, res) {
+  admin.get('/update/:username', function(req, res, next) {
     let u = req.users.get(req.params.username)
 
     if(!u) {
-      return handleSystemError(req,res)('User not found')
+      return next(new HTTPError('User not found', 404))
     }
 
     return res.renderBody('admin/user/update.haml', {user: u})
   })
 
-  admin.get('/delete/:username', function(req, res) {
+  admin.get('/delete/:username', function(req, res, next) {
     req.users.delete(req.params.username)
     .then(function() {
       req.flash('info', `User ${req.params.username} deleted`)
-      return res.redirect('/a') 
+      return res.handle('/a') 
     })
-    .catch(handleSystemError(req, res))
+    .catch(handleSystemError(next))
   })
 
-  admin.post('/users', validUser, function(req, res) {
+  admin.post('/users', validUser, function(req, res, next) {
 
     if(req.users.get(req.body.username)) {
-      return handleSystemError(req, res)('User already exists')
+      return next(new HTTPError('User already exists', 400))
     }
 
     return new User(req.body) 
@@ -102,17 +90,17 @@ let Admin = function(app) {
       return req.users.put(user)
       .then(function() {
         req.flash('info', `User ${user.username} created`)
-        return res.redirect('/a')
+        return res.handle('/a', {user: user}, 201)
       })
     })
-    .catch(handleSystemError(req, res))
+    .catch(handleSystemError(next))
   })
 
-  admin.put('/users', function(req, res) {
+  admin.put('/users', function(req, res, next) {
     let u = req.users.get(req.body.username)
 
     if(!(u instanceof User)) {
-      return handleSystemError(req,res)('User not found')
+      return next(new HTTPError('User not found', 404))
     }
     
     u.update(req.body)
@@ -120,14 +108,13 @@ let Admin = function(app) {
       return req.users.put(user)
       .then(function() {
         req.flash('info', `User ${user.username} updated`)
-        return res.redirect('/a')
+        return res.handle('/a')
       })
     })
-    .catch(handleSystemError(req, res))
+    .catch(handleSystemError(next))
   })
 
   app.use('/a', admin)
-
 }
 
 export {Admin}

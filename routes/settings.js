@@ -1,20 +1,14 @@
 import Promise from 'bluebird'
 import {User} from '../lib/users.js'
-import {trashSize, prepareTree} from './middlewares.js'
-
-function handleSystemError(req, res) {
-  return function (err) {
-    console.error(err)
-    req.flash('error', err)
-    return res.redirect('back')
-  }
-}
+import {trashSize, prepareTree} from '../middlewares'
+import {handleSystemError} from '../lib/utils.js'
+import HTTPError from '../lib/HTTPError.js'
 
 function settings(req, res) {
   return res.renderBody('settings.haml', {user: req.user})
 }
 
-function updateSettings(req, res) {
+function updateSettings(req, res, next) {
 
   if(!req.body.username == req.user.username)
     return handleSystemError(req, res)("Can't update another user")
@@ -22,7 +16,7 @@ function updateSettings(req, res) {
   let u = req.users.get(req.user.username)
 
   if(!u) {
-    return handleSystemError(req,res)('User not found')
+    return next(new HTTPError('User not found', 404))
   }
 
   let ignore = ['home', 'admin', 'readonly', 'ignore']
@@ -36,10 +30,10 @@ function updateSettings(req, res) {
     return req.users.put(user)
     .then(function() {
       req.flash('info', `Settings updated`)
-      return res.redirect('/settings')
+      return res.handle('/settings', req.users.get(u.username))
     })
   })
-  .catch(handleSystemError(req, res))
+  .catch(handleSystemError(next))
 }
 
 let Settings = function(app) {
