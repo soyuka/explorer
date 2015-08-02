@@ -9,10 +9,11 @@ tree:
   concurrency: 100 #Default 100
 remove:
   method: 'mv'
-  trash: './test/fixtures/trash'
+  trash: './trash'
 database: './users' # don't touch if you don't know what you're doing
 app_root: '/' 
 session_secret: 'Some string here'
 port: 4859
 https:
   port: 6859
+dev: true
