@@ -1,53 +1,11 @@
 import p from 'path'
-import prettyBytes from 'pretty-bytes'
 import mm from 'minimatch'
 
-import {tree} from '../lib/tree.js'
 import {sort} from '../lib/sort.js'
 import {extend, buildUrl, secureString, higherPath, handleSystemError} from '../lib/utils.js'
 import HTTPError from '../lib/HTTPError.js'
 
 let debug = require('debug')('explorer:middlewares')
-
-function trashSize(config) {
-
-  return function (req, res, next) {
-
-    res.locals.trashSize = '0 B' 
-
-    if(!config.remove || !config.remove.method == 'mv') {
-      return next() 
-    }
-
-    let v = config.remove.trash
-
-    if(req.user.trash) {
-      v = p.resolve(req.user.home, req.user.trash)
-    }
-
-    tree(v, {maxDepth: 1})
-    .then(function(tree) {
-
-      if(tree.tree.length == 0) {
-        return next()
-      }
-        
-      let size = 0;
-
-      for(var i in tree.tree) {
-        size += tree.tree[i].size
-      }
-
-      debug('Trash size %s', size)
-
-      res.locals.trashSize = prettyBytes(size)
-
-      return next()
-    })
-    .catch(handleSystemError(next))
-  }
-}
-
 /**
  * Prepare tree locals et validate queries 
  * @param config
@@ -137,6 +95,12 @@ function prepareTree(config) {
       } 
     }
 
+    if(parseInt(req.cookies.compressOnFly) == req.cookies.compressOnFly) {
+      req.options.compressOnFly = !!parseInt(req.cookies.compressOnFly)
+    } else {
+      req.options.compressOnFly = true 
+    }
+
     debug('Options: %o', req.options)
 
     return next()
@@ -144,4 +108,4 @@ function prepareTree(config) {
 }
 
 
-export {trashSize, prepareTree}
+export {prepareTree}
