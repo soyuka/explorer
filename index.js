@@ -1,7 +1,7 @@
-var p = require('path')
-var http = require('http')
-var https = require('https')
-var fs = require('fs')
+import p from 'path'
+import http from 'http'
+import https from 'https'
+import fs from 'fs'
 
 import {firstExistingPath} from './lib/utils.js'
 import {getConfiguration} from './lib/config.js'
@@ -25,9 +25,10 @@ let https_options = {
 
 require('./server.js')(config)
 .then(function(app) {
-  http.createServer(app).listen(config.port, e => console.log('HTTP listening on %s', config.port))
+  http.createServer(app).listen(config.port, e => !config.quiet ? console.log('HTTP listening on %s', config.port) : 1)
 
   if(config.https.enabled) {
-    https.createServer(https_options, app).listen(config.https.port, e => console.log('HTTPS listening on %s', config.https.port))
+    https.createServer(https_options, app).listen(config.https.port, e => !config.quiet ? console.log('HTTPS listening on %s', config.https.port) : 1)
   }
 }) 
+
