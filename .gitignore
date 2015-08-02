@@ -7,3 +7,4 @@ backup
 data/users
 !data/.gitkeep
 client/css
+.DS_Store
