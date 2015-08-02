@@ -1,19 +1,29 @@
-describe('search', function(cb) {
+describe('search', function() {
   
-  before(login)
+  before(bootstrap.autoAgent)
+  before(bootstrap.login)
 
-  it('should get search', function() {
-    request.get('/search?search=dir')
+  it('should get tree', function(cb) {
+    this.request.get('/search?search=*')
+    .expect(function(res) {
+      expect(res.body.tree).to.be.an.array
+      expect(res.body.tree).to.have.length.of.at.least(1)
+      expect(res.body.breadcrumb).to.be.an.array
+      expect(res.body.breadcrumb).to.have.length.of(1)
+    })
     .end(cb)
   })
 
-  //data is not tested here and it should be:
-  //@todo find a solution to render json when format is specified
-  it('should get search with options', function() {
-    request.get('/serach?sort=time&order=desc&search=dir')
+  it('should get search', function(cb) {
+    this.request.get('/search?search=dir')
     .end(cb)
   })
 
-  after(logout)
+  it('should get search with options', function(cb) {
+    this.request.get('/search?sort=time&order=desc&search=dir')
+    .end(cb)
+  })
 
+  after(bootstrap.logout)
+  after(bootstrap.removeAgent)
 })
