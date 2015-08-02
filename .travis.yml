@@ -2,11 +2,7 @@ language: node_js
 branches:
   only:
     - master
+    - development
 node_js:
    - "iojs"
-   - "iojs-v2.0"
-   - "iojs-v1.5"
-   - "iojs-v1.0"
    - "0.12"
-   - "0.11"
-   - "0.10"
