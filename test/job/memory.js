@@ -4,6 +4,14 @@ let mem;
 
 describe('memory', function() {
 
+  it('should fail creating an instance', function() {
+    try {
+      mem = new Memory()
+    } catch(e) {
+      expect(e).to.be.an.instanceof(TypeError) 
+    }
+  })
+
   it('should create instance', function() {
       mem = new Memory('test') 
   })
