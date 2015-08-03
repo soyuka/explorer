@@ -10,7 +10,8 @@
 @import 'foundation/components/tables';
 @import 'foundation/components/top-bar';
 @import 'foundation/components/visibility';
-@import 'foundation/components/alert-boxes.scss';
+@import 'foundation/components/alert-boxes';
+@import 'foundation/components/labels';
 
 body {
 }
@@ -91,9 +92,14 @@ small > label {
     margin: 0;
   }
 
-  .button.expand {
+  button {
     margin-bottom: 0; 
-    background: #8EB2C5;
+    background: transparent;
+    color: #333;
+
+    &:hover:before, &:focus:before, &:active:before {
+        content: '\e80e';
+    } 
   }
 
 }
