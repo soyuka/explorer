@@ -9,7 +9,7 @@ describe('memory', function() {
   })
 
   it('should store object', function() {
-    mem.add('test', {foo: 'bar'})
+    mem.put('test', {foo: 'bar'})
   })
   
   it('should retreive object', function() {
