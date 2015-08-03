@@ -76,7 +76,7 @@ $include-html-global-classes: $include-html-classes;
 // b. Grid
 // - - - - - - - - - - - - - - - - - - - - - - - - -
 
-$include-xl-html-grid-classes: true
+$include-xl-html-grid-classes: true;
 
 // $row-width: rem-calc(1000);
 // $total-columns: 12;
@@ -810,7 +810,7 @@ $include-xl-html-grid-classes: true
 // $include-html-label-classes: $include-html-classes;
 
 // We use these to style the labels
-// $label-padding: rem-calc(4 8 4);
+$label-padding: rem-calc(2 4 2);
 // $label-radius: $global-radius;
 
 // We use these to style the label text

@@ -8,17 +8,21 @@
   %link{rel: 'icon', type: 'image/png', href: app_root + 'favicon-16x16.png', sizes: '16x16'}
 
 %body
-  %nav.top-bar
-    %ul.title-area
-      %li.name
-        %h1
-          %a{href: '/'}
-            %i.icon-home
-            Explorer 
-
-    %section.top-bar-section
-      - if(user.username)
+  - if(user.username)
+    %nav.top-bar
+      %ul.title-area
+        %li.name
+          %h1
+            %a{href: '/'}
+              Explorer 
+      %section.top-bar-section
         %ul.right
+          - if(notifications.num > 0)
+            %li
+              %a{href: '/notifications'}
+                %i.icon-bell
+                %sup
+                  %span.label.radius.info= notifications.num
           %li
             %a{href: '/settings'}= user.username
           - if(user.admin)
@@ -28,6 +32,15 @@
           %li
             %a{href: '/logout'}
               %i.icon-logout
+        %ul.left
+          %li
+            %a{href: '/'}
+              %i.icon-home
+              Home
+          %li
+            %a{href: '/upload'}
+              %i.icon-upload
+              Upload
 
   .large-6.container.large-centered.columns
     - if(messages.info.length)
