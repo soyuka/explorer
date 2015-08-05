@@ -2,7 +2,7 @@ function getError(config) {
   return function error(err, req, res, next) {
 
     if(!err) {
-      err = new HTTPError('Not Found', 404, '/')
+      err = new HTTPError('No errors - please report', 500, '/')
     }
 
     let d = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')
@@ -14,9 +14,6 @@ function getError(config) {
         console.error(d, err.code + ' - ' + err.message)
 
     return res.format({
-      'text/plain': function() {
-        return res.status(err.code).send(err.message).end()
-      },
       'text/html': function() {
         req.flash('error', err.message)
          
