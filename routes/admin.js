@@ -39,14 +39,16 @@ let Admin = function(app) {
   admin.use(isAdmin(config))
 
   admin.get('/', trashSize(config), function(req, res) {
-    return res.renderBody('admin', {users: req.users.users, remove: config.remove && config.remove.method == 'mv'})
+    return res.renderBody('admin', {
+      users: req.users.users
+    })
   })
 
   admin.post('/trash', function(req, res, next) {
 
-    debug('Empty trash %s', config.remove.trash)
+    debug('Empty trash %s', config.remove.path)
 
-    removeDirectoryContent(config.remove.trash)
+    removeDirectoryContent(config.remove.path)
     .then(function() {
       return res.handle('back')
     })

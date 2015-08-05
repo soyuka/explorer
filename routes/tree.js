@@ -4,7 +4,7 @@ import p from 'path'
 import moment from 'moment'
 
 import {higherPath, extend, removeDirectoryContent, handleSystemError} from '../lib/utils.js'
-import HTTPError from '../lib/HTTPError.js'
+import nTTPError from '../lib/HTTPError.js'
 import {tree} from '../lib/tree.js'
 import {searchMethod} from '../lib/search.js'
 import {prepareTree} from '../middlewares'
@@ -18,6 +18,9 @@ let debug = require('debug')('explorer:routes:tree')
  * @route /compress
  */
 function compress(req, res, next) {
+
+  if(req.options.archive.disabled)
+    return next(new HTTPError('Unauthorized', 401))
 
   let paths = []
   let directories = []
@@ -45,25 +48,24 @@ function compress(req, res, next) {
   }
 
   let name = req.body.name || 'archive'+new Date().getTime()
-  let temp = p.join(req.options.archive.temp || './', `${name}.zip`)
+  let temp = p.join(req.options.archive.path || './', `${name}.zip`)
+
   let data = {
     name: name,
     paths: paths,
     temp: temp,
-    directories: directories,
-    options: req.options
+    directories: directories
   }
 
-  //this is the streaming magic
   if(req.body.compressOnFly !== undefined || !req.options.archive.keep) {
+    //this is the streaming magic
     data.stream = res
     let archive = new Archive()
-    return archive.create(data)
+    return archive.create(data, req.user, req.options)
   } else {
+    //background job
     data.stream = temp
-
-    interactor.ipc.send('command', 'archive.create', data)
-
+    interactor.ipc.send('command', 'archive.create', data, req.user, req.options)
     return res.handle('back', {info: 'Archive created'}, 201)
   }
 
@@ -109,7 +111,16 @@ function getTree(req, res, next) {
  */
 function deletePath(req, res, next) {
 
-  let path = higherPath(req.options.root, req.query.path)
+  let opts = req.options
+  let path = opts.path
+
+  if(path == opts.root || path == req.user.home) {
+    return next(new HTTPError('Forbidden', 403))
+  }
+
+  if((!!req.user.readonly) === true || opts.remove.disabled || !~['mv', 'rm'].indexOf(opts.remove.method)) {
+    return next(new HTTPError('Unauthorized', 401))
+  }
 
   debug('Deleting %s', path)
 
@@ -121,23 +132,13 @@ function deletePath(req, res, next) {
     return res.handle('back', newPath ? {path: newPath, moved: true} : {removed: true})
   }
 
-  if(path === req.options.root || !!req.user.readonly === true) {
-    return next(new HTTPError('Unauthorized', 401))
-  }
-
-  if(req.options.remove.method == 'mv') {
-    let t = p.join(req.options.remove.trash, p.basename(path) + '.' + moment().format('YYYYMMDDHHmmss'))
-    return fs.rename(path, t, function(err) {
-      if(err) { 
-        return cb(err) 
-      } 
-
-      return cb(err, t)
-    }) 
-  } else if(req.options.remove.method == 'rm') {
+  if(opts.remove.method == 'rm') {
     return rimraf(path, cb)
   } else {
-    return next(new HTTPError('Forbidden', 403))
+    let t = p.join(opts.remove.path, p.basename(path) + '.' + moment().format('YYYYMMDDHHmmss'))
+    return fs.rename(path, t, function(err) {
+      return cb(err, t)
+    }) 
   }
 }
 
@@ -163,17 +164,19 @@ function search(req, res, next) {
 
 function emptyTrash(req, res, next) {
 
-  if(!req.options.remove || req.options.remove.method !== 'mv') {
+  let opts = req.options
+
+  if(opts.remove.disabled || opts.remove.method !== 'mv') {
     return handleSystemError(next)('Forbidden', 403)
   }
 
-  if(req.options.remove.trash == req.options.root) {
+  if(opts.remove.path == opts.root) {
     return handleSystemError(next)("Won't happend", 417)
   }
 
-  debug('Empty trash %s', req.options.remove.trash)
+  debug('Empty trash %s', opts.remove.path)
 
-  removeDirectoryContent(req.options.remove.trash)
+  removeDirectoryContent(opts.remove.path)
   .then(function() {
     req.flash('info', 'Trash is now empty!')
     return res.handle('back')

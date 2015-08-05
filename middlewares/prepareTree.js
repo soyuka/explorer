@@ -5,7 +5,7 @@ import {sort} from '../lib/sort.js'
 import {extend, buildUrl, secureString, higherPath, handleSystemError} from '../lib/utils.js'
 import HTTPError from '../lib/HTTPError.js'
 
-let debug = require('debug')('explorer:middlewares')
+let debug = require('debug')('explorer:middlewares:prepareTree')
 /**
  * Prepare tree locals et validate queries 
  * @param config
@@ -44,47 +44,45 @@ function prepareTree(config) {
       root: p.resolve(req.user.home),
       path: higherPath(req.user.home, req.query.path),
       parent: higherPath(req.user.home, p.resolve(req.query.path, '..')),
-      buildUrl: buildUrl
-    })
+      buildUrl: buildUrl,
+    }, {remove: config.remove}, {archive: config.archive}, {upload: config.upload})
 
-    req.options = extend(
+    let opts = extend(
       res.locals,
       config.tree, 
-      config.pagination,
-      {remove: config.remove},
-      {archive: config.archive}
+      config.pagination
     )
 
-    if(req.user.trash) {
-      req.options.remove.trash = p.resolve(req.user.home, req.user.trash)
+    if(req.user) {
+      for(let i in req.user) {
+        if (~['remove', 'archive', 'upload'].indexOf(i) && req.user[i] != '' && req.user[i] != req.user.home) {
+          opts[i].path = p.resolve(req.user.home, req.user[i])
+        }
+      }
     }
 
-    if(!!req.user.readonly === true || req.options.path == req.options.remove.trash) {
+    if(!!req.user.readonly === true || opts.remove.disabled || opts.path == opts.remove.trash) {
       res.locals.canRemove = false 
     } else {
       res.locals.canRemove = config.remove && config.remove.method ? true : false
     }
 
-    if(req.user.archive) {
-      req.options.archive.temp = p.resolve(req.user.home, req.user.archive)
-    }
-
     if(res.locals.sort)
-      req.options.sortMethod = sort[res.locals.sort](req.options)
+      opts.sortMethod = sort[res.locals.sort](opts)
 
     if(req.query.limit) {
-      req.options.limit = !!parseInt(req.query.limit) ? req.query.limit : req.options.limit
+      opts.limit = !!parseInt(req.query.limit) ? req.query.limit : opts.limit
     }
 
     if(req.user.ignore) {
 
       for(let i in req.user.ignore) {
-        if(mm(req.options.path, req.user.ignore[i])) {
+        if(mm(opts.path, req.user.ignore[i])) {
           return next(new HTTPError('Forbidden', 403)) 
         }
       }
 
-      req.options.skip = function(v) {
+      opts.skip = function(v) {
         for(let i in req.user.ignore)  {
           if(mm(v, req.user.ignore[i])) {
             return false 
@@ -95,13 +93,16 @@ function prepareTree(config) {
       } 
     }
 
+    //move to compress
     if(parseInt(req.cookies.compressOnFly) == req.cookies.compressOnFly) {
-      req.options.compressOnFly = !!parseInt(req.cookies.compressOnFly)
+      opts.compressOnFly = !!parseInt(req.cookies.compressOnFly)
     } else {
-      req.options.compressOnFly = true 
+      opts.compressOnFly = true 
     }
 
-    debug('Options: %o', req.options)
+    req.options = opts
+
+    debug('Options: \n%o', opts)
 
     return next()
   }
