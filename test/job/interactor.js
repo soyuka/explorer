@@ -19,15 +19,15 @@ describe('interactor', function() {
     })
   })
   
-  it('should get a long answer', function(cb) {
-    this.timeout(2500)
-    interactor.ipc.send('command', 'testjob.longAnswer', 'foo')
-
-    interactor.ipc.once('longanswer', function(d) {
-     expect(d).to.equal('foo')
-     cb()
-    })
-  })
+  // it('should get a long answer', function(cb) {
+  //   this.timeout(2500)
+  //   interactor.ipc.send('command', 'testjob.longAnswer', 'foo')
+  //
+  //   interactor.ipc.once('longanswer', function(d) {
+  //    expect(d).to.equal('foo')
+  //    cb()
+  //   })
+  // })
 
   it('should throw because running', function(cb) {
     try {
