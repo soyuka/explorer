@@ -29,10 +29,10 @@ describe('stat', function() {
     expect(stat.get()).to.deep.equal({test: [{foo: 'bar'}]})
   })
 
-  it('should add another user object', function() {
-    stat.add('admin', {foo: 'bar'})
+  it('should add array user object', function() {
+    stat.add('admin', [{foo: 'bar'}, {bar: 'foo'}])
 
-    expect(stat.get('admin')).to.deep.equal([{foo: 'bar'}])
+    expect(stat.get('admin')).to.deep.equal([{foo: 'bar'}, {bar: 'foo'}])
   })
 
   it('should fail removing whole object', function() {
