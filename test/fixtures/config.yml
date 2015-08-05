@@ -9,7 +9,7 @@ tree:
   concurrency: 100 #Default 100
 remove:
   method: 'mv'
-  trash: './trash'
+  path: './trash'
 database: './users' # don't touch if you don't know what you're doing
 app_root: '/' 
 session_secret: 'Some string here'

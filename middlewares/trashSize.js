@@ -1,5 +1,6 @@
 import {tree} from '../lib/tree.js'
 import prettyBytes from 'pretty-bytes'
+import p from 'path'
 import {handleSystemError} from '../lib/utils.js'
 let debug = require('debug')('explorer:trashSize')
 
@@ -9,11 +10,11 @@ function trashSize(config) {
 
     res.locals.trashSize = '0 B' 
 
-    if(!config.remove || !config.remove.method == 'mv') {
+    if(config.remove.disabled || config.remove.method != 'mv') {
       return next() 
     }
 
-    let v = config.remove.trash
+    let v = config.remove.path
 
     if(req.user.trash) {
       v = p.resolve(req.user.home, req.user.trash)
