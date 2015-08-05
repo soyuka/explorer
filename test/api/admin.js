@@ -60,6 +60,15 @@ describe('admin', function() {
     .end(cb)
   })
 
+  it('should update with POST _method=PUT', function(cb) {
+    user.admin = 0
+    user.password = 'new'
+    user._method = 'PUT'
+    this.request.post('/a/users') 
+    .send(user)
+    .end(cb)
+  })
+
   it('should login as test', function(cb) {
     this.agent.post('/login') 
     .send({username: 'test', password: 'new'})
