@@ -3,7 +3,6 @@ import {expect} from 'chai'
 import Promise from 'bluebird'
 import {getConfiguration} from '../lib/config.js'
 import app from '../server.js'
-import interactor from '../lib/job/interactor.js'
 
 let config_path = p.join(__dirname, './fixtures/config.yml')
 
@@ -55,8 +54,7 @@ module.exports = {
   },
   removeAgent: function(cb) {
     this.request = null
-    interactor.kill()
-    interactor.once('exit', cb)
+    return cb()
   }
 }
 

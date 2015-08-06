@@ -21,4 +21,5 @@ describe('api', function() {
 describe('job', function() {
   require('./job/interactor.js')
   require('./job/memory.js')
+  require('./job/stat.js')
 })
