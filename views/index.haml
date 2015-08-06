@@ -17,10 +17,10 @@
               Explorer 
       %section.top-bar-section
         %ul.right
-          - if(notifications.num > 0)
-            %li
-              %a{href: '/notifications'}
-                %i.icon-bell
+          %li
+            %a{href: '/notifications'}
+              %i.icon-bell
+              - if(notifications.num > 0)
                 %sup
                   %span.label.radius.info= notifications.num
           %li
@@ -61,4 +61,3 @@
   var confirmDeletion = function(e) {
     return confirm('Are you sure?')
   }
-
