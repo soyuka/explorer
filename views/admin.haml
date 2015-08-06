@@ -25,14 +25,19 @@
           %tr.header
             %th Trash
             %th Archive
+            %th Upload
             %th{colspan: 2} Ignore
           %tr.border-bottom
-            - if(remove)
-              %td= item.trash || config.remove.trash
+            - if(!config.remove.disabled)
+              %td= item.remove || config.remove.path
             - else
               %td ∅
-            - if(config.archive.keep)
-              %td= item.archive || config.archive.temp
+            - if(!config.archive.disabled)
+              %td= item.archive || config.archive.path
+            - else
+              %td ∅
+            - if(!config.upload.disabled)
+              %td= item.upload || config.upload.path
             - else
               %td ∅
             %td{colspan: 2}= item.ignore || '∅'
