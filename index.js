@@ -2,6 +2,7 @@ import p from 'path'
 import http from 'http'
 import https from 'https'
 import fs from 'fs'
+import interactor from './lib/job/interactor.js'
 
 import {firstExistingPath} from './lib/utils.js'
 import {getConfiguration} from './lib/config.js'
@@ -32,3 +33,20 @@ require('./server.js')(config)
   }
 }) 
 
+let plugin_path = p.join(__dirname, './lib/plugins')
+
+fs.readdirAsync(plugin_path)
+.then(function(files) {
+  files = files.map(f => p.join(plugin_path, f))
+
+  if(interactor.job) {
+    console.error('Interactor already launched')
+    return Promise.resolve()
+  }
+
+  return interactor.run(files)
+})
+.catch(function(err) {
+  console.error('Error while launching database') 
+  console.error(err.stack)
+})
