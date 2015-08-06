@@ -171,10 +171,25 @@ DEBUG="explorer:*, explorer:routes:*" babel-node index.js
 npm test
 ```
 
+## Performances
+
+We use Bluebird with concurrency, FIY you may speed things up:
+
+```
+$ sync && echo 3 > /proc/sys/vm/drop_caches
+$ node test.js 1
+reading files 35ms
+$ sync && echo 3 > /proc/sys/vm/drop_caches
+$ node test.js Infinity
+reading files: 9ms
+```
+
+[See docs](https://github.com/petkaantonov/bluebird/blob/master/API.md#option-concurrency)
+
 ## Thoughts and improvements
 
 I did this because I could not find a light file explorer. I tried pydio but it's heavy and long to install.
 Features like in-place text editing, images viewer could be nice but they will add some significant overload.
-An unarchiver could be a nice feature too but will require some dependencies (unrar, unzip).
+An unarchiver could be a nice feature too but will require some dependencies (eg: unrar).
 
 KISS.
