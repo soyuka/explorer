@@ -1,0 +1,11 @@
+limit key access
+more secure api key?
+
+tests :
+- archive (+compressOnFly)
+- ignore
+- user opts
+- user key
+- bad cookie (login => do not logout => delete as admin => refresh)
+- upload
+- api doc
