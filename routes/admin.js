@@ -4,7 +4,7 @@ import yaml from 'yamljs'
 import {noDotFiles, extend, removeDirectoryContent, handleSystemError} from '../lib/utils.js'
 import {User} from '../lib/users.js'
 import {tree} from '../lib/tree.js'
-import {trashSize} from '../middlewares'
+import {trashSize, prepareTree} from '../middlewares'
 import HTTPError from '../lib/HTTPError.js'
 
 let fs = Promise.promisifyAll(require('fs'))
@@ -38,7 +38,7 @@ let Admin = function(app) {
 
   admin.use(isAdmin(config))
 
-  admin.get('/', trashSize(config), function(req, res) {
+  admin.get('/', trashSize(config), prepareTree(config), function(req, res) {
     return res.renderBody('admin', {
       users: req.users.users
     })
