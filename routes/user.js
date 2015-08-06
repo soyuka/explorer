@@ -1,5 +1,6 @@
 import util from 'util'
 import HTTPError from '../lib/HTTPError.js'
+import interactor from '../lib/job/interactor.js'
 import {handleSystemError} from '../lib/utils.js'
 
 let debug = require('debug')('explorer:routes:user')
@@ -46,9 +47,34 @@ function login(req, res, next) {
   })
 }
 
+function notifications(req, res, next) {
+  return res.renderBody('notifications') 
+}
+
+function deleteNotifications(req, res, next) {
+  
+  if(!interactor.ipc) {
+    debug('No interactor')
+    return next(new HTTPError('No Interactor', 400))
+  }
+
+  interactor.ipc.once('clear', function(data) {
+
+    debug('Remove notifications %o', data)
+
+    req.flash('info', `${res.locals.notifications.num} notifications deleted`)
+    return res.handle('/') 
+  })
+
+  interactor.ipc.send('clear', req.user.username)
+
+}
+
 let User = function(app) {
   app.get('/logout', logout)
   app.get('/login', home)
+  app.get('/notifications', notifications)
+  app.delete('/notifications', deleteNotifications)
   app.post('/login', login)
 
   return app
