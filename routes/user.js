@@ -80,7 +80,7 @@ function deleteNotifications(req, res, next) {
     debug('Remove notifications %o', data)
 
     req.flash('info', `${res.locals.notifications.num} notifications deleted`)
-    return res.handle('/') 
+    return res.handle('/notifications') 
   })
 
   interactor.ipc.send('clear', req.user.username)
