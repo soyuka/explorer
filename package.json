@@ -21,6 +21,9 @@
       }
     }
   ],
+  "apidoc": {
+    "title": "Explorer api"
+  },
   "repository": "http://github.com/soyuka/explorer",
   "author": "soyuka",
   "license": "MIT",

@@ -11,11 +11,23 @@ function home(req, res) {
   return res.renderBody('login.haml')
 }
 
+/**
+ * @api {get} /logout Logout
+ * @apiGroup User
+ * @apiName logout
+ */
 function logout(req, res) {
   res.cookie('user', {}, util._extend({}, cookieOptions, {expires: new Date()}))
   return res.handle('/login')
 }
 
+/**
+ * @api {post} /login Login
+ * @apiGroup User
+ * @apiName login
+ * @apiParam {string} username
+ * @apiParam {string} password
+ */
 function login(req, res, next) {
 
   if(!req.body.username || !req.body.password) {
@@ -51,6 +63,11 @@ function notifications(req, res, next) {
   return res.renderBody('notifications') 
 }
 
+/**
+ * @api {delete} /notifications Delete notifications
+ * @apiGroup User
+ * @apiName notifications
+ */
 function deleteNotifications(req, res, next) {
   
   if(!interactor.ipc) {
