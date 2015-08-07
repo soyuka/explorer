@@ -15,6 +15,12 @@ function getUpload(req, res, next) {
   return res.renderBody('upload', req.options)
 }
 
+/**
+ * @api {post} /remote-upload Remote Upload
+ * @apiGroup Upload
+ * @apiName remoteUpload
+ * @apiParam {string} links Links to download
+ */
 function remoteUpload(req, res, next) {
   let links = req.body.links.split('\r\n')
 
@@ -51,6 +57,12 @@ let Upload = function(app) {
     }
   })
 
+  /**
+   * @api {post} /upload Upload
+   * @apiGroup Upload
+   * @apiName upload
+   * @apiParam {string[]} files
+   */
   let upload = multer({storage: storage})
 
   app.get('/upload', pt, canUpload, getUpload)

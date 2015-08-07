@@ -32,6 +32,19 @@ function isAdmin(config) {
   }
 }
 
+/**
+ * @apiDefine UserSchema
+ * @apiParam (Admin) {string} username
+ * @apiParam (User) {string} password
+ * @apiParam (Admin) {string} home 
+ * @apiParam (User) {string} key '1' to re-generate
+ * @apiParam (Admin) {boolean} admin 
+ * @apiParam (Admin) {boolean} readonly 
+ * @apiParam (Admin) {array} ignore
+ * @apiParam (User) {string} trash
+ * @apiParam (User) {string} archive
+ * @apiParam (User) {string} upload
+ */
 let Admin = function(app) {
   let admin = require('express').Router()
   let config = app.get('config')
@@ -42,17 +55,6 @@ let Admin = function(app) {
     return res.renderBody('admin', {
       users: req.users.users
     })
-  })
-
-  admin.post('/trash', function(req, res, next) {
-
-    debug('Empty trash %s', config.remove.path)
-
-    removeDirectoryContent(config.remove.path)
-    .then(function() {
-      return res.handle('back')
-    })
-    .catch(handleSystemError(next))
   })
 
   admin.get('/create', function(req, res) {
@@ -69,7 +71,33 @@ let Admin = function(app) {
     return res.renderBody('admin/user/update.haml', {user: u})
   })
 
+  /**
+   * @api {post} /a/trash Empty global trash
+   * @apiName emptyTrash
+   * @apiGroup Admin
+   */
+  admin.post('/trash', function(req, res, next) {
+
+    debug('Empty trash %s', config.remove.path)
+
+    removeDirectoryContent(config.remove.path)
+    .then(function() {
+      return res.handle('back')
+    })
+    .catch(handleSystemError(next))
+  })
+
+  /**
+   * @api {get} /a/delete/:username Delete user
+   * @apiName deleteUser
+   * @apiGroup Admin
+   * @apiParam {String} username
+   */
   admin.get('/delete/:username', function(req, res, next) {
+    if(req.user.username == req.params.username) {
+      return next(new HTTPError("You can't delete yourself", 400))
+    }
+
     req.users.delete(req.params.username)
     .then(function() {
       req.flash('info', `User ${req.params.username} deleted`)
@@ -78,6 +106,12 @@ let Admin = function(app) {
     .catch(handleSystemError(next))
   })
 
+  /**
+   * @api {post} /a/users Create user
+   * @apiName createUser
+   * @apiGroup Admin
+   * @apiUse UserSchema
+   */
   admin.post('/users', validUser, function(req, res, next) {
 
     if(req.users.get(req.body.username)) {
@@ -98,6 +132,12 @@ let Admin = function(app) {
     .catch(handleSystemError(next))
   })
 
+  /**
+   * @api {put} /a/users Update user
+   * @apiName updateUser
+   * @apiGroup Admin
+   * @apiUse UserSchema
+   */
   admin.put('/users', function(req, res, next) {
     let u = req.users.get(req.body.username)
 

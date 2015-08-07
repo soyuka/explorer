@@ -14,8 +14,14 @@ import Archive from '../lib/plugins/archive.js'
 let debug = require('debug')('explorer:routes:tree')
 
 /**
- * Compress paths with archiver
- * @route /compress
+ * @api {post} /compress Compress paths with archiver
+ * @apiGroup Tree
+ * @apiName compress
+ * @apiParam {string[]} zip Array of paths to zip
+ * @apiParam {string} [name="archive-Date.getTime()"] Archive name
+ * @apiParam {boolean} compressOnFly pipe zip to response if false
+ *                                   data will be processed in the background
+ *                                   through interactor
  */
 function compress(req, res, next) {
 
@@ -72,7 +78,10 @@ function compress(req, res, next) {
 }
 
 /**
- * @route /download
+ * @api {get} /download Download path
+ * @apiGroup Tree
+ * @apiName Download
+ * @apiParam {string} path
  */
 function download(req, res, next) {
   let path = higherPath(req.options.root, req.query.path)
@@ -89,8 +98,12 @@ function download(req, res, next) {
 } 
 
 /**
- * Get the tree
- * @route /
+ * @api {get} /download Get the tree
+ * @apiGroup Tree
+ * @apiName Tree
+ * @apiParam {string} path
+ * @apiParam {string} sort
+ * @apiParam {string} order
  */
 function getTree(req, res, next) {
 
@@ -107,7 +120,10 @@ function getTree(req, res, next) {
 }
 
 /**
- * Deletes or moves a file
+ * @api {get} /remove Deletes or moves a file
+ * @apiGroup Tree
+ * @apiName Remove
+ * @apiParam {string} path
  */
 function deletePath(req, res, next) {
 
@@ -143,8 +159,10 @@ function deletePath(req, res, next) {
 }
 
 /**
- * Search through config search method
- * @route /search
+ * @api {get} /search Search according to the configuration method
+ * @apiGroup Tree
+ * @apiName Search
+ * @apiParam {string} search
  */
 function search(req, res, next) {
   let config = req.config
@@ -162,6 +180,11 @@ function search(req, res, next) {
   .catch(handleSystemError(next))
 }
 
+/**
+ * @api {post} /trash Empty trash
+ * @apiGroup User
+ * @apiName emptyTrash
+ */
 function emptyTrash(req, res, next) {
 
   let opts = req.options

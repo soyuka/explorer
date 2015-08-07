@@ -8,6 +8,12 @@ function settings(req, res) {
   return res.renderBody('settings.haml', {user: req.user})
 }
 
+/**
+ * @api {put} /settings Update user settings
+ * @apiName userSettings
+ * @apiGroup User
+ * @apiUse UserSchema
+ */
 function updateSettings(req, res, next) {
 
   if(!req.body.username == req.user.username)
