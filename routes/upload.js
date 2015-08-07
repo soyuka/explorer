@@ -50,10 +50,16 @@ let Upload = function(app) {
     },
     filename: function (req, file, cb) {
 
-      let ext = p.extname(file.originalname)
-      let n = p.basename(file.originalname, ext) + '-' + Date.now() + ext
+      let original = file.originalname
+      let ext = p.extname(original)
+      let name = p.basename(original, ext) 
 
-      return cb(null, n)
+      //rename if exists
+      if(fs.existsSync(p.join(req.options.upload.path, original))) {
+        original =  name + '-' + Date.now() + ext
+      }
+
+      return cb(null, original)
     }
   })
 
