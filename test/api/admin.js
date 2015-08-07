@@ -114,6 +114,12 @@ describe('admin', function() {
     .end(cb)
   })
 
+  it('should not be available to login', function(cb) {
+    this.agent.get('/')
+    .expect(400)
+    .end(cb)
+  })
+
   after(bootstrap.logout)
   after(bootstrap.removeAgent)
 })
