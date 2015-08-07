@@ -178,7 +178,7 @@ npm test
 
 ## Performances
 
-We use Bluebird with concurrency, FIY you may speed things up:
+We use Bluebird with concurrency, for your information you may speed things up:
 
 ```
 $ sync && echo 3 > /proc/sys/vm/drop_caches
