@@ -10,6 +10,8 @@ tree:
 remove:
   method: 'mv'
   path: './trash'
+upload:
+  path: './upload'
 database: './users' # don't touch if you don't know what you're doing
 app_root: '/' 
 session_secret: 'Some string here'
