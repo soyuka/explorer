@@ -39,4 +39,4 @@ https:
   enabled: true #default option!
   key: './certs/key.pem' #change those are dummies
   cert: './certs/cert.pem'
-dev: true
+dev: false
