@@ -1,5 +1,6 @@
 import HTTPError from '../lib/HTTPError.js'
 import p from 'path'
+import util from 'util'
 
 let debug = require('debug')('explorer:middlewares:user')
 
