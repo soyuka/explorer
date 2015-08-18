@@ -19,17 +19,6 @@ function optionsCookie(req, res, next) {
     req.query.order = req.cookies.order
   }
 
-  if(!~req.url.indexOf('compress')) {
-    if(req.body.compressOnFly != req.cookies.compressOnFly) {
-      res.cookie('compressOnFly', req.body.compressOnFly || '0', {httpOnly: false})
-    }
-  
-    if(isString(req.cookies.compressOnFly) && !req.body.compressOnFly) {
-      req.body.compressOnFly = req.cookies.compressOnFly
-    }
-
-  }
-
   return next()
 }
 

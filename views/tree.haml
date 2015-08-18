@@ -39,7 +39,7 @@
           %a{href: '/?path=' + b.path}= b.name
       
     -# Tree
-    %form{method: 'POST', action: '/compress'}
+    %form{method: 'POST', action: '/'}
       %table
         %thead
           %tr
@@ -53,7 +53,7 @@
         - each item in tree
           %tr
             %td
-              %input{type: 'checkbox', value: item.path, name: 'zip'}
+              %input{type: 'checkbox', value: item.path, name: 'path'}
             %td
               - if (item.directory)
                 - var options = {page: 1, sort: sort, order: order}
@@ -78,19 +78,21 @@
 
       -# Archive button
       .row
-        .large-4.small-12.columns
-          .row.collapse
-            .large-8.small-10.columns
+        .small-12.columns
+          .row
+            .large-3.columns
+              %select{name: 'action'}
+                %optgroup{Label: 'Zip'}
+                  %option{value: 'download', selected: true} Download
+                  - if(archive.disabled != true)
+                    %option{value: 'archive'} Archive
+                - if(remove.disabled != true)
+                  %option{value: 'remove'} Remove
+            .large-3.columns
               %input{type: 'text', name: 'name', placeholder: 'archive' + new Date().getTime()}
-            .large-4.small-2.columns
-              %button.button.postfix.tiny{type: 'submit', style: 'margin:0;'}
-                Compress
-          - if(archive.keep == true)
-            .row
-              .large-12.columns{style: 'margin-top:-20px;'}
-                %small
-                  %input{type: 'checkbox', name: 'compressOnFly', id: 'compressOnFly', checked: compressOnFly, value: 1}
-                  %label{for: 'compressOnFly'} Download
+            .large-2.columns
+              %button.button.postfix.tiny{type: 'submit'}
+                Submit
 
     -# Pagination
     .pagination-centered

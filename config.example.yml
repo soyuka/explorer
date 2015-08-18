@@ -23,7 +23,6 @@ remove:
   method: 'mv' #default is to move
   path: './trash'
 archive:
-  keep: false # set to true to keep archives
   path: './tmp'
 upload:
   path: './upload'
