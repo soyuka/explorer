@@ -93,13 +93,6 @@ function prepareTree(config) {
       } 
     }
 
-    //move to compress
-    if(parseInt(req.cookies.compressOnFly) == req.cookies.compressOnFly) {
-      opts.compressOnFly = !!parseInt(req.cookies.compressOnFly)
-    } else {
-      opts.compressOnFly = true 
-    }
-
     req.options = opts
 
     debug('Options: \n%o', opts)
@@ -108,5 +101,36 @@ function prepareTree(config) {
   }
 }
 
+function sanitizeCheckboxes(req, res, next) {
+  let paths = []
+  let directories = []
 
-export {prepareTree}
+  if(typeof req.body.path == 'string')
+    req.body.path = [req.body.path]
+
+  //validating paths
+  for(let i in req.body.path) {
+    let path = higherPath(req.options.root, req.body.path[i]) 
+
+    if(path != req.options.root) {
+      try {
+        var stat = fs.statSync(path)
+      } catch(err) {
+        return handleSystemError(next)(err)
+      }
+
+      if(stat.isDirectory()) {
+        directories.push(path)
+      } else {
+        paths.push(path)
+      }
+    }
+  }
+
+  req.options.directories = directories
+  req.options.paths = paths
+
+  next()
+}
+
+export {prepareTree, sanitizeCheckboxes}
