@@ -1,6 +1,6 @@
 {
   "name": "directory-listings",
-  "version": "v2.0.0",
+  "version": "v2.0.1",
   "description": "Directory Listings - Explore and share ",
   "main": "index.js",
   "scripts": {
