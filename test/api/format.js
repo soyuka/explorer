@@ -21,9 +21,6 @@ describe('format', function() {
     .set('Accept', 'application/rss+xml')
     .expect(200)
     .expect('Content-Type', /rss/)
-    // .expect(function(res) {
-      //@todo
-    // })
     .end(cb)
   })
 
@@ -32,9 +29,6 @@ describe('format', function() {
     .set('Accept', 'application/rss+xml')
     .expect(200)
     .expect('Content-Type', /rss/)
-    // .expect(function(res) {
-      //@todo
-    // })
     .end(cb)
   })
 
