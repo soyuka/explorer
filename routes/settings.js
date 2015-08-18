@@ -16,19 +16,16 @@ function settings(req, res) {
  */
 function updateSettings(req, res, next) {
 
-  if(!req.body.username == req.user.username)
-    return handleSystemError(req, res)("Can't update another user")
-
   let u = req.users.get(req.user.username)
 
   if(!u) {
-    return next(new HTTPError('User not found', 404))
+    return handleSystemError(next)('User not found', 404)
   }
 
   let ignore = ['home', 'admin', 'readonly', 'ignore']
 
   if(req.user.readonly) {
-    ignore.concat(['trash', 'archive'])
+    ignore = ignore.concat(['trash', 'archive'])
   }
     
   u.update(req.body, ignore)

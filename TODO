@@ -1,11 +1,5 @@
-limit key access
-more secure api key?
+Review post /compress to add more possibilities (remove batch etc. + req.body.zip => files)
+Delete, trashSize, delete smthing from trash => ?
 
 tests :
-- archive (+compressOnFly)
-- ignore
-- user opts
-- user key
-- bad cookie (login => do not logout => delete as admin => refresh)
-- upload
-- api doc
+- user opts (readonly, upload:false etc.)
