@@ -1,4 +1,4 @@
-# Directory Listings [![Build Status](https://travis-ci.org/soyuka/explorer.svg?branch=master)](https://travis-ci.org/soyuka/explorer)
+# ![Logo](https://raw.githubusercontent.com/soyuka/explorer/master/client/favicon-32x32.png) Explorer [![Build Status](https://travis-ci.org/soyuka/explorer.svg?branch=master)](https://travis-ci.org/soyuka/explorer)
 
 Explore and share
 

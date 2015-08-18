@@ -7,7 +7,8 @@
     "test": "mocha --compilers js:babel/register",
     "coverage": "istanbul cover _mocha -- --compilers js:babel/register",
     "postpublish": "git stash && rm -r lib.bak routes.bak",
-    "postinstall": "bash deploy.sh postinstall"
+    "postinstall": "bash deploy.sh postinstall",
+    "docs": "apidoc -i routes -o doc/api"
   },
   "engines": {
     "node": ">0.11.1"
