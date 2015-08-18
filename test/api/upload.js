@@ -16,6 +16,7 @@ function getList() {
 describe('upload', function() {
 
   before(function(cb) {
+    this.timeout(5000)
     interactor.run([p.resolve(__dirname, '../../lib/plugins/upload.js')])
     .then(function(plugins) { return cb() })
     .catch(cb)
