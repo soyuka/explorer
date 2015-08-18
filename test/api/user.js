@@ -100,6 +100,11 @@ describe('user', function() {
     .end(cb)
   })
 
+  it('should access with key', function(cb) {
+    this.request.get('/search?search=dir&key='+key) 
+    .end(cb)
+  })
+
   it('should not access with key', function(cb) {
     this.request.get('/settings?key='+key) 
     .expect(401)

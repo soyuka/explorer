@@ -5,7 +5,7 @@ import util from 'util'
 let debug = require('debug')('explorer:middlewares:user')
 
 function isValidForKey(path) {
-  return path == '/' || path == '/download'
+  return path == '/' || path == '/download' || path == '/search'
 }
 /**
  * Middleware that handles the user cookie
