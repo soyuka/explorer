@@ -4,5 +4,5 @@ branches:
     - master
     - development
 node_js:
-   - "iojs"
+   - "iojs-v2.5.0"
    - "0.12"
