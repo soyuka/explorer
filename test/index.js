@@ -17,6 +17,7 @@ describe('api', function() {
   require('./api/search.js')
   require('./api/admin.js')
   require('./api/upload.js')
+  require('./api/archive.js')
 })
 
 describe('job', function() {

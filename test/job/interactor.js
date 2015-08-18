@@ -3,6 +3,7 @@ import interactor from '../../lib/job/interactor.js'
 
 describe('interactor', function() {
   it('should run', function(cb) {
+    this.timeout(5000)
     interactor.run([__dirname + '/../fixtures/testjob.js']) 
     .then(function(plugins) {
       expect(plugins).to.deep.equal(['testjob'])
