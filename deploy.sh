@@ -3,7 +3,7 @@ DEBUG=''
 cmd=$1
 
 babelize() {
-  babel routes/* lib/* index.js server.js --out-dir build/ &>/dev/null
+  babel routes/*.js lib/**/*.js lib/*.js middlewares/*.js index.js server.js --out-dir build/ &>/dev/null
   mv lib lib.bak 
   mv routes routes.bak
   mv build/* ./
