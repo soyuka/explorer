@@ -21,11 +21,14 @@ remove:
   # 'rm' will delete files
   # empty to disable deletion
   method: 'mv' #default is to move
-  trash: './trash' #will be created if non-existant
+  path: './trash'
 archive:
-  keep: false #set to true to keep archives
-  temp: './tmp'
-#note that the trash or temp path will be overridden by the user path if set
+  path: './tmp'
+upload:
+  path: './upload'
+  concurrency: 10
+# note that path values will be overridden by the user path if set
+# path will be created if non-existant
 database: './data/users' # don't touch if you don't know what you're doing
 app_root: '/' # app root for client ressources
 session_secret: 'Some string here' #Change this
@@ -35,3 +38,4 @@ https:
   enabled: true #default option!
   key: './certs/key.pem' #change those are dummies
   cert: './certs/cert.pem'
+dev: false

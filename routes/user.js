@@ -1,4 +1,7 @@
 import util from 'util'
+import HTTPError from '../lib/HTTPError.js'
+import interactor from '../lib/job/interactor.js'
+import {handleSystemError} from '../lib/utils.js'
 
 let debug = require('debug')('explorer:routes:user')
 
@@ -8,16 +11,27 @@ function home(req, res) {
   return res.renderBody('login.haml')
 }
 
+/**
+ * @api {get} /logout Logout
+ * @apiGroup User
+ * @apiName logout
+ */
 function logout(req, res) {
   res.cookie('user', {}, util._extend({}, cookieOptions, {expires: new Date()}))
-  return res.redirect('/login')
+  return res.handle('/login')
 }
 
-function login(req, res) {
+/**
+ * @api {post} /login Login
+ * @apiGroup User
+ * @apiName login
+ * @apiParam {string} username
+ * @apiParam {string} password
+ */
+function login(req, res, next) {
 
   if(!req.body.username || !req.body.password) {
-    req.flash('error', 'One of the required fields is missing')
-    return res.redirect('/login') 
+    return next(new HTTPError('One of the required fields is missing', 400, '/login'))
   }
 
   req.users.authenticate(req.body.username, req.body.password)
@@ -28,26 +42,56 @@ function login(req, res) {
     if(ok) {
       let u = req.users.get(req.body.username)
 
-      if(!u) {
-        req.flash('error', `User ${req.body.username} does not exist`)
-        return res.redirect('/login') 
-      }
-
       debug('%s logged in', u)
 
-      res.cookie('user', {username: u.username, home: u.home, rss: u.rss}, cookieOptions)
+      res.cookie('user', u.getCookie(), cookieOptions)
 
-      return res.redirect('/')
+      return res.handle('/', u.getCookie())
     } 
 
-    req.flash('error', `Wrong password`)
-    return res.redirect('/login')
-  })  
+    return next(new HTTPError('Wrong password', 401, '/login'))
+  }) 
+  .catch(function(e) {
+    if(typeof e == 'string')
+      return next(new HTTPError(e, 401, '/login'))
+    else
+      return handleSystemError(next)(e)
+  })
+}
+
+function notifications(req, res, next) {
+  return res.renderBody('notifications') 
+}
+
+/**
+ * @api {delete} /notifications Delete notifications
+ * @apiGroup User
+ * @apiName notifications
+ */
+function deleteNotifications(req, res, next) {
+  
+  if(!interactor.ipc) {
+    debug('No interactor')
+    return next(new HTTPError('No Interactor', 400))
+  }
+
+  interactor.ipc.once('clear', function(data) {
+
+    debug('Remove notifications %o', data)
+
+    req.flash('info', `${res.locals.notifications.num} notifications deleted`)
+    return res.handle('/notifications') 
+  })
+
+  interactor.ipc.send('clear', req.user.username)
+
 }
 
 let User = function(app) {
   app.get('/logout', logout)
   app.get('/login', home)
+  app.get('/notifications', notifications)
+  app.delete('/notifications', deleteNotifications)
   app.post('/login', login)
 
   return app

@@ -1,73 +1,111 @@
-var url = function(u) {
+let url = function(u) {
   return function(res) {
     expect(res.header.location).to.equal(u)
   }
 }
 
+let key
+
 describe('user', function() {
   
+  before(bootstrap.autoAgent)
+
   it('should not be logged in', function(cb) {
-    request.get('/')
+    this.request.get('/')
+    .expect(401)
+    .end(cb)
+  })
+
+  it('should not be logged in (html)', function(cb) {
+    this.request.get('/')
+    .set('Accept', 'text/html')
     .expect(302)
-    .expect(url('/login'))
     .end(cb)
   })
 
   it('should get login', function(cb) {
-    request.get('/login')
-    .expect(200)
+    this.request.get('/login')
     .end(cb)
   })
 
-  it('should fail login', function(cb) {
-    request.post('/login')
+  it('should fail login (missing field)', function(cb) {
+    this.request.post('/login')
     .send({})
-    .expect(302)
-    .expect(url('/login'))
+    .expect(400)
     .end(cb)
   })
 
   it('should fail login (user does not exist)', function(cb) {
-    request.post('/login')
-    .send({username: 'nonexistant'})
-    .expect(302)
-    .expect(url('/login'))
+    this.request.post('/login')
+    .send({username: 'nonexistant', password: 'no'})
+    .expect(401)
     .end(cb)
   })
 
   it('should fail login (bad password)', function(cb) {
-    request.post('/login')
+    this.request.post('/login')
     .send({username: 'admin', password: 'root'})
-    .expect(302)
-    .expect(url('/login'))
+    .expect(401)
     .end(cb)
   })
 
-  it('should login', login)
+  it('should login (json)', function(cb) {
+    this.request.post('/login')  
+    .send({username: 'admin', password: 'admin'})
+    .expect(function(res) {
+      expect(res.headers['set-cookie']).not.to.be.undefined
+      key = res.body.key
+    })
+    .end(cb)
+  })
 
   it('should be logged in', function(cb) {
-    request.get('/')
+    this.request.get('/')
     .end(cb)
   })
 
   it('should get settings', function(cb) {
-    request.get('/settings') 
+    this.request.get('/settings') 
     .end(cb)
   })
 
-  it('should update key', function(cb) {
-    request.put('/settings')
-    .send({key: 1})
-    .expect(302)
+  it('should logout (json)', function(cb) {
+    this.request.get('/logout')  
+    .send({username: 'admin', password: 'admin'})
+    .expect(function(res) {
+      expect(res.headers['set-cookie']).not.to.be.undefined
+    })
     .end(cb)
   })
-
-  it('should logout', logout)
 
   it('should be logged out', function(cb) {
-    request.get('/')
+    this.request.get('/')
+    .expect(401)
+    .expect(function(res) {
+      expect(res.body.redirect).to.equal('/login')
+    })
+    .end(cb)
+  })
+
+  it('should be redirected to login', function(cb) {
+    this.request.get('/') 
+    .set('Accept', 'text/html')
     .expect(302)
     .expect(url('/login'))
     .end(cb)
   })
+
+  it('should access with key', function(cb) {
+    this.request.get('/?key='+key) 
+    .end(cb)
+  })
+
+  it('should not access with key', function(cb) {
+    this.request.get('/settings?key='+key) 
+    .expect(401)
+    .end(cb)
+  })
+
+  after(bootstrap.removeAgent)
+
 })

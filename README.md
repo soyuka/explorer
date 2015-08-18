@@ -98,11 +98,15 @@ remove:
   # 'rm' will delete files
   # empty to disable deletion
   method: 'mv' #default is to move
-  trash: './trash' # will be created if non-existant /!\ must be writable
+  path: './trash'
 archive:
-  keep: false #set to true to keep archives
-  temp: './tmp' # /!\ must be writable
-#note that the trash or temp path will be overridden by the user path if set
+  keep: false # set to true to keep archives
+  path: './tmp'
+upload:
+  path: './upload'
+  concurrency: 10
+# note that path values will be overridden by the user path if set
+# path will be created if non-existant
 database: './data/users' # don't touch if you don't know what you're doing
 app_root: '/' # app root for client ressources
 session_secret: 'Some string here' #Change this
@@ -112,6 +116,7 @@ https:
   enabled: true #default option!
   key: './certs/key.pem' #change those are dummies
   cert: './certs/cert.pem'
+dev: false
 ```
 
 The `config.yml` will be searched in:
@@ -171,10 +176,25 @@ DEBUG="explorer:*, explorer:routes:*" babel-node index.js
 npm test
 ```
 
+## Performances
+
+We use Bluebird with concurrency, for your information you may speed things up:
+
+```
+$ sync && echo 3 > /proc/sys/vm/drop_caches
+$ node test.js 1
+reading files 35ms
+$ sync && echo 3 > /proc/sys/vm/drop_caches
+$ node test.js Infinity
+reading files: 9ms
+```
+
+[See docs](https://github.com/petkaantonov/bluebird/blob/master/API.md#option-concurrency)
+
 ## Thoughts and improvements
 
 I did this because I could not find a light file explorer. I tried pydio but it's heavy and long to install.
 Features like in-place text editing, images viewer could be nice but they will add some significant overload.
-An unarchiver could be a nice feature too but will require some dependencies (unrar, unzip).
+An unarchiver could be a nice feature too but will require some dependencies (eg: unrar).
 
 KISS.

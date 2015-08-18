@@ -1,0 +1,5 @@
+Review post /compress to add more possibilities (remove batch etc. + req.body.zip => files)
+Delete, trashSize, delete smthing from trash => ?
+
+tests :
+- user opts (readonly, upload:false etc.)

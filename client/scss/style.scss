@@ -10,7 +10,11 @@
 @import 'foundation/components/tables';
 @import 'foundation/components/top-bar';
 @import 'foundation/components/visibility';
-@import 'foundation/components/alert-boxes.scss';
+@import 'foundation/components/alert-boxes';
+@import 'foundation/components/labels';
+
+body {
+}
 
 .small {
   font-size: 0.87rem;
@@ -72,3 +76,47 @@ label.key {
 small > label {
     font-size: inherit;
 }
+
+.login-box {
+  color: #333;
+  background: url('../login.png') no-repeat;
+  background-size: contain;
+  margin: 100px auto;
+  padding: 180px 20px 40px 20px;
+  width: 650px;
+  height: 429px;
+
+  input {
+    border:0; 
+  }
+
+  form {
+    margin: 0 auto;
+    width: 95%;
+  }
+
+  button {
+    margin-bottom: 0; 
+    background: transparent;
+    color: #333;
+
+    &:hover:before, &:focus:before, &:active:before {
+        content: '\e80e';
+    } 
+  }
+}
+
+button.file-upload {
+
+    input[type='file'] {
+        cursor: pointer;
+        position: absolute;
+        font-size: 0;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        height: 100%;
+        width: 100%;
+    }
+}
+
