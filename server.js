@@ -63,6 +63,8 @@ module.exports = function(config) {
       error: req.flash('error')
     }
 
+    res.locals.upload = config.upload
+
     return next()
   })
 

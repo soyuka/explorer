@@ -37,10 +37,11 @@
             %a{href: '/'}
               %i.icon-home
               Home
-          %li
-            %a{href: '/upload'}
-              %i.icon-upload
-              Upload
+          - if(upload.disabled != true)
+            %li
+              %a{href: '/upload'}
+                %i.icon-upload
+                Upload
 
   .large-6.container.large-centered.columns
     - if(messages.info.length)
