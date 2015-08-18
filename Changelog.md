@@ -1,4 +1,13 @@
 # Changelog
+2.0.1
+- Lots of new tests
+- Remote-upload feature
+- Archive and remote upload are done in background with notifications
+- Better download/archive UI
+- Better login UI
+- Remove archive.keep configuration option
+- ApiDoc (`npm run docs`)
+- Logo \o/
 1.2.1
 - Fix issue while compressing and not keeping archives
 1.2.0
