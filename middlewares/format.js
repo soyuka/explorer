@@ -1,4 +1,5 @@
 import util from 'util'
+import rss from '../routes/rss.js'
 
 function getFormat(app) {
   return function format(req, res, next) {
@@ -13,10 +14,9 @@ function getFormat(app) {
         },
         'application/rss+xml': function() {
           res.set('Content-Type', 'application/rss+xml')
-
-          //@TODO
           if(locals.tree) {
-            return res.send('OK')
+            res.locals = locals
+            return rss(req, res, next)
           } else {
             return res.status(406).send('Not acceptable')
           }
