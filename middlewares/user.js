@@ -4,6 +4,9 @@ import util from 'util'
 
 let debug = require('debug')('explorer:middlewares:user')
 
+function isValidForKey(path) {
+  return path == '/' || path == '/download'
+}
 /**
  * Middleware that handles the user cookie
  * on error end @see HTTPError
@@ -14,7 +17,7 @@ function user(req, res, next) {
   let locals =  {}
   let user = req.cookies.user
 
-  if((!user || !user.username) && req.query.key) {
+  if((!user || !user.username) && req.query.key && isValidForKey(req.path)) {
     user = req.user = req.users.getByKey(req.query.key) 
     
     if(!req.user) {
