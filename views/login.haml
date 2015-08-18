@@ -1,19 +1,17 @@
-.large-4.large-centered.columns
-  .login-box
+.login-box.large-centered
+  %form{method: 'POST', action: '/login'}
     .row
-      %form{method: 'POST', action: '/login'}
-        .row
-          .small-12.columns
-            %label{for: 'username'} Username
-        .row
-          .small-12.columns
-            %input{type: 'text', id: 'username', name: 'username'}
-        .row
-          .small-12.columns
-            %label{for: 'password'} Password
-        .row
-          .small-12.columns
-            %input{type: 'password', id: 'password', name: 'password'}
-        .row
-          .small-12.large-centered.columns
-            %button.expand.icon-lock{type: 'submit'}
+      .small-12.columns
+        %label{for: 'username'} Username
+    .row
+      .small-12.columns
+        %input{type: 'text', id: 'username', name: 'username'}
+    .row
+      .small-12.columns
+        %label{for: 'password'} Password
+    .row
+      .small-12.columns
+        %input{type: 'password', id: 'password', name: 'password'}
+    .row
+      .small-12.large-centered.columns
+        %button.expand.icon-lock{type: 'submit'}
