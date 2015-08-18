@@ -1,11 +1,27 @@
-import Promise from 'bluebird'
-import {User} from '../lib/users.js'
-import {trashSize, prepareTree} from '../middlewares'
-import {handleSystemError} from '../lib/utils.js'
-import HTTPError from '../lib/HTTPError.js'
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _bluebird = require('bluebird');
+
+var _bluebird2 = _interopRequireDefault(_bluebird);
+
+var _libUsersJs = require('../lib/users.js');
+
+var _middlewares = require('../middlewares');
+
+var _libUtilsJs = require('../lib/utils.js');
+
+var _libHTTPErrorJs = require('../lib/HTTPError.js');
+
+var _libHTTPErrorJs2 = _interopRequireDefault(_libHTTPErrorJs);
 
 function settings(req, res) {
-  return res.renderBody('settings.haml', {user: req.user})
+  return res.renderBody('settings.haml', { user: req.user });
 }
 
 /**
@@ -16,36 +32,33 @@ function settings(req, res) {
  */
 function updateSettings(req, res, next) {
 
-  let u = req.users.get(req.user.username)
+  var u = req.users.get(req.user.username);
 
-  if(!u) {
-    return handleSystemError(next)('User not found', 404)
+  if (!u) {
+    return (0, _libUtilsJs.handleSystemError)(next)('User not found', 404);
   }
 
-  let ignore = ['home', 'admin', 'readonly', 'ignore']
+  var ignore = ['home', 'admin', 'readonly', 'ignore'];
 
-  if(req.user.readonly) {
-    ignore = ignore.concat(['trash', 'archive'])
+  if (req.user.readonly) {
+    ignore = ignore.concat(['trash', 'archive']);
   }
-    
-  u.update(req.body, ignore)
-  .then(function(user) {
-    return req.users.put(user)
-    .then(function() {
-      req.flash('info', `Settings updated`)
-      return res.handle('/settings', req.users.get(u.username))
-    })
-  })
-  .catch(handleSystemError(next))
+
+  u.update(req.body, ignore).then(function (user) {
+    return req.users.put(user).then(function () {
+      req.flash('info', 'Settings updated');
+      return res.handle('/settings', req.users.get(u.username));
+    });
+  })['catch']((0, _libUtilsJs.handleSystemError)(next));
 }
 
-let Settings = function(app) {
-  let config = app.get('config')
+var Settings = function Settings(app) {
+  var config = app.get('config');
 
-  app.get('/settings', trashSize(config), prepareTree(config), settings)
-  app.put('/settings', updateSettings)
+  app.get('/settings', (0, _middlewares.trashSize)(config), (0, _middlewares.prepareTree)(config), settings);
+  app.put('/settings', updateSettings);
 
-  return app
-}
+  return app;
+};
 
-export {Settings}
+exports.Settings = Settings;

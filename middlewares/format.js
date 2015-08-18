@@ -1,58 +1,71 @@
-import util from 'util'
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _util = require('util');
+
+var _util2 = _interopRequireDefault(_util);
 
 function getFormat(app) {
   return function format(req, res, next) {
-    res.renderBody = function(name, locals) {
-      locals = util._extend(res.locals, locals ? locals : {})
+    res.renderBody = function (name, locals) {
+      locals = _util2['default']._extend(res.locals, locals ? locals : {});
 
       res.format({
-        'text/html': function() {
-          app.render(name, locals, function(err, body) {
-            return res.render('index.haml', util._extend(locals, {body: body}))
-          }) 
+        'text/html': function textHtml() {
+          app.render(name, locals, function (err, body) {
+            return res.render('index.haml', _util2['default']._extend(locals, { body: body }));
+          });
         },
-        'application/rss+xml': function() {
-          res.set('Content-Type', 'application/rss+xml')
+        'application/rss+xml': function applicationRssXml() {
+          res.set('Content-Type', 'application/rss+xml');
 
           //@TODO
-          if(locals.tree) {
-            return res.send('OK')
+          if (locals.tree) {
+            return res.send('OK');
           } else {
-            return res.status(406).send('Not acceptable')
+            return res.status(406).send('Not acceptable');
           }
         },
-        'application/json': function() {
-          return res.json(locals)
+        'application/json': function applicationJson() {
+          return res.json(locals);
         },
-        'default': function() {
-          return res.status(406).send('Not acceptable')
+        'default': function _default() {
+          return res.status(406).send('Not acceptable');
         }
-      })
-    }
+      });
+    };
 
-    res.handle = function(redirect = 'back', data = {}, status = 200) {
+    res.handle = function () {
+      var redirect = arguments[0] === undefined ? 'back' : arguments[0];
+      var data = arguments[1] === undefined ? {} : arguments[1];
+      var status = arguments[2] === undefined ? 200 : arguments[2];
+
       res.format({
-        'text/html': function() {
-          if(data.info)
-            req.flash('info', data.info)
+        'text/html': function textHtml() {
+          if (data.info) req.flash('info', data.info);
 
-          return res.redirect(redirect)
+          return res.redirect(redirect);
         },
-        'application/rss+xml': function() {
-          res.set('Content-Type', 'application/rss+xml')
-          return res.send('OK')
+        'application/rss+xml': function applicationRssXml() {
+          res.set('Content-Type', 'application/rss+xml');
+          return res.send('OK');
         },
-        'application/json': function() {
-          return res.status(status).json(util._extend(data, {redirect: redirect}))
+        'application/json': function applicationJson() {
+          return res.status(status).json(_util2['default']._extend(data, { redirect: redirect }));
         },
-        'default': function() {
-          return res.status(406).send('Not acceptable')
+        'default': function _default() {
+          return res.status(406).send('Not acceptable');
         }
-      })
-    }
+      });
+    };
 
-    return next()
-  }
+    return next();
+  };
 }
 
-export {getFormat}
+exports.getFormat = getFormat;
