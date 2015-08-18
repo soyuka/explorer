@@ -1,6 +1,6 @@
 # ![Logo](https://raw.githubusercontent.com/soyuka/explorer/master/client/favicon-32x32.png) Explorer [![Build Status](https://travis-ci.org/soyuka/explorer.svg?branch=master)](https://travis-ci.org/soyuka/explorer)
 
-Explore and share
+Explore and share. Highly-configurable directory listing made with nodejs.
 
 ![Screenshot](https://raw.githubusercontent.com/soyuka/explorer/master/screen.png)
 
@@ -194,6 +194,7 @@ reading files: 9ms
 ## Thoughts and improvements
 
 I did this because I could not find a light file explorer. I tried pydio but it's heavy and long to install.
+I also tried h5ai but it does not have users support and has a lot of client-side javascript. Here, there are [only 2 javascript lines](https://github.com/soyuka/explorer/blob/master/views/index.haml#L60).
 Features like in-place text editing, images viewer could be nice but they will add some significant overload.
 An unarchiver could be a nice feature too but will require some dependencies (eg: unrar).
 
