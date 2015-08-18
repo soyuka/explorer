@@ -4,6 +4,8 @@ let url = function(u) {
   }
 }
 
+let key
+
 describe('user', function() {
   
   before(bootstrap.autoAgent)
@@ -52,6 +54,7 @@ describe('user', function() {
     .send({username: 'admin', password: 'admin'})
     .expect(function(res) {
       expect(res.headers['set-cookie']).not.to.be.undefined
+      key = res.body.key
     })
     .end(cb)
   })
@@ -89,6 +92,17 @@ describe('user', function() {
     .set('Accept', 'text/html')
     .expect(302)
     .expect(url('/login'))
+    .end(cb)
+  })
+
+  it('should access with key', function(cb) {
+    this.request.get('/?key='+key) 
+    .end(cb)
+  })
+
+  it('should not access with key', function(cb) {
+    this.request.get('/settings?key='+key) 
+    .expect(401)
     .end(cb)
   })
 
