@@ -7,6 +7,8 @@ pagination:
 tree:
   max_depth: 10 #Default 10
   concurrency: 100 #Default 100
+archive:
+  path: './tmp'
 remove:
   method: 'mv'
   path: './trash'
