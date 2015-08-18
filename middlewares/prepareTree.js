@@ -1,5 +1,6 @@
 import p from 'path'
 import mm from 'minimatch'
+import fs from 'fs'
 
 import {sort} from '../lib/sort.js'
 import {extend, buildUrl, secureString, higherPath, handleSystemError} from '../lib/utils.js'
