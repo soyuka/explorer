@@ -1,6 +1,6 @@
 {
   "name": "directory-listings",
-  "version": "v2.0.2",
+  "version": "v2.0.3",
   "description": "Explore and share. Highly-configurable directory listing made with nodejs",
   "main": "index.js",
   "keywords": [
