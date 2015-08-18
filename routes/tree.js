@@ -1,127 +1,47 @@
 import fs from 'fs'
-import archiver from 'archiver'
 import rimraf from 'rimraf'
 import p from 'path'
 import moment from 'moment'
-import prettyBytes from 'pretty-bytes'
 
-import {higherPath, extend, removeDirectoryContent} from '../lib/utils.js'
+import {higherPath, extend, removeDirectoryContent, handleSystemError} from '../lib/utils.js'
+import HTTPError from '../lib/HTTPError.js'
 import {tree} from '../lib/tree.js'
 import {searchMethod} from '../lib/search.js'
-import {prepareTree} from './middlewares.js'
+import {prepareTree, sanitizeCheckboxes} from '../middlewares'
+import interactor from '../lib/job/interactor.js'
+import Archive from '../lib/plugins/archive.js'
 
 let debug = require('debug')('explorer:routes:tree')
 
 /**
- * Compress paths with archiver
- * @route /compress
+ * @api {get} /download Download path
+ * @apiGroup Tree
+ * @apiName Download
+ * @apiParam {string} path
  */
-function compress(req, res) {
-
-  let paths = []
-  let directories = []
-
-  if(typeof req.body.zip == 'string')
-    req.body.zip = [req.body.zip]
-
-  //validating paths
-  for(let i in req.body.zip) {
-    let path = higherPath(req.options.root, req.body.zip[i]) 
-
-    if(path != req.options.root) {
-      try {
-        var stat = fs.statSync(path)
-      } catch(err) {
-        return res.status(500).send(err)
-      }
-
-      if(stat.isDirectory()) {
-        directories.push(path)
-      } else {
-        paths.push(path)
-      }
-    }
-  }
-
-  let archive = archiver('zip') 
-  let name = req.body.name || 'archive'+new Date().getTime()
-  let temp = p.join(req.options.archive.temp || './', `${name}.zip`)
-
-  archive.on('error', function(err) {
-    archive.abort()
-    return res.status(500).send({error: err.message})
-  })
-
-  //on stream closed we can end the request
-  archive.on('end', function() {
-
-    let b = archive.pointer()
-    console.log('Archive wrote %d bytes', b)
-
-    if(req.body.download === undefined && req.options.archive.keep) {
-      req.flash('info', `${prettyBytes(b)} written in ${temp}`)
-      return res.redirect('back') 
-    }
-  })
-
-  //set the archive name
-  res.attachment(`${name}.zip`)
-
-  /**
-   * @TODO
-   * res.send(201)
-   * queue this somewhere so that we can have a progression somewhere so that
-   * we don't need to wait for big archives
-   */
-  if(req.options.archive.keep && !req.body.download) {
-    fs.access(temp, fs.R_OK | fs.W_OK, function(err) {
-      if(err) {
-        req.flash('error', `No write access to ${temp}`)
-        return res.redirect('back')
-      }
-
-      archive.pipe(fs.createWriteStream(temp))
-    })
-  } else {
-    archive.pipe(res) 
-  }
-
-  for(let i in paths) {
-    archive.append(fs.createReadStream(paths[i]), {name: p.basename(paths[i])}) 
-  }
-
-  for(let i in directories) {
-    debug('Path : ', directories[i].replace(req.options.root, ''))
-    archive.directory(directories[i], directories[i].replace(req.options.root, ''))
-  }
-
-  archive.finalize()
-}
-
-/**
- * @route /download
- */
-function download(req, res) {
+function download(req, res, next) {
   let path = higherPath(req.options.root, req.query.path)
 
   if(path === req.options.root) {
-    return res.status(401).send('Unauthorized') 
+    return next(new HTTPError('Unauthorized', 401))
   }
 
   return res.download(path, p.basename(path), function(err) {
     if(err) {
-      console.error('Error %o', err)
-      console.error('With headers %o', res.headersSent)
-      return res.status(500).send('Error while downloading') 
+      return handleSystemError(next)(err)
     } 
   })
 } 
 
 /**
- * Get the tree
- * @route /
+ * @api {get} /download Get the tree
+ * @apiGroup Tree
+ * @apiName Tree
+ * @apiParam {string} path
+ * @apiParam {string} sort
+ * @apiParam {string} order
  */
-function getTree(req, res) {
+function getTree(req, res, next) {
 
   debug('Sort by %s %s', req.options.sort, req.options.order)
 
@@ -129,53 +49,58 @@ function getTree(req, res) {
   .then(function(e) {
     return res.renderBody('tree.haml', e)
   })
-  .catch(function(error) {
-    console.error(error)
-    return res.status(500).send('Error while parsing tree at path: ' + req.options.path) 
+  .catch(function(err) {
+    console.error('Error while parsing tree at path: ' + req.options.path) 
+    return handleSystemError(next)(err)
   })
 }
 
 /**
- * Deletes or moves a file
+ * @api {get} /remove Deletes or moves a file
+ * @apiGroup Tree
+ * @apiName Remove
+ * @apiParam {string} path
  */
-function deletePath(req, res) {
+function deletePath(req, res, next) {
 
-  let path = higherPath(req.options.root, req.query.path)
+  let opts = req.options
+  let path = opts.path
+
+  if(path == opts.root || path == req.user.home) {
+    return next(new HTTPError('Forbidden', 403))
+  }
+
+  if((!!req.user.readonly) === true || opts.remove.disabled || !~['mv', 'rm'].indexOf(opts.remove.method)) {
+    return next(new HTTPError('Unauthorized', 401))
+  }
 
   debug('Deleting %s', path)
 
-  let next = function(err) {
+  let cb = function(err, newPath) {
     if(err) {
-      console.error(err) 
-      req.flash('error', 'Delete failed')
+      return handleSystemError(next)(err)
     }
 
-    return res.redirect('back')
+    return res.handle('back', newPath ? {path: newPath, moved: true} : {removed: true})
   }
 
-  if(path === req.options.root) {
-    return res.status(401).send('Unauthorized') 
-  }
-
-  if(!!req.user.readonly === true) {
-    return res.status(401).send('Unauthorized') 
-  }
-
-  if(req.options.remove.method == 'mv') {
-    let t = p.join(req.options.remove.trash, p.basename(path) + '.' + moment().format('YYYYMMDDHHmmss'))
-    return fs.rename(path, t, next) 
-  } else if(req.options.remove.method == 'rm') {
-    return rimraf(path, next)
+  if(opts.remove.method == 'rm') {
+    return rimraf(path, cb)
   } else {
-    return res.status(403).send('Forbidden')
+    let t = p.join(opts.remove.path, p.basename(path) + '.' + moment().format('YYYYMMDDHHmmss'))
+    return fs.rename(path, t, function(err) {
+      return cb(err, t)
+    }) 
   }
 }
 
 /**
- * Search through config search method
- * @route /search
+ * @api {get} /search Search according to the configuration method
+ * @apiGroup Tree
+ * @apiName Search
+ * @apiParam {string} search
  */
-function search(req, res) {
+function search(req, res, next) {
   let config = req.config
 
   debug('Search with %s', config.search.method, req.options.search)
@@ -188,28 +113,76 @@ function search(req, res) {
   .then(function(e) {
     return res.renderBody('tree.haml', extend(e, {search: req.query.search}))
   })
+  .catch(handleSystemError(next))
 }
 
+/**
+ * @api {post} /trash Empty trash
+ * @apiGroup User
+ * @apiName emptyTrash
+ */
 function emptyTrash(req, res, next) {
 
-  if(!req.options.remove || req.options.remove.method !== 'mv') {
-    return res.status(403).send('Forbidden') 
+  let opts = req.options
+
+  if(opts.remove.disabled || opts.remove.method !== 'mv') {
+    return handleSystemError(next)('Forbidden', 403)
   }
 
-  if(req.options.remove.trash == req.options.root) {
-    return res.status(417).send("Won't happend") 
+  if(opts.remove.path == opts.root) {
+    return handleSystemError(next)("Won't happend", 417)
   }
 
-  debug('Empty trash %s', req.options.remove.trash)
+  debug('Empty trash %s', opts.remove.path)
 
-  removeDirectoryContent(req.options.remove.trash)
+  removeDirectoryContent(opts.remove.path)
   .then(function() {
-    return res.redirect('back')
+    req.flash('info', 'Trash is now empty!')
+    return res.handle('back')
   })
-  .catch(function(err) {
-    console.error(err)
-    res.status(500, 'Error while emptying trash')
-  })
+  .catch(handleSystemError(next))
+}
+
+/**
+ * @api {post} / Compress paths with archiver
+ * @apiGroup Tree
+ * @apiName compress
+ * @apiParam {string[]} paths Array of paths and directories
+ * @apiParam {string} [name="archive-Date.getTime()"] Archive name
+ * @apiParam {string} action Download, archive, remove
+ */
+function treeAction(req, res, next) {
+  if(!req.body.action) {
+    return handleSystemError(next)("Action is needed", 400) 
+  }
+
+  let name = req.body.name || 'archive'+new Date().getTime()
+  let temp = p.join(req.options.archive.path || './', `${name}.zip`)
+
+  let data = {
+    name: name,
+    paths: req.options.paths,
+    temp: temp,
+    directories: req.options.directories
+  }
+
+  switch (req.body.action) {
+    case 'download':
+      data.stream = res
+      let archive = new Archive()
+      return archive.create(data, req.user, req.options)
+    case 'archive':
+      if(req.options.archive.disabled)
+        return next(new HTTPError('Unauthorized', 401))
+
+      data.stream = temp
+      interactor.ipc.send('command', 'archive.create', data, req.user, req.options)
+      return res.handle('back', {info: 'Archive created'}, 201)
+    case 'remove':
+      break;
+    default:
+     return handleSystemError(next)("Action must be one of download, archive, remove", 400) 
+  }
 }
 
 let Tree = function(app) {
@@ -217,9 +190,9 @@ let Tree = function(app) {
   let pt = prepareTree(config)
 
   app.get('/', pt, getTree)
+  app.post('/', pt, sanitizeCheckboxes, treeAction)
   app.get('/search', pt, search)
   app.get('/download', pt, download)
-  app.post('/compress', pt, compress)
   app.post('/trash', pt, emptyTrash)
   app.get('/remove', pt, deletePath)
 

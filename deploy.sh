@@ -49,6 +49,7 @@ fi
 
 if [ ! -f client/css/app.css ]; then
   echo "Run gulp"
+  exit 1
 fi
 
 if [ -z $version ]; then
