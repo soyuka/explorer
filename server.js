@@ -25,8 +25,8 @@ module.exports = function(config) {
   if(!config.quiet)
     app.use(morgan(config.dev ? 'dev' : 'tiny'))
 
-  app.use(bodyParser.urlencoded({extended: false}))
-  app.use(bodyParser.json())
+  app.use(bodyParser.urlencoded({extended: false, limit: config.upload.maxSize}))
+  app.use(bodyParser.json({limit: config.upload.maxSize}))
 
   app.set('config', config)
   app.set('view engine','haml' )
