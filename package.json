@@ -13,7 +13,7 @@
   "scripts": {
     "test": "mocha --compilers js:babel/register",
     "coverage": "istanbul cover _mocha -- --compilers js:babel/register",
-    "postpublish": "git stash && rm -r lib.bak routes.bak",
+    "postpublish": "git stash && rm -r lib.bak routes.bak middlewares.bak",
     "postinstall": "bash deploy.sh postinstall",
     "docs": "apidoc -i routes -o doc/api"
   },
