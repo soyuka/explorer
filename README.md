@@ -145,6 +145,14 @@ server {
 
 You can either change the paths in the `config.yml`, or replace those located in your configuration path (see [Configuration](#configuration)).
 
+### Rss
+
+By calling your tree url or a search path (`localhost:4859/search?search=*.mkv&key=my-key`), set the `Accept` header to `application/rss+xml`:
+
+```bash
+http GET localhost:4859/?key=get-your-key-from-settings Accept:application/rss+xml
+```
+
 ## Update
 
 ### As a pm2 module
