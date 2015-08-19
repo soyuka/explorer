@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.4
+- Configuration upload.maxSize
+
 ## 2.0.1
 - Lots of new tests
 - Remote-upload feature
