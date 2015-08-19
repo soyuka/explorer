@@ -155,6 +155,8 @@ http GET localhost:4859/?key=get-your-key-from-settings Accept:application/rss+x
 
 ## Update
 
+[From 1.x to 2.x see configuration migration](https://github.com/soyuka/explorer/blob/master/Migration.md).
+
 ### As a pm2 module
 
 ```
