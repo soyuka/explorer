@@ -67,9 +67,9 @@ describe('upload', function() {
   it('should get notifications', function(cb) {
     this.request.get('/notifications')
     .expect(function(res) {
-      expect(res.body.notifications.num).to.eql(1)
+      expect(res.body.notifications.num).to.eql(2)
       expect(res.body.notifications.upload).to.be.an('array')
-      expect(res.body.notifications.upload).to.have.length.of(1)
+      expect(res.body.notifications.upload).to.have.length.of(2)
     })
     .end(cb)
   })
