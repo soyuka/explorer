@@ -22,11 +22,12 @@ describe('stat', function() {
   })
   
   it('should retreive user object', function() {
-    expect(stat.get('test')).to.deep.equal([{foo: 'bar'}])
+    expect(stat.get('test')).to.be.an('array')
+    expect(stat.get('test')).to.have.deep.property('[0].foo', 'bar')
   })
 
   it('should retreive global object', function() {
-    expect(stat.get()).to.deep.equal({test: [{foo: 'bar'}]})
+    expect(stat.get()).to.have.deep.property('.test[0].foo', 'bar')
   })
 
   it('should add array user object', function() {
