@@ -40,7 +40,7 @@ describe('archive', function() {
   it('should post and get file stream', function(cb) {
     this.timeout(5000)
     this.request.post('/')
-    .send({'path': p.join(__dirname, '../fixtures/tree/dir/1Mo.dat'), name: 'test2', action: 'download'})
+    .send({'path': p.join(__dirname, '../fixtures/tree/dir'), name: 'test2', action: 'download'})
     .expect('Content-Type', /zip/)
     .expect('Content-disposition', /test2/)
     .expect('Transfer-Encoding', /chunked/)
