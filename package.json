@@ -1,10 +1,11 @@
 {
-  "name": "directory-listings",
+  "name": "xplorer",
   "version": "v2.0.6",
   "description": "Explore and share. Highly-configurable directory listing made with nodejs",
   "main": "index.js",
   "keywords": [
     "explorer",
+    "xplorer",
     "directory listing",
     "tree",
     "listing",

@@ -1,4 +1,4 @@
-# ![Logo](https://raw.githubusercontent.com/soyuka/explorer/master/client/favicon-32x32.png) Explorer [![Build Status](https://travis-ci.org/soyuka/explorer.svg?branch=master)](https://travis-ci.org/soyuka/explorer)
+# ![Logo](https://raw.githubusercontent.com/soyuka/explorer/master/client/logo.png) Explorer [![Build Status](https://travis-ci.org/soyuka/explorer.svg?branch=master)](https://travis-ci.org/soyuka/explorer)
 
 Explore and share. Highly-configurable directory listing made with nodejs.
 
@@ -22,7 +22,7 @@ nvm alias default 0.12
 
 ```bash
 npm i pm2 -g
-pm2 install directory-listings
+pm2 install xplorer
 ```
 Go to IP:4859, login with `admin:admin` Don't forget to change the password.
 
@@ -129,7 +129,7 @@ The `config.yml` will be searched in:
 ### Nginx
 
 ```nginx
-upstream directorylistings {
+upstream explorer {
   server localhost:4859 #port can be changed in the config.yml
 }
 
@@ -137,7 +137,7 @@ server {
   listen 80;
 
   location / { #if you want to change this, change `app_root` in the config.yml
-    proxy_pass http://directorylistings/ 
+    proxy_pass http://explorer/ 
   }
 }
 ```
@@ -161,7 +161,7 @@ http GET localhost:4859/?key=get-your-key-from-settings Accept:application/rss+x
 ### As a pm2 module
 
 ```
-pm2 install directory-listings
+pm2 install xplorer
 ```
 
 ### From tarball
