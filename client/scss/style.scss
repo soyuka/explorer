@@ -77,18 +77,13 @@ small > label {
     font-size: inherit;
 }
 
-.login-box {
-  color: #333;
-  background: url('../login.png') no-repeat;
-  background-size: contain;
-  margin: 100px auto;
-  padding: 180px 20px 40px 20px;
-  width: 650px;
-  height: 429px;
+img.logo {
+    vertical-align: -4px;
+    padding-right: 10px;
+}
 
-  input {
-    border:0; 
-  }
+.login-box {
+  margin: 20px auto;
 
   form {
     margin: 0 auto;
@@ -105,18 +100,3 @@ small > label {
     } 
   }
 }
-
-button.file-upload {
-
-    input[type='file'] {
-        cursor: pointer;
-        position: absolute;
-        font-size: 0;
-        top: 0;
-        left: 0;
-        opacity: 0;
-        height: 100%;
-        width: 100%;
-    }
-}
-
