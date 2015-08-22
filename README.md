@@ -201,6 +201,12 @@ Tests are using their own configuration file `test/fixtures/config.yml`:
 mocha --compilers js:babel/register
 ```
 
+### Api docs
+
+Generated with [apidocjs](http://apidocjs.com) ([available here](http://soyuka.github.io/explorer/#api-Admin-createUser)):
+
+`apidoc -i routes -o doc/api`
+
 ## Performances
 
 We use Bluebird with concurrency, for your information you may speed things up:
@@ -219,8 +225,7 @@ reading files: 9ms
 ## Thoughts and improvements
 
 I did this because I could not find a light file explorer. I tried pydio but it's heavy and long to install.
-I also tried h5ai but it does not have users support and has a lot of client-side javascript. Here, there are [only 2 javascript lines](https://github.com/soyuka/explorer/blob/master/views/index.haml#L60).
-Features like in-place text editing, images viewer could be nice but they will add some significant overload.
-An unarchiver could be a nice feature too but will require some dependencies (eg: unrar).
+I also tried h5ai but it does not have users support and has a lot of client-side javascript. 
+Here, there are [only 2 javascript lines](https://github.com/soyuka/explorer/blob/master/views/index.haml#L60).
 
 KISS.
