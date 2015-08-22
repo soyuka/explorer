@@ -3,7 +3,6 @@ import p from 'path'
 import moment from 'moment'
 import multer from 'multer'
 
-// import {higherPath, extend, removeDirectoryContent, handleSystemError} from '../lib/utils.js'
 import HTTPError from '../lib/HTTPError.js'
 import {prepareTree} from '../middlewares'
 import interactor from '../lib/job/interactor.js'
@@ -21,14 +20,20 @@ function getUpload(req, res, next) {
  * @apiName remoteUpload
  * @apiParam {string} links Links to download
  */
-function remoteUpload(req, res, next) {
-  let links = req.body.links.split('\r\n')
+function remoteUpload(config) {
+  return function(req, res, next) {
+    let links = req.body.links.split('\r\n')
 
-  links.filter(function(e) { return e.trim().length > 0 })
+    links = links.filter(function(e) { return e.trim().length > 0 })
 
-  interactor.ipc.send('command', 'upload.create', links, req.user, req.options)
+    if(links.length > config.maxCount) {
+      return next(new HTTPError(`Max number of files exceeded (${config.maxCount})`, 400))
+    }
 
-  return res.handle('back', {info: 'Upload launched'}, 201)
+    interactor.ipc.send('command', 'upload.create', links, req.user, req.options)
+
+    return res.handle('back', {info: 'Upload launched'}, 201)
+  }
 }
 
 function canUpload(req, res, next) {
@@ -72,8 +77,8 @@ let Upload = function(app) {
   let upload = multer({storage: storage})
 
   app.get('/upload', pt, canUpload, getUpload)
-  app.post('/upload', pt, canUpload, upload.array('files', 10), getUpload)
-  app.post('/remote-upload', pt, canUpload, remoteUpload)
+  app.post('/upload', pt, canUpload, upload.array('files', config.upload.maxCount), getUpload)
+  app.post('/remote-upload', pt, canUpload, remoteUpload(config.upload))
 
   return app
 }

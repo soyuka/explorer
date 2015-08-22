@@ -105,7 +105,8 @@ archive:
 upload:
   path: './upload'
   concurrency: 10
-  maxSize: '50mb' #default to 50mb see https://github.com/expressjs/body-parser#limit
+  maxSize: '50mb' # default to 50mb see https://github.com/expressjs/body-parser#limit
+  maxCount: 10 # max number of files 
 # note that path values will be overridden by the user path if set
 # path will be created if non-existant
 database: './data/users' # don't touch if you don't know what you're doing
