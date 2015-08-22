@@ -163,7 +163,8 @@ function treeAction(req, res, next) {
     name: name,
     paths: req.options.paths,
     temp: temp,
-    directories: req.options.directories
+    directories: req.options.directories,
+    root: req.options.root
   }
 
   switch (req.body.action) {
