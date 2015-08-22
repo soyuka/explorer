@@ -125,6 +125,8 @@ The `config.yml` will be searched in:
 - `~/.config/explorer/config.yml`
 - `./config/explorer/config.yml` (relative to the script directory!)
 
+To reload the configuration you'll need to restart the script `pm2 restart xplorer`!
+
 ## HTTP(S)
 
 ### Nginx
