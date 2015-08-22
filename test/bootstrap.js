@@ -1,4 +1,5 @@
 import p from 'path'
+import fs from 'fs'
 import {expect} from 'chai'
 import Promise from 'bluebird'
 import {getConfiguration} from '../lib/config.js'
@@ -8,6 +9,10 @@ let config_path = p.join(__dirname, './fixtures/config.yml')
 
 let config = getConfiguration(config_path)
 config.database = p.join(__dirname, './fixtures/users')
+
+if(!fs.existsSync(config.database)) {
+  fs.writeFileSync(config.database, fs.readFileSync(p.join(__dirname, '/../users.default')))
+}
 
 let options = {
   headers: []
