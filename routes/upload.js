@@ -20,20 +20,18 @@ function getUpload(req, res, next) {
  * @apiName remoteUpload
  * @apiParam {string} links Links to download
  */
-function remoteUpload(config) {
-  return function(req, res, next) {
-    let links = req.body.links.split('\r\n')
+function remoteUpload(req, res, next) {
+  let links = req.body.links.split('\r\n')
 
-    links = links.filter(function(e) { return e.trim().length > 0 })
+  links = links.filter(function(e) { return e.trim().length > 0 })
 
-    if(links.length > config.maxCount) {
-      return next(new HTTPError(`Max number of files exceeded (${config.maxCount})`, 400))
-    }
-
-    interactor.ipc.send('command', 'upload.create', links, req.user, req.options)
-
-    return res.handle('back', {info: 'Upload launched'}, 201)
+  if(links.length > req.options.upload.maxCount) {
+    return next(new HTTPError(`Max number of files exceeded (${req.options.upload.maxCount})`, 400))
   }
+
+  interactor.ipc.send('command', 'upload.create', links, req.user, req.options)
+
+  return res.handle('back', {info: 'Upload launched'}, 201)
 }
 
 function canUpload(req, res, next) {
@@ -77,8 +75,28 @@ let Upload = function(app) {
   let upload = multer({storage: storage})
 
   app.get('/upload', pt, canUpload, getUpload)
-  app.post('/upload', pt, canUpload, upload.array('files', config.upload.maxCount), getUpload)
-  app.post('/remote-upload', pt, canUpload, remoteUpload(config.upload))
+  app.post('/upload', pt, canUpload, 
+    upload.array('files', config.upload.maxCount),
+    function(req, res, next) {
+      let info = ''
+
+      if(req.files.length == 1) {
+        info = `${req.files[0].originalname} uploaded to ${req.files[0].path}`
+      } else {
+        info = `${req.files.length} files uploaded to ${req.options.upload.path}`
+      }
+
+      return res.handle('upload', {info: info}, 200)
+    }
+  )
+
+  /**
+   * @api {post} /remote-upload Remote Upload
+   * @apiGroup Upload
+   * @apiName remoteUpload
+   * @apiParam {string[]} links One link by line
+   */
+  app.post('/remote-upload', pt, canUpload, remoteUpload)
 
   return app
 }
