@@ -67,7 +67,7 @@ function download(req, res, next) {
 } 
 
 /**
- * @api {get} /download Get the tree
+ * @api {get} / Get the tree
  * @apiGroup Tree
  * @apiName Tree
  * @apiParam {string} path
