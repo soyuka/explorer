@@ -1,5 +1,6 @@
 import interactor from '../lib/job/interactor.js'
 import util from 'util'
+import moment from 'moment'
 
 let debug = require('debug')('explorer:middlewares:notify')
 
@@ -31,6 +32,11 @@ function notify(req, res, next) {
         if(username in data[plugin]) {
           num += Object.keys(data[plugin][username]).length
           user_data[plugin] = data[plugin][username]
+
+          for(var i in user_data[plugin]) {
+            user_data[plugin][i].fromNow = moment(user_data[plugin][i].time).fromNow()
+          }
+
         } else {
           user_data[plugin] = {} 
         }
