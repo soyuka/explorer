@@ -155,6 +155,30 @@ describe('tree', function() {
     .end(cb)
   })
 
+  it('should serve a picture', function(cb) {
+    this.request.get('/download?path=favicon.ico')
+    .expect('Content-type', 'image/x-icon')
+    .end(cb)
+  })
+
+  it('should download a file', function(cb) {
+    this.request.get('/download?path=dir/1Mo.dat')
+    .expect('Content-disposition', /1Mo\.dat/)
+    .end(cb)
+  })
+
+  it('should fail downloading an inexistant file', function(cb) {
+    this.request.get('/download?path=somenonexistantpath')
+    .expect(500)
+    .end(cb)
+  })
+
+  it('should fail downloading a directory', function(cb) {
+    this.request.get('/download?path=dir')
+    .expect(400)
+    .end(cb)
+  })
+
   after(bootstrap.logout)
   after(bootstrap.removeAgent)
 })
