@@ -1,5 +1,25 @@
 # Changelog
 
+## 2.0.11
+- Improve docs
+- Serve files if images or text instead of forcing download
+- Tests improvements
+
+## 2.0.10
+- Fix directory archiving
+
+## 2.0.8
+- Better notifications
+- Fix missing upload notification
+- Max number of files to upload
+
+## 2.0.7
+- Rename npm package to `xplorer`
+- Less fancy login
+
+## 2.0.5
+- Notify when something has started
+
 ## 2.0.4
 - Configuration upload.maxSize
 
