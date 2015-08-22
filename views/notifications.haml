@@ -12,5 +12,8 @@
           %dd
             - if(notification.error)
               %span.alert.warning= notification.error
-            - else
+            - else if(notification.path)
               %a{href: '/?path='+notification.path+'&search='+notification.name}= notification.message
+            - else
+              %span= notification.message
+            %i= notification.fromNow
