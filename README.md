@@ -118,7 +118,7 @@ https:
   enabled: true #default option!
   key: './certs/key.pem' #change those are dummies
   cert: './certs/cert.pem'
-dev: false
+dev: false # more verbose error (stack)
 ```
 
 The `config.yml` will be searched in:
@@ -177,17 +177,28 @@ npm rebuild
 
 ## Development
 
-Must be compiled with babel for ES6 compatibility.
+1. Clone
+2. Follow the [manual installation](https://github.com/soyuka/explorer#manual) to copy default files
+3. Launch
 
+The easiest is to compile with babel for ES6 compatibility, for example:
 ```bash
-gulp watch #scss
 DEBUG="explorer:*, explorer:routes:*" babel-node index.js
 ```
 
+Sass is compiled with gulp, for example: 
+```
+gulp watch
+```
+
+To get stack traces from errors use `dev: true` in your configuration file. 
+
 ### Tests
 
+Tests are using their own configuration file `test/fixtures/config.yml`:
+
 ```bash
-npm test
+mocha --compilers js:babel/register
 ```
 
 ## Performances
@@ -203,7 +214,7 @@ $ node test.js Infinity
 reading files: 9ms
 ```
 
-[See docs](https://github.com/petkaantonov/bluebird/blob/master/API.md#option-concurrency)
+[See bluebird docs](https://github.com/petkaantonov/bluebird/blob/master/API.md#option-concurrency)
 
 ## Thoughts and improvements
 
