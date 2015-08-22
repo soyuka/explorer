@@ -1,9 +1,9 @@
-import fs from 'fs'
 import rimraf from 'rimraf'
+import Promise from 'bluebird'
 import p from 'path'
 import moment from 'moment'
 
-import {higherPath, extend, removeDirectoryContent, handleSystemError} from '../lib/utils.js'
+import {higherPath, extend, removeDirectoryContent, handleSystemError, pathInfo} from '../lib/utils.js'
 import HTTPError from '../lib/HTTPError.js'
 import {tree} from '../lib/tree.js'
 import {searchMethod} from '../lib/search.js'
@@ -12,6 +12,7 @@ import interactor from '../lib/job/interactor.js'
 import Archive from '../lib/plugins/archive.js'
 
 let debug = require('debug')('explorer:routes:tree')
+let fs = Promise.promisifyAll(require('fs'))
 
 /**
  * @api {get} /download Download path
@@ -26,11 +27,43 @@ function download(req, res, next) {
     return next(new HTTPError('Unauthorized', 401))
   }
 
-  return res.download(path, p.basename(path), function(err) {
+  return Promise.join(fs.statAsync(path), pathInfo(path), function(stat, info) {
+    if(stat.isDirectory()) {
+      return next(new HTTPError('Downloading a directory is not possible', 400)) 
+    }
+    
+    if(~['image', 'text'].indexOf(info.type)) {
+
+      debug('SendFile %o', info)
+
+      var options = {
+        root: req.options.root,
+        maxAge: '5h',
+        dotfiles: 'deny',
+        lastModified: stat.mtime
+      }
+
+      return res.sendFile(p.relative(options.root, path), options, function(err) {
+        if(err) {
+          return handleSystemError(next)(err)
+        } 
+      })
+    }
+
+    debug('Download %o', info)
+
+    return res.download(path, p.basename(path), function(err) {
+      if(err) {
+        return handleSystemError(next)(err)
+      } 
+    })
+  })
+  .catch(function(err) {
     if(err) {
       return handleSystemError(next)(err)
     } 
   })
+
 } 
 
 /**
