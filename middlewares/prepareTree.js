@@ -96,6 +96,11 @@ function prepareTree(config) {
 
     req.options = opts
 
+    //forcing accept header to rss
+    if(req.query.rss && req.query.rss == 1) {
+      req.headers['accept'] = 'application/rss+xml'
+    }
+
     debug('Options: \n%o', opts)
 
     return next()
