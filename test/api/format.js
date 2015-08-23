@@ -47,6 +47,13 @@ describe('format', function() {
     .end(cb)
   })
 
+  it('should get rss tree (forced)', function(cb) {
+    this.request.get('/?rss=1')
+    .expect(200)
+    .expect('Content-Type', /rss/)
+    .end(cb)
+  })
+
   after(bootstrap.logout)
   after(bootstrap.removeAgent)
 })
