@@ -167,6 +167,12 @@ describe('tree', function() {
     .end(cb)
   })
 
+  it('should download a file', function(cb) {
+    this.request.get('/download?path=\'[special,]')
+    .expect('Content-disposition', /'\[special,\]/)
+    .end(cb)
+  })
+
   it('should fail downloading an inexistant file', function(cb) {
     this.request.get('/download?path=somenonexistantpath')
     .expect(500)
