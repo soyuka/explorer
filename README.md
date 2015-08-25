@@ -222,10 +222,10 @@ reading files: 9ms
 
 [See bluebird docs](https://github.com/petkaantonov/bluebird/blob/master/API.md#option-concurrency)
 
-## Thoughts and improvements
+## Why?
 
-I did this because I could not find a light file explorer. I tried pydio but it's heavy and long to install.
-I also tried h5ai but it does not have users support and has a lot of client-side javascript. 
-Here, there are [only 2 javascript lines](https://github.com/soyuka/explorer/blob/master/views/index.haml#L60).
+I did this because I could not find a light file explorer. It had to be simple, easy to install and fast. 
+I tried [pydio](https://pyd.io) but it's heavy and long to install. I also tried [h5ai](http://larsjung.de/h5ai/) but it does not have user support and has a lot of client-side javascript. I also have the feeling that it's slow.
+Explorer was built with [only 2 client javascript lines](https://github.com/soyuka/explorer/blob/master/views/index.haml#L60). It's fun to see how hard it seems, nowadays, to avoid using javascript for apps that don't require it. 
 
 KISS.
