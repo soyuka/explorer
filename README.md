@@ -14,6 +14,7 @@ Explore and share. Highly-configurable directory listing made with nodejs.
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash
 nvm install 0.12 #nvm ls-remote to see available versions
 nvm alias default 0.12
+nvm use default
 ```
 
 ## Install
