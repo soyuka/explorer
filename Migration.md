@@ -16,3 +16,14 @@ upload:
   concurrency: 10
 dev: false
 ```
+
+### From < 2.0.6 to 2.0.7+
+
+Package name changed and is no longer published to `directory-listings`.
+
+```
+pm2 uninstall directory-listings
+pm2 install xplorer
+```
+
+Configuration will not be removed.
