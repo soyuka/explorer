@@ -11,7 +11,7 @@ archive:
   path: './tmp'
 remove:
   method: 'mv'
-  path: './trash'
+  path: './tree/trash'
 upload:
   path: './upload'
 database: './users' # don't touch if you don't know what you're doing
