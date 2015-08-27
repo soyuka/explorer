@@ -107,6 +107,10 @@ function deletePath(req, res, next) {
     return next(new HTTPError('Unauthorized', 401))
   }
 
+  if(~path.indexOf(opts.remove.path)) {
+    return next(new HTTPError('Not acceptable', 406))
+  }
+
   debug('Deleting %s', path)
 
   let cb = function(err, newPath) {

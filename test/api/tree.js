@@ -1,4 +1,7 @@
 import fs from 'fs'
+import p from 'path'
+
+let newName
 
 function testSort(params, modifiers, cb) {
   let url = '/'
@@ -142,10 +145,18 @@ describe('tree', function() {
     fs.writeFileSync(__dirname + '/../fixtures/tree/tobedeleted/somefile', 'somecontent');
     this.request.get('/remove?path=tobedeleted/somefile')
     .expect(function(res) {
+      newName = res.body.path 
       expect(fs.existsSync(res.body.path)).to.be.true
     })
     .end(cb)
   })
+
+  it('should not delete a file (trash)', function(cb) {
+    this.request.get('/remove?path=trash/'+p.basename(newName))
+    .expect(406)
+    .end(cb)
+  })
+
 
   it('should empty trash', function(cb) {
     this.request.post('/trash')
