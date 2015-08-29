@@ -46,9 +46,20 @@ function prepareTree(config) {
       path: higherPath(req.user.home, req.query.path),
       parent: higherPath(req.user.home, p.resolve(req.query.path, '..')),
       buildUrl: buildUrl,
-    }, {remove: config.remove}, {archive: config.archive}, {upload: config.upload})
+      extend: extend,
+      urlOptions: {
+        limit: req.query.limit,
+        order: req.query.order,
+        sort: req.query.sort,
+        page: req.query.page
+      }
+    })
 
-    let opts = extend(
+    ;['remove', 'archive', 'upload'].forEach(function(e) {
+      res.locals[e] = config[e]
+    })
+
+    let opts = extend({},
       res.locals,
       config.tree, 
       config.pagination
