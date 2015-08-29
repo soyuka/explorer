@@ -142,7 +142,7 @@ function search(req, res, next) {
 
   debug('Search with %s', config.search.method, req.options.search)
 
-  searchMethod(config.search.method, config)(req.options.search, req.options.root)
+  searchMethod(config.search.method, config)(req.options.search, req.options.path)
   .then(function(data) {
     data = data ? data : this.data.out
     return tree([].concat.apply([], data), req.options)

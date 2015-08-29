@@ -24,6 +24,14 @@ describe('search', function() {
     .end(cb)
   })
 
+  it('should get search with path', function(cb) {
+    this.request.get('/search?path=dir&search=nonexistant')
+    .expect(function(res) {
+      expect(res.body.tree).to.have.length.of(0) 
+    })
+    .end(cb)
+  })
+
   after(bootstrap.logout)
   after(bootstrap.removeAgent)
 })
