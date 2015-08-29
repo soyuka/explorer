@@ -1,27 +1,39 @@
 .row.container
   .large-12.xlarge-12.columns
-    -# Sort
-    .row
-      .columns.large-5
-        %form.row.collapse{method: 'GET', action: ''}
-          .columns.small-10
-            .row
-              .columns.small-5
-                %select{name: 'sort'}
-                  %option{value: 'name', selected: sort == 'name'} Name
-                  %option{value: 'time', selected: sort == 'time'} Time
-                  %option{value: 'size', selected: sort == 'size'} Size
-              .columns.small-7
-                %input{type: 'radio', id: 'order_asc', name: 'order', value: 'asc', checked: order == 'asc'} 
-                %label.inline{for: 'order_asc'} Asc
-                %input{type: 'radio', id: 'order_desc', name: 'order', value: 'desc', checked: order == 'desc'} 
-                %label.inline{for: 'order_desc'} Desc
-          .columns.small-2
-            %input.button.postfix.secondary{type: 'submit', value: 'Sort'}
-            %input{type: 'hidden', name: 'search', value: search}
-            %input{type: 'hidden', name: 'path', value: path}
 
-      .columns.large-5.large-offset-2
+    -# Sort
+    %form#options{method: 'GET', action: ''}
+      .row
+        .columns.large-3
+          .row
+            .columns.large-3
+              %label.inline{for: 'sort'} Sort
+            .columns.large-9
+              %select{name: 'sort', id: 'sort'}
+                %option{value: 'name', selected: sort == 'name'} Name
+                %option{value: 'time', selected: sort == 'time'} Time
+                %option{value: 'size', selected: sort == 'size'} Size
+        .columns.large-3
+          %input{type: 'radio', id: 'order_asc', name: 'order', value: 'asc', checked: order == 'asc'} 
+          %label.inline{for: 'order_asc'} Asc
+          %input{type: 'radio', id: 'order_desc', name: 'order', value: 'desc', checked: order == 'desc'} 
+          %label.inline{for: 'order_desc'} Desc
+        .columns.large-2
+          .row
+            .columns.large-3
+              %label.inline{for: 'limit'} Limit
+            .columns.large-9
+              %input{type: 'number', id: 'limit', name: 'limit', value: limit}
+        .columns.large-2.end
+          %button.postfix.secondary{type: 'submit'} Update
+          %input{type: 'hidden', name: 'search', value: search}
+          %input{type: 'hidden', name: 'path', value: path}
+
+    %a.left{href: '#', onclick: 'toggleOptions(event)'} Show options
+
+    -# Search
+    .row
+      .columns.large-5.small-12.right
         %form.row.collapse{action: '/search', method: 'GET'}
           .columns.large-9
             %input{type: 'search', name: 'search', value: search}
@@ -56,7 +68,7 @@
               %input{type: 'checkbox', value: item.path, name: 'path'}
             %td
               - if (item.directory)
-                - var options = {page: 1, sort: sort, order: order}
+                - var options = extend(urlOptions, {page: 1})
                 %a{href: buildUrl(item.path, '', options)}
                   %i.icon-folder
                   = item.name
@@ -65,7 +77,7 @@
                   %i{class: 'icon-file-' + item.type}
                   = item.name
                   - if (search)
-                    - var options = {page: 1, sort: sort, order: order}
+                    - var options = extend(urlOptions, {page: 1})
                     %a{href: buildUrl(item.dirname, '', options)}
                       %i.icon-folder.right{title: 'Jump to directory'}
 
@@ -80,7 +92,7 @@
                   %a{onclick: 'return confirmDeletion(event)', href: '/remove?path=' + item.path}
                     %i.icon-trash
 
-      -# Archive button
+      -# Action button
       .row
         .small-12.columns
           .row
@@ -95,7 +107,7 @@
             .large-3.columns
               %input{type: 'text', name: 'name', placeholder: 'archive' + new Date().getTime()}
             .large-2.columns.end
-              %button.button.postfix.tiny{type: 'submit'}
+              %button.postfix{type: 'submit'}
                 Submit
 
     -# Pagination
@@ -107,7 +119,7 @@
             %a{href: ''} &laquo;
         - else
           %li.arrow
-            - var options = {page: page-1, sort: sort, order: order}
+            - var options = extend(urlOptions, {page: page-1})
             %a{href: buildUrl(path, search, options)} &laquo;
 
         - for (var i = 1; i <= pages; ++i)
@@ -116,14 +128,13 @@
               %a{href: ''}= i
           - else
             %li
-              - var options = {page: i, sort: sort, order: order}
+              - var options = extend(urlOptions, {page: i})
               %a{href: buildUrl(path, search, options)}= i
 
         - if(page < pages)
           %li.arrow
-            - var options = {page: page+1, sort: sort, order: order}
+            - var options = extend(urlOptions, {page: page+1})
             %a{href: buildUrl(path, search, options)} &raquo;
         - else
           %li.arrow.unavailable
             %a{href: ''} &raquo;
-
