@@ -75,16 +75,16 @@ function deleteNotifications(req, res, next) {
     return next(new HTTPError('No Interactor', 400))
   }
 
-  interactor.ipc.once('clear', function(data) {
+  interactor.ipc.once('clear:get', function(data) {
 
     debug('Remove notifications %o', data)
 
     req.flash('info', `${res.locals.notifications.num} notifications deleted`)
+
     return res.handle('/notifications') 
   })
 
-  interactor.ipc.send('clear', req.user.username)
-
+  interactor.ipc.send('get', 'clear', req.user.username)
 }
 
 let User = function(app) {
