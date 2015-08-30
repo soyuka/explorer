@@ -29,7 +29,7 @@ function remoteUpload(req, res, next) {
     return next(new HTTPError(`Max number of files exceeded (${req.options.upload.maxCount})`, 400))
   }
 
-  interactor.ipc.send('command', 'upload.create', links, req.user, req.options)
+  interactor.ipc.send('call', 'upload.create', links, req.user, req.options)
 
   return res.handle('back', {info: 'Upload launched'}, 201)
 }

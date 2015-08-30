@@ -12,7 +12,7 @@ function notify(req, res, next) {
     return next()
   }
 
-  interactor.ipc.once('info', function(data) {
+  interactor.ipc.once('info:get', function(data) {
 
     debug('Notifications %o', data)
 
@@ -50,7 +50,7 @@ function notify(req, res, next) {
     return next()
   })
 
-  interactor.ipc.send('info')
+  interactor.ipc.send('get', 'info')
 }
 
 export default notify

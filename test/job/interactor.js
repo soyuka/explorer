@@ -12,7 +12,7 @@ describe('interactor', function() {
   })
 
   it('should send a message', function(cb) {
-    interactor.ipc.send('command', 'testjob.answer', 'foo')
+    interactor.ipc.send('call', 'testjob.answer', 'foo')
 
     interactor.ipc.once('answer', function(d) {
      expect(d).to.equal('foo')

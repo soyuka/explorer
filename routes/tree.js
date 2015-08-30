@@ -181,7 +181,7 @@ function emptyTrash(req, res, next) {
 }
 
 /**
- * @api {post} / Compress paths with archiver
+ * @api {post} / Action path (upload, archive, plugins)
  * @apiGroup Tree
  * @apiName compress
  * @apiParam {string[]} paths Array of paths and directories
@@ -214,7 +214,7 @@ function treeAction(req, res, next) {
         return next(new HTTPError('Unauthorized', 401))
 
       data.stream = temp
-      interactor.ipc.send('command', 'archive.create', data, req.user, req.options)
+      interactor.ipc.send('call', 'archive.create', data, req.user, req.options)
       return res.handle('back', {info: 'Archive created'}, 201)
     case 'remove':
       break;
