@@ -21,6 +21,9 @@ describe('search', function() {
 
   it('should get search with options', function(cb) {
     this.request.get('/search?sort=time&order=desc&search=dir')
+    .expect(function(res) {
+      expect(res.body.breadcrumb).to.have.length.of(1)
+    })
     .end(cb)
   })
 
@@ -28,6 +31,7 @@ describe('search', function() {
     this.request.get('/search?path=dir&search=nonexistant')
     .expect(function(res) {
       expect(res.body.tree).to.have.length.of(0) 
+      expect(res.body.breadcrumb).to.have.length.of(2)
     })
     .end(cb)
   })
