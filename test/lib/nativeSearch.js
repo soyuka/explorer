@@ -11,4 +11,13 @@ describe('nativeSearch', function() {
       cb()
     })
   })
+
+  it('should search witih directory', function(cb) {
+    nativeSearch()('*.dat', p.resolve(__dirname, '../fixtures/tree/dir'), p.resolve(__dirname, '../fixtures/tree')) 
+    .then(function(paths) {
+      expect(paths).to.be.an('array')
+      expect(paths).to.have.length.of(1)
+      cb()
+    })
+  })
 })

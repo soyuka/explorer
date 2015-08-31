@@ -140,9 +140,9 @@ function deletePath(req, res, next) {
 function search(req, res, next) {
   let config = req.config
 
-  debug('Search with %s', config.search.method, req.options.search)
+  debug('Search with %s, %s', config.search.method, req.options.search, req.options.path)
 
-  searchMethod(config.search.method, config)(req.options.search, req.options.path)
+  searchMethod(config.search.method, req.options)(req.options.search, req.options.path, req.options.root)
   .then(function(data) {
     data = data ? data : this.data.out
     return tree([].concat.apply([], data), req.options)

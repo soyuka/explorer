@@ -37,6 +37,7 @@
         %form.row.collapse{action: '/search', method: 'GET'}
           .columns.large-9
             %input{type: 'search', name: 'search', value: search}
+            %input{type: 'hidden', name: 'path', value: path}
           .columns.large-3
             %button.button.postfix.primary{type: 'submit'} Search
 
