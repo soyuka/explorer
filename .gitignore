@@ -11,5 +11,5 @@ client/css
 .DS_Store
 trash
 tmp
-upload
+./upload
 doc
