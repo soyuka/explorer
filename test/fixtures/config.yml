@@ -21,3 +21,6 @@ port: 4859
 https:
   port: 6859
 dev: true
+plugins: 
+  - upload
+  - archive

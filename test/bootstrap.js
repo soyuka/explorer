@@ -1,5 +1,6 @@
 import p from 'path'
 import fs from 'fs'
+import util from 'util' 
 import {expect} from 'chai'
 import Promise from 'bluebird'
 import {getConfiguration} from '../lib/config.js'
@@ -44,7 +45,15 @@ module.exports = {
     })
    .end(cb)
   },
-  createAgent: function(cb) {
+  createAgent: function(opts, cb) {
+    var conf = config
+
+    if(typeof opts == 'function') {
+      cb = opts
+    } else {
+      conf = util._extend(conf, opts) 
+    }
+
     return app(config).then(function(app) {
       return cb(require('./supertest')(app, options))
     })

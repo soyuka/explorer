@@ -9,6 +9,7 @@ import flash from 'connect-flash'
 import methodOverride from 'method-override'
 import morgan from 'morgan'
 import Promise from 'bluebird'
+import {registerPlugins} from './lib/plugins.js'
 
 import {Users} from './lib/users.js'
 import * as routes from './routes'
@@ -29,7 +30,9 @@ module.exports = function(config) {
   app.use(bodyParser.json({limit: config.upload.maxSize}))
 
   app.set('config', config)
-  app.set('view engine','haml' )
+  app.set('view engine', 'haml')
+  app.set('view cache', true)
+  app.set('views', [p.join(__dirname, 'views')])
 
   app.engine('.haml', function(str, options, fn) {
     options.locals = util._extend({}, options)
@@ -76,9 +79,10 @@ module.exports = function(config) {
     middlewares.optionsCookie,
   ]))
 
+  registerPlugins(app)
+
   //Load routes
   routes.Tree(app)
-  routes.Upload(app)
   routes.User(app)
   routes.Settings(app)
   routes.Admin(app)

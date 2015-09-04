@@ -42,7 +42,7 @@ function updateSettings(req, res, next) {
 let Settings = function(app) {
   let config = app.get('config')
 
-  app.get('/settings', trashSize(config), prepareTree(config), settings)
+  app.get('/settings', trashSize(config), prepareTree(app), settings)
   app.put('/settings', updateSettings)
 
   return app

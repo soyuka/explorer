@@ -4,6 +4,11 @@ Explore and share. Highly-configurable directory listing made with nodejs.
 
 ![Screenshot](https://raw.githubusercontent.com/soyuka/explorer/master/screen.png)
 
+- [Requirements](#requirements)
+- [Install](#install)
+- [Configuration](#configuration)
+- [Update](#update)
+
 ## Requirements
 
 - nodejs (> 0.11 with harmony support) 
@@ -19,59 +24,18 @@ nvm use default
 
 ## Install
 
-### As a pm2 module
-
 ```bash
 npm i pm2 -g
 pm2 install xplorer
 ```
+
 Go to IP:4859, login with `admin:admin` Don't forget to change the password.
 
 With pm2 configuration file is located in `~/.config/explorer`
 
 You may want to create your own HTTPS certs or disable it ([see below](#certs)).
 
-### Manual 
-Download, unpack, configure, launch :
-
-```bash
-curl -L https://github.com/soyuka/explorer/archive/v2.0.15.tar.gz | tar xz
-cd explorer-2.0.15
-cp config.example.yml config.yml #copy default configuration
-cp users.default data/users #copy default database
-npm rebuild
-node --harmony index.js #see below to run as a daemon
-```
-
-#### Mirror
-
-```bash
-curl -L http://lab.wareziens.net/soyuka/explorer/repository/archive.tar.gz?ref=v2.0.15 | tar xz
-```
-
-Check `IP:4859`, login with `admin:admin`. Don't forget to change the password!
-
-## Run
-
-Installed as a pm2 module explorer will already be daemonized. 
-
-### Daemonize with pm2
-```bash
-npm i pm2 -g
-pm2 start --node-args="--harmony" --name explorer index.js
-```
-
-With iojs you can run:
-```
-pm2 --next-gen-js --name explorer start index.js
-```
-
-Or with babel-node:
-
-```
-npm i pm2 babel-node -g
-pm2 --interpreter babel-node --name explorer start index.js
-```
+[More installation methods](#more-installation-methods)
 
 ## Configuration
 
@@ -98,11 +62,14 @@ remove:
   # 'mv' will move files to a trash directory
   # 'rm' will delete files
   # empty to disable deletion
-  method: 'mv' #default is to move
+  method: 'mv' # default is to mv (move instead of remove)
   path: './trash'
+# disable with:
+# archive: false
 archive:
-  keep: false # set to true to keep archives
   path: './tmp'
+# disable with:
+# upload: false
 upload:
   path: './upload'
   concurrency: 10
@@ -116,9 +83,12 @@ session_secret: 'Some string here' #Change this
 port: 4859
 https:
   port: 6859
-  enabled: true #default option!
-  key: './certs/key.pem' #change those are dummies
+  enabled: true # default option!
+  key: './certs/key.pem' # change those are dummies
   cert: './certs/cert.pem'
+plugins: # those are enable by default, use below options to disable them
+  - upload
+  - archive
 dev: false # more verbose error (stack)
 ```
 
@@ -175,20 +145,81 @@ cd /path/to/your/explorer
 curl -L https://github.com/soyuka/explorer/archive/v1.0.6.tar.gz | tar xz --strip-components 1
 npm rebuild
 ```
+## More installation methods 
+
+### Tarball package
+
+Download, unpack, configure, launch :
+
+```bash
+curl -L https://github.com/soyuka/explorer/archive/v2.0.15.tar.gz | tar xz
+cd explorer-2.0.15
+cp config.example.yml config.yml #copy default configuration
+cp users.default data/users #copy default database
+npm rebuild
+```
+
+#### Mirror
+
+```bash
+curl -L http://lab.wareziens.net/soyuka/explorer/repository/archive.tar.gz?ref=v2.0.15 | tar xz
+```
+
+Check `IP:4859`, login with `admin:admin`. Don't forget to change the password!
+
+#### From git
+
+```
+git clone git@github.com:soyuka/explorer
+cd explorer
+cp config.example.yml config.yml #copy default configuration
+cp users.default data/users #copy default database
+npm install #install packages
+```
+
+### Run
+
+Installed as a pm2 module explorer will already be daemonized. 
+
+#### Development
+
+```bash
+npm i babel-node -g
+DEBUG="explorer:*" babel-node index.js
+```
+
+#### Daemonize with pm2
+
+```bash
+npm i pm2 -g
+pm2 start --node-args="--harmony" --name explorer index.js
+```
+
+Or
+
+```bash
+pm2 --next-gen-js --name explorer start index.js
+```
+
+Or with babel-node:
+
+```bash
+npm i pm2 babel-node -g
+pm2 --interpreter babel-node --name explorer start index.js
+```
 
 ## Development
 
-1. Clone
-2. Follow the [manual installation](https://github.com/soyuka/explorer#manual) to copy default files
-3. Launch
+Clone [see From git](#from-git)
+The easiest is to compile with babel for ES6 compatibility:
 
-The easiest is to compile with babel for ES6 compatibility, for example:
 ```bash
-DEBUG="explorer:*, explorer:routes:*" babel-node index.js
+DEBUG="explorer:*" babel-node index.js
 ```
 
-Sass is compiled with gulp, for example: 
-```
+Sass is compiled with gulp: 
+
+```bash
 gulp watch
 ```
 

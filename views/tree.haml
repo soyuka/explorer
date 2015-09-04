@@ -99,12 +99,10 @@
           .row
             .large-3.columns
               %select{name: 'action'}
-                %optgroup{Label: 'Zip'}
-                  %option{value: 'download', selected: true} Download
-                  - if(archive.disabled != true)
-                    %option{value: 'archive'} Archive
-                - if(remove.disabled != true)
-                  %option{value: 'remove'} Remove
+                - each p in hooks
+                  != p.action()
+              -# - if(remove.disabled != true)
+              -#   %option{value: 'remove'} Remove
             .large-3.columns
               %input{type: 'text', name: 'name', placeholder: 'archive' + new Date().getTime()}
             .large-2.columns.end

@@ -3,15 +3,13 @@ import http from 'http'
 import fs from 'fs'
 import p from 'path'
 import prettyBytes from 'pretty-bytes'
-import Stat from '../job/stat.js'
 
 let debug = require('debug')('explorer:job:archive')
 
-let stat = new Stat('archive')
-
-function Archive(ipc = null) {
-  if(!(this instanceof Archive)) { return new Archive(ipc) }
+function ArchiveJob(ipc = null, stat) {
+  if(!(this instanceof ArchiveJob)) { return new ArchiveJob(ipc, stat) }
   this.ipc = ipc
+  this.stat = stat
 }
 
 /**
@@ -21,7 +19,7 @@ function Archive(ipc = null) {
  *   name, temp, directories, paths, root, stream (string|http.ServerResponse), options (req.options)
  * }
  */
-Archive.prototype.create = function(data, user, config) {
+ArchiveJob.prototype.create = function(data, user, config) {
   let archive = archiver('zip') 
   let self = this
 
@@ -29,7 +27,7 @@ Archive.prototype.create = function(data, user, config) {
     archive.abort()
     if(!(data.stream instanceof http.ServerResponse)) {
       self.ipc.send('archive.error', err.stack)
-      return stat.add(user.username, {error: err.message})
+      return self.stat.add(user.username, {error: err.message})
     } else {
       return data.stream.status(500).send(err);
     }
@@ -43,7 +41,7 @@ Archive.prototype.create = function(data, user, config) {
 
     if(!(data.stream instanceof http.ServerResponse)) {
       self.ipc.send('archive.create', user.username, data)
-      return stat.add(user.username, {message: `${prettyBytes(b)} written in ${data.temp}`, path: p.dirname(data.temp), name: data.name})
+      return self.stat.add(user.username, {message: `${prettyBytes(b)} written in ${data.temp}`, path: p.dirname(data.temp), name: data.name})
     }
   })
 
@@ -53,7 +51,7 @@ Archive.prototype.create = function(data, user, config) {
   } else if(typeof data.stream == 'string') {
 
     data.stream = fs.createWriteStream(data.stream) 
-    stat.add(user.username, {message: `Compressing data from ${data.root} to ${data.temp}`, name: data.name})
+    self.stat.add(user.username, {message: `Compressing data from ${data.root} to ${data.temp}`, name: data.name})
   }
 
   archive.pipe(data.stream)
@@ -69,12 +67,12 @@ Archive.prototype.create = function(data, user, config) {
   archive.finalize()
 }
 
-Archive.prototype.info = function() {
-  return stat.get()
+ArchiveJob.prototype.info = function() {
+  return this.stat.get()
 }
 
-Archive.prototype.clear = function(user) {
-  return stat.remove(user)
+ArchiveJob.prototype.clear = function(user) {
+  return this.stat.remove(user)
 }
 
-export default Archive
+export default ArchiveJob

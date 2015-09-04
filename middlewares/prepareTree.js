@@ -12,7 +12,10 @@ let debug = require('debug')('explorer:middlewares:prepareTree')
  * @param config
  * @return function middleware(req, res, next)
  */
-function prepareTree(config) {
+function prepareTree(app) {
+  let config = app.get('config')
+  let plugins = app.get('plugins')
+
   return function(req, res, next) {
     //should be an app.param
     if(!req.query.page || req.query.page < 0)
@@ -47,6 +50,7 @@ function prepareTree(config) {
       parent: higherPath(req.user.home, p.resolve(req.query.path, '..')),
       buildUrl: buildUrl,
       extend: extend,
+      hooks: {},
       urlOptions: {
         limit: req.query.limit,
         order: req.query.order,
@@ -58,6 +62,15 @@ function prepareTree(config) {
     ;['remove', 'archive', 'upload'].forEach(function(e) {
       res.locals[e] = config[e]
     })
+
+    for(let i in plugins) {
+      if('hooks' in plugins[i]) {
+        debug('Registering hooks for %s', i)
+        res.locals.hooks[i] = plugins[i].hooks(res.locals) 
+      }
+    }
+
+    debug('Hooks', res.locals.hooks)
 
     let opts = extend({},
       res.locals,
