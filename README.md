@@ -8,6 +8,10 @@ Explore and share. Highly-configurable directory listing made with nodejs.
 - [Install](#install)
 - [Configuration](#configuration)
 - [Update](#update)
+- [More installation methods](#more-installation-methods)
+- [Development](#development)
+- [Performances](#performances)
+- [Why](#why)
 
 ## Requirements
 
