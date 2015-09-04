@@ -20,10 +20,14 @@ remove:
   # 'mv' will move files to a trash directory
   # 'rm' will delete files
   # empty to disable deletion
-  method: 'mv' #default is to move
+  method: 'mv' # default is to mv (move instead of remove)
   path: './trash'
+# disable with:
+# archive: false
 archive:
   path: './tmp'
+# disable with:
+# upload: false
 upload:
   path: './upload'
   concurrency: 10
@@ -37,7 +41,10 @@ session_secret: 'Some string here' #Change this
 port: 4859
 https:
   port: 6859
-  enabled: true #default option!
-  key: './certs/key.pem' #change those are dummies
+  enabled: true # default option!
+  key: './certs/key.pem' # change those are dummies
   cert: './certs/cert.pem'
+plugins: # those are enable by default, use below options to disable them
+  - upload
+  - archive
 dev: false # more verbose error (stack)

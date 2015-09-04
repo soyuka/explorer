@@ -17,12 +17,13 @@ describe('upload', function() {
 
   before(function(cb) {
     this.timeout(5000)
-    interactor.run([p.resolve(__dirname, '../../lib/plugins/upload.js')])
+    interactor.run([p.resolve(__dirname, '../../plugins/upload')])
     .then(function(plugins) { return cb() })
     .catch(cb)
   })
 
   before(bootstrap.autoAgent)
+
   before(bootstrap.login)
 
   it('should get upload', function(cb) {

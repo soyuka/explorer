@@ -1,5 +1,6 @@
 import util from 'util'
 import rss from '../routes/rss.js'
+import HTTPError from '../lib/HTTPError.js'
 
 function getFormat(app) {
   return function format(req, res, next) {
@@ -9,6 +10,10 @@ function getFormat(app) {
       res.format({
         'text/html': function() {
           app.render(name, locals, function(err, body) {
+            if(err) {
+              return next(new HTTPError(err, 500))
+            }
+
             return res.render('index.haml', util._extend(locals, {body: body}))
           }) 
         },

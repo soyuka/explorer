@@ -9,7 +9,6 @@ import {tree} from '../lib/tree.js'
 import {searchMethod} from '../lib/search.js'
 import {prepareTree, sanitizeCheckboxes} from '../middlewares'
 import interactor from '../lib/job/interactor.js'
-import Archive from '../lib/plugins/archive.js'
 
 let debug = require('debug')('explorer:routes:tree')
 let fs = Promise.promisifyAll(require('fs'))
@@ -188,47 +187,40 @@ function emptyTrash(req, res, next) {
  * @apiParam {string} [name="archive-Date.getTime()"] Archive name
  * @apiParam {string} action Download, archive, remove
  */
-function treeAction(req, res, next) {
-  if(!req.body.action) {
-    return handleSystemError(next)("Action is needed", 400) 
-  }
+function treeAction(plugins) {
+  return function(req, res, next) {
+    if(!req.body.action) {
+      return handleSystemError(next)("Action is needed", 400) 
+    }
 
-  let name = req.body.name || 'archive'+new Date().getTime()
-  let temp = p.join(req.options.archive.path || './', `${name}.zip`)
+    let action = req.body.action.split('.')
+    let plugin = action.shift()
+    let method = action.shift()
 
-  let data = {
-    name: name,
-    paths: req.options.paths,
-    temp: temp,
-    directories: req.options.directories,
-    root: req.options.root
-  }
+    if(!(plugin in plugins)) {
+      return new HTTPError(`Plugin ${plugin} is not available`, 400) 
+    }
 
-  switch (req.body.action) {
-    case 'download':
-      data.stream = res
-      let archive = new Archive()
-      return archive.create(data, req.user, req.options)
-    case 'archive':
-      if(req.options.archive.disabled)
-        return next(new HTTPError('Unauthorized', 401))
+    if(!~plugins[plugin].actionMethods.indexOf(method)) {
+      return new HTTPError(`Method ${plugin}.${method} is not accepted`, 403) 
+    }
+    
+    return plugins[plugin][method](req, res, next)
 
-      data.stream = temp
-      interactor.ipc.send('call', 'archive.create', data, req.user, req.options)
-      return res.handle('back', {info: 'Archive created'}, 201)
-    case 'remove':
-      break;
-    default:
-     return handleSystemError(next)("Action must be one of download, archive, remove", 400) 
+    // switch (req.body.action) {
+    //   case 'remove':
+    //     break;
+    //   default:
+     // return handleSystemError(next)("Action has not been found", 400) 
+    // }
   }
 }
 
 let Tree = function(app) {
-  let config = app.get('config')
-  let pt = prepareTree(config)
+  let pt = prepareTree(app)
 
   app.get('/', pt, getTree)
-  app.post('/', pt, sanitizeCheckboxes, treeAction)
+  app.post('/', pt, sanitizeCheckboxes, treeAction(app.get('plugins')))
   app.get('/search', pt, search)
   app.get('/download', pt, download)
   app.post('/trash', pt, emptyTrash)

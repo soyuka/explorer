@@ -1,11 +1,13 @@
 import p from 'path'
 import http from 'http'
 import https from 'https'
-import fs from 'fs'
+import Promise from 'bluebird'
 import interactor from './lib/job/interactor.js'
 
 import {firstExistingPath} from './lib/utils.js'
 import {getConfiguration} from './lib/config.js'
+
+let fs = Promise.promisifyAll(require('fs'))
 
 try {
   let config_path = firstExistingPath([
@@ -33,9 +35,7 @@ require('./server.js')(config)
   }
 }) 
 
-let plugin_path = p.join(__dirname, './lib/plugins')
-
-fs.readdirAsync(plugin_path)
+fs.readdirAsync(config.plugin_path)
 .then(function(files) {
   files = files.map(f => p.join(plugin_path, f))
 

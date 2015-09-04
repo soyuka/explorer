@@ -17,18 +17,19 @@ describe('archive', function() {
 
   before(function(cb) {
     this.timeout(5000)
-    interactor.run([p.resolve(__dirname, '../../lib/plugins/archive.js')])
+    interactor.run([p.resolve(__dirname, '../../plugins/archive')])
     .then(function(plugins) { return cb() })
     .catch(cb)
   })
 
   before(bootstrap.autoAgent)
+
   before(bootstrap.login)
 
   it('should post file', function(cb) {
     this.timeout(5000)
     this.request.post('/')
-    .send({'path': p.join(__dirname, '../fixtures/tree/dir/1Mo.dat'), name: 'test', action: 'archive'})
+    .send({'path': p.join(__dirname, '../fixtures/tree/dir/1Mo.dat'), name: 'test', action: 'archive.compress'})
     .end(function() {
       interactor.ipc.once('archive.create', function() {
         expect(getList()).to.deep.equal(['test.zip'])
@@ -40,7 +41,7 @@ describe('archive', function() {
   it('should post and get file stream', function(cb) {
     this.timeout(5000)
     this.request.post('/')
-    .send({'path': p.join(__dirname, '../fixtures/tree/dir'), name: 'test2', action: 'download'})
+    .send({'path': p.join(__dirname, '../fixtures/tree/dir'), name: 'test2', action: 'archive.download'})
     .expect('Content-Type', /zip/)
     .expect('Content-disposition', /test2/)
     .expect('Transfer-Encoding', /chunked/)
