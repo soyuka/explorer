@@ -25,4 +25,4 @@ function optionsCookie(req, res, next) {
   return next()
 }
 
-export {optionsCookie}
+export default optionsCookie

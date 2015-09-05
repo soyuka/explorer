@@ -38,12 +38,11 @@ The hooks structure must be as following:
 ```
 /**
  * registerHooks
- * @param object locals tree locals
  * @param object config explorer configuration
  */
-function registerHooks(locals, config) {
+function registerHooks(config) {
   return {
-    directory: function() {
+    directory: function(tree) {
       return '' //expects a <dd><a href="#"></a></dd> element
     },
     action: function() {
@@ -60,120 +59,6 @@ function registerHooks(locals, config) {
 ```
 
 /!\ Skip hooks you don't need so that they don't get called for nothing
-
-Where locals will look like this: 
-
-```
-{
-  "tree": [
-    {
-      "name": "'[special,]",
-      "ext": "",
-      "dirname": "/Users/soyuka/explorer/test/fixtures/tree",
-      "path": "/Users/soyuka/explorer/test/fixtures/tree/'[special,]",
-      "type": "application",
-      "size": 0,
-      "mtime": 1441048063000,
-      "lastModified": "Mon, Aug 31, 2015 9:07 PM",
-      "humanSize": "0 B"
-    },
-    {
-      "name": "dir",
-      "ext": "",
-      "dirname": "/Users/soyuka/explorer/test/fixtures/tree",
-      "path": "/Users/soyuka/explorer/test/fixtures/tree/dir",
-      "type": "directory",
-      "size": 1000102,
-      "mtime": 1441048063000,
-      "lastModified": "Mon, Aug 31, 2015 9:07 PM",
-      "directory": true,
-      "depth": 1,
-      "humanSize": "1 MB"
-    },
-    {
-      "name": "dummy.txt",
-      "ext": ".txt",
-      "dirname": "/Users/soyuka/explorer/test/fixtures/tree",
-      "path": "/Users/soyuka/explorer/test/fixtures/tree/dummy.txt",
-      "type": "text",
-      "size": 14,
-      "mtime": 1441048063000,
-      "lastModified": "Mon, Aug 31, 2015 9:07 PM",
-      "humanSize": "14 B"
-    },
-    {
-      "name": "favicon.ico",
-      "ext": ".ico",
-      "dirname": "/Users/soyuka/explorer/test/fixtures/tree",
-      "path": "/Users/soyuka/explorer/test/fixtures/tree/favicon.ico",
-      "type": "image",
-      "size": 5430,
-      "mtime": 1441048063000,
-      "lastModified": "Mon, Aug 31, 2015 9:07 PM",
-      "humanSize": "5.43 kB"
-    }
-  ],
-  "pages": 1,
-  "num": 8,
-  "breadcrumb": [
-    {
-      "path": "/Users/soyuka/explorer/test/fixtures/tree",
-      "name": "/Users/soyuka/explorer/test/fixtures/tree"
-    }
-  ],
-  "limit": 10,
-  "max_depth": 10,
-  "concurrency": 100,
-  "app_root": "/",
-  "messages": {
-    "info": [],
-    "error": []
-  },
-  "upload": {
-    "concurrency": 10,
-    "maxSize": "50mb",
-    "maxCount": 10,
-    "path": "/Users/soyuka/.config/explorer/upload"
-  },
-  "user": {
-    "username": "admin",
-    "home": "/Users/soyuka/explorer/test/fixtures/tree",
-    "key": "W2yE24zwTDmtX9Y8fWkzZS3X4",
-    "admin": 1,
-    "readonly": 0,
-    "ignore": "",
-    "trash": "",
-    "archive": "",
-    "upload": ""
-  },
-  "notifications": {
-    "num": 0,
-    "upload": {},
-    "archive": {}
-  },
-  "urlOptions": {
-    "order": "desc",
-    "sort": "name",
-    "page": 1
-  },
-  "hooks": {
-    "archive": {}
-  },
-  "parent": "/Users/soyuka/explorer/test/fixtures/tree",
-  "path": "/Users/soyuka/explorer/test/fixtures/tree",
-  "root": "/Users/soyuka/explorer/test/fixtures/tree",
-  "page": 1,
-  "order": "desc",
-  "sort": "name",
-  "remove": {
-    "method": "mv",
-    "path": "/Users/soyuka/.config/explorer/trash"
-  },
-  "archive": {
-    "path": "/Users/soyuka/.config/explorer/tmp"
-  }
-}
-```
 
 ### Router structure
 

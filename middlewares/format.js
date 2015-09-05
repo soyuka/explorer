@@ -68,4 +68,4 @@ function getFormat(app) {
   }
 }
 
-export {getFormat}
+export default getFormat

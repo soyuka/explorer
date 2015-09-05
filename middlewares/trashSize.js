@@ -48,4 +48,4 @@ function trashSize(config) {
   }
 }
 
-export {trashSize}
+export default trashSize

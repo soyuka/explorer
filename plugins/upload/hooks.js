@@ -1,8 +1,8 @@
-function registerHooks(locals, config) {
+function registerHooks(config) {
   return {
     menu: function() {
 
-      if(locals.archive.disabled === true)
+      if(config.upload.disabled === true)
         return ''
 
       return '<li><a href="/upload"><i class="icon-upload"></i>Upload</a></li>'

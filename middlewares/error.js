@@ -26,7 +26,10 @@ function getError(config) {
       'text/html': function() {
         req.flash('error', err.message)
          
-        return res.redirect(err.redirect)
+        if(err.redirect)
+          return res.redirect(err.redirect)
+        else
+          return res.send('Too bad :(<br><img src="http://edgecats.net/first" alt="a random cat gif moar" /><br><br>' + err.message)
       },
       'application/json': function() {
         return res.status(err.code).json(err).end()
@@ -38,4 +41,4 @@ function getError(config) {
   }
 }
 
-export {getError}
+export default getError
