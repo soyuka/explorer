@@ -25,7 +25,7 @@ ArchiveJob.prototype.create = function(data, user, config) {
   archive.on('error', function(err) {
     archive.abort()
     if(!(data.stream instanceof http.ServerResponse)) {
-      self.ipc.send('archive.error', err.stack)
+      self.ipc.send('error', err.stack)
       return self.stat.add(user.username, {error: err.message})
     } else {
       return data.stream.status(500).send(err);

@@ -104,7 +104,7 @@ UploadJob.prototype.create = function(urls, user, config) {
   .catch(function(err) {
     console.error(err.message) 
     console.error(err.stack) 
-    self.ipc.send('upload.error', user.username, err.stack)
+    self.ipc.send('error', user.username, err.stack)
     return self.stat.add(user.username, {error: err.message})
   })
 }
