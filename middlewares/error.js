@@ -1,3 +1,5 @@
+import HTTPError from '../lib/HTTPError.js'
+
 function getError(config) {
   return function error(err, req, res, next) {
 
