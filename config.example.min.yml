@@ -1,0 +1,5 @@
+---
+session_secret: 'iQEGLKa@@asfkj12irj91r0#$aijfksju1' #Change this
+port: 4859
+https:
+  enabled: false

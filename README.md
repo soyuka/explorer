@@ -103,6 +103,8 @@ The `config.yml` will be searched in:
 
 To reload the configuration you'll need to restart the script `pm2 restart xplorer`!
 
+See also: [minimal](https://github.com/soyuka/explorer/blob/master/config.example.min.yml), [dev](https://github.com/soyuka/explorer/blob/master/config.example.dev.yml)
+
 ## HTTP(S)
 
 ### Nginx
@@ -254,7 +256,7 @@ Clone [see From git](#from-git)
 The easiest is to compile with babel for ES6 compatibility:
 
 ```bash
-DEBUG="explorer:*" babel-node index.js
+DEBUG="explorer:*" babel-node index.js -c config.example.dev.yml
 ```
 
 Sass is compiled with gulp: 
