@@ -9,6 +9,7 @@
 @import 'foundation/components/pagination';
 @import 'foundation/components/tables';
 @import 'foundation/components/top-bar';
+@import 'foundation/components/sub-nav';
 @import 'foundation/components/visibility';
 @import 'foundation/components/alert-boxes';
 @import 'foundation/components/labels';
@@ -99,4 +100,8 @@ img.logo {
         content: '\e80e';
     } 
   }
+}
+
+#directory-hooks {
+    @include sub-nav();
 }

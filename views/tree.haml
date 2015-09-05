@@ -93,6 +93,11 @@
                   %a{onclick: 'return confirmDeletion(event)', href: '/remove?path=' + item.path}
                     %i.icon-trash
 
+      %dl#directory-hooks
+        - each p in hooks
+          - if('directory' in p)
+            != p.directory()
+
       -# Action button
       .row
         .small-12.columns
@@ -100,7 +105,8 @@
             .large-3.columns
               %select{name: 'action'}
                 - each p in hooks
-                  != p.action()
+                  - if('action' in p)
+                    != p.action()
               -# - if(remove.disabled != true)
               -#   %option{value: 'remove'} Remove
             .large-3.columns

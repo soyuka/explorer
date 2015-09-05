@@ -7,7 +7,7 @@ import {higherPath, extend, removeDirectoryContent, handleSystemError, pathInfo}
 import HTTPError from '../lib/HTTPError.js'
 import {tree} from '../lib/tree.js'
 import {searchMethod} from '../lib/search.js'
-import {prepareTree, sanitizeCheckboxes} from '../middlewares'
+import {prepareTree, sanitizeCheckboxes, registerHooks} from '../middlewares'
 import interactor from '../lib/job/interactor.js'
 
 let debug = require('debug')('explorer:routes:tree')
@@ -79,7 +79,8 @@ function getTree(req, res, next) {
 
   tree(req.options.path, req.options)
   .then(function(e) {
-    return res.renderBody('tree.haml', e)
+    res.locals = extend(res.locals, e)
+    return next()
   })
   .catch(function(err) {
     console.error('Error while parsing tree at path: ' + req.options.path) 
@@ -147,9 +148,14 @@ function search(req, res, next) {
     return tree([].concat.apply([], data), req.options)
   })
   .then(function(e) {
-    return res.renderBody('tree.haml', extend(e, {search: req.query.search}))
+    res.locals = extend(res.locals, e, {search: req.query.search})
+    return next()
   })
   .catch(handleSystemError(next))
+}
+
+function render(req, res, next) {
+  return res.renderBody('tree.haml')
 }
 
 /**
@@ -211,10 +217,11 @@ function treeAction(plugins) {
 
 let Tree = function(app) {
   let pt = prepareTree(app)
+  let register = registerHooks(app)
 
-  app.get('/', pt, getTree)
   app.post('/', pt, sanitizeCheckboxes, treeAction(app.get('plugins')))
-  app.get('/search', pt, search)
+  app.get('/', pt, getTree, register, render)
+  app.get('/search', pt, search, register, render)
   app.get('/download', pt, download)
   app.post('/trash', pt, emptyTrash)
   app.get('/remove', pt, deletePath)

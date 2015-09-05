@@ -3,6 +3,9 @@
   "version": "v2.0.15",
   "description": "Explore and share. Highly-configurable directory listing made with nodejs",
   "main": "index.js",
+  "bin": {
+    "explorer": "./bin/explorer"
+  },
   "keywords": [
     "explorer",
     "xplorer",
@@ -53,10 +56,12 @@
     "method-override": "^2.3.5",
     "mime": "^1.3.4",
     "minimatch": "^2.0.10",
+    "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.10.6",
     "morgan": "^1.6.1",
     "multer": "^1.0.3",
+    "pm2": "^0.14.7",
     "pretty-bytes": "^2.0.1",
     "promise-spawner": "^1.1.3",
     "rimraf": "^2.4.2",

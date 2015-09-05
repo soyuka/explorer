@@ -9,6 +9,7 @@ Explore and share. Highly-configurable directory listing made with nodejs.
 - [Configuration](#configuration)
 - [Update](#update)
 - [More installation methods](#more-installation-methods)
+- [Plugins](#plugins)
 - [Development](#development)
 - [Performances](#performances)
 - [Why](#why)
@@ -211,6 +212,41 @@ Or with babel-node:
 npm i pm2 babel-node -g
 pm2 --interpreter babel-node --name explorer start index.js
 ```
+
+## Plugins
+
+### Install a plugin:
+
+```
+explorer plugin install [plugin-name]
+```
+
+**See `explorer --help` for more commands.**
+
+### Configure
+
+In the `config.yml`:
+
+```
+plugins:
+  - name:
+    module: 'npm-package-name'
+  - local-name: {} # located in path/to/explorer/plugins/local-name
+```
+
+### Available plugins:
+
+- [explorer-unrar](https://github.com/soyuka/explorer-unrar)
+
+```
+plugins:
+  - unrar:
+    module: 'explorer-unrar' 
+```
+
+### Development
+
+[See plugins documentation](https://github.com/soyuka/explorer/blob/master/Plugins.md)
 
 ## Development
 

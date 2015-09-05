@@ -14,7 +14,6 @@ let debug = require('debug')('explorer:middlewares:prepareTree')
  */
 function prepareTree(app) {
   let config = app.get('config')
-  let plugins = app.get('plugins')
 
   return function(req, res, next) {
     //should be an app.param
@@ -62,18 +61,6 @@ function prepareTree(app) {
     ;['remove', 'archive', 'upload'].forEach(function(e) {
       res.locals[e] = config[e]
     })
-
-    /**
-     * @see plugins documentation
-     */
-    for(let i in plugins) {
-      if('hooks' in plugins[i]) {
-        debug('Registering hooks for %s', i)
-        res.locals.hooks[i] = plugins[i].hooks(res.locals) 
-      }
-    }
-
-    debug('Hooks', res.locals.hooks)
 
     let opts = extend({},
       res.locals,
@@ -167,7 +154,34 @@ function sanitizeCheckboxes(req, res, next) {
   req.options.directories = directories
   req.options.paths = paths
 
-  next()
+  return next()
 }
 
-export {prepareTree, sanitizeCheckboxes}
+//Register plugins, should be called just before rendering (after prepareTree)
+function registerHooks(app) {
+
+  let plugins = app.get('plugins')
+  let config = app.get('config')
+
+  return function(req, res, next) {
+    let hooks = {}
+
+    /**
+     * @see plugins documentation
+     */
+    for(let i in plugins) {
+      if('hooks' in plugins[i]) {
+        debug('Registering hooks for %s', i)
+        hooks[i] = plugins[i].hooks(res.locals, config) 
+      }
+    }
+
+    res.locals.hooks = hooks
+
+    debug('Hooks', res.locals.hooks)
+
+    return next()
+  }
+}
+
+export {prepareTree, sanitizeCheckboxes, registerHooks}

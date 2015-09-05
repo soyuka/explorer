@@ -45,10 +45,9 @@ function canUpload(req, res, next) {
 
 let Upload = function(app) {
       
+  //Hacking views directory
   let views = app.get('views')
-  
   views.push(p.join(__dirname, 'views'))
-
   app.set('views', views)
 
   let config = app.get('config')

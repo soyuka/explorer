@@ -45,6 +45,6 @@ https:
   key: './certs/key.pem' # change those are dummies
   cert: './certs/cert.pem'
 plugins: # those are enable by default, use below options to disable them
-  - upload
-  - archive
+  - upload: {}
+  - archive: {}
 dev: false # more verbose error (stack)
