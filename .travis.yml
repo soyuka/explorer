@@ -4,5 +4,10 @@ branches:
     - master
     - development
 node_js:
+   - "iojs"
    - "iojs-v2.5.0"
    - "0.12"
+matrix:
+  fast_finish: true
+  allow_failures:
+    - node_js: "iojs"
