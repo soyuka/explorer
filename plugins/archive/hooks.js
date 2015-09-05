@@ -1,6 +1,6 @@
 function registerHooks(config) {
   return {
-    action: function() {
+    action: function(tree) {
       let str = `
         <optgroup label="Zip">
           <option value="archive.download" selected="selected">Download</option>`
