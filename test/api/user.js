@@ -64,6 +64,11 @@ describe('user', function() {
     .end(cb)
   })
 
+  it('should get notifications', function(cb) {
+    this.request.get('/notifications')
+    .end(cb)
+  })
+
   it('should get settings', function(cb) {
     this.request.get('/settings') 
     .end(cb)
