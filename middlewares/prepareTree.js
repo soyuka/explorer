@@ -49,7 +49,6 @@ function prepareTree(app) {
       parent: higherPath(req.user.home, p.resolve(req.query.path, '..')),
       buildUrl: buildUrl,
       extend: extend,
-      hooks: {},
       urlOptions: {
         limit: req.query.limit,
         order: req.query.order,
@@ -157,31 +156,4 @@ function sanitizeCheckboxes(req, res, next) {
   return next()
 }
 
-//Register plugins, should be called just before rendering (after prepareTree)
-function registerHooks(app) {
-
-  let plugins = app.get('plugins')
-  let config = app.get('config')
-
-  return function(req, res, next) {
-    let hooks = {}
-
-    /**
-     * @see plugins documentation
-     */
-    for(let i in plugins) {
-      if('hooks' in plugins[i]) {
-        debug('Registering hooks for %s', i)
-        hooks[i] = plugins[i].hooks(res.locals, config) 
-      }
-    }
-
-    res.locals.hooks = hooks
-
-    debug('Hooks', res.locals.hooks)
-
-    return next()
-  }
-}
-
-export {prepareTree, sanitizeCheckboxes, registerHooks}
+export {prepareTree, sanitizeCheckboxes}

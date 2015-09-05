@@ -7,7 +7,7 @@ import {higherPath, extend, removeDirectoryContent, handleSystemError, pathInfo}
 import HTTPError from '../lib/HTTPError.js'
 import {tree} from '../lib/tree.js'
 import {searchMethod} from '../lib/search.js'
-import {prepareTree, sanitizeCheckboxes, registerHooks} from '../middlewares'
+import {prepareTree, sanitizeCheckboxes} from '../middlewares'
 import interactor from '../lib/job/interactor.js'
 
 let debug = require('debug')('explorer:routes:tree')
@@ -217,11 +217,10 @@ function treeAction(plugins) {
 
 let Tree = function(app) {
   let pt = prepareTree(app)
-  let register = registerHooks(app)
 
   app.post('/', pt, sanitizeCheckboxes, treeAction(app.get('plugins')))
-  app.get('/', pt, getTree, register, render)
-  app.get('/search', pt, search, register, render)
+  app.get('/', pt, getTree, render)
+  app.get('/search', pt, search, render)
   app.get('/download', pt, download)
   app.post('/trash', pt, emptyTrash)
   app.get('/remove', pt, deletePath)

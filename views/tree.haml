@@ -96,7 +96,7 @@
       %dl#directory-hooks
         - each p in hooks
           - if('directory' in p)
-            != p.directory()
+            != p.directory(tree)
 
       -# Action button
       .row

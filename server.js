@@ -40,6 +40,8 @@ module.exports = function(config) {
     return hamljs.renderFile(str, 'utf-8', options, fn)
   })
 
+  app.set('plugins', registerPlugins(config))
+
   app.use(parallelMiddlewares([
     methodOverride(function(req, res) {
         if (req.body && typeof req.body === 'object' && '_method' in req.body) {
@@ -50,7 +52,7 @@ module.exports = function(config) {
     }),
     cookieParser(),
     //sessions are only used for flash
-    session({secret: config.session_secret, resave: false, saveUninitialized: false}),
+    session({secret: config.session_secret || 'MEOW', resave: false, saveUninitialized: false}),
     flash(),
     express.static('client')
   ]))
@@ -77,10 +79,8 @@ module.exports = function(config) {
     middlewares.format(app),
     middlewares.notify,
     middlewares.optionsCookie,
+    middlewares.registerHooks(app)
   ]))
-
-  //this might be a separated router in the future
-  registerPlugins(app)
 
   //Load routes
   routes.Tree(app)

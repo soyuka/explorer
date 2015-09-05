@@ -53,4 +53,4 @@ function user(req, res, next) {
   return next()
 } 
 
-export {user}
+export default user
