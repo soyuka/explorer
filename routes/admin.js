@@ -10,6 +10,9 @@ import HTTPError from '../lib/HTTPError.js'
 let fs = Promise.promisifyAll(require('fs'))
 let debug = require('debug')('explorer:routes:admin')
 
+/** 
+ * validUser middleware
+ */
 function validUser(req, res, next) {
   try {
     new User(req.body, false) 
@@ -20,6 +23,11 @@ function validUser(req, res, next) {
   return next()
 }
 
+/**
+ * checks if user is admin
+ * @param object config
+ * @return function
+ */
 function isAdmin(config) {
   return function(req, res, next) {
     if(!req.user.admin)

@@ -206,13 +206,6 @@ function treeAction(plugins) {
     }
     
     return plugins[plugin][method](req, res, next)
-
-    // switch (req.body.action) {
-    //   case 'remove':
-    //     break;
-    //   default:
-     // return handleSystemError(next)("Action has not been found", 400) 
-    // }
   }
 }
 

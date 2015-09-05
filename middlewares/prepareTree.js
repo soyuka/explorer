@@ -9,8 +9,8 @@ import HTTPError from '../lib/HTTPError.js'
 let debug = require('debug')('explorer:middlewares:prepareTree')
 /**
  * Prepare tree locals et validate queries 
- * @param config
- * @return function middleware(req, res, next)
+ * @param Express app
+ * @return function 
  */
 function prepareTree(app) {
   let config = app.get('config')
@@ -63,6 +63,9 @@ function prepareTree(app) {
       res.locals[e] = config[e]
     })
 
+    /**
+     * @see plugins documentation
+     */
     for(let i in plugins) {
       if('hooks' in plugins[i]) {
         debug('Registering hooks for %s', i)
@@ -131,6 +134,10 @@ function prepareTree(app) {
   }
 }
 
+/**
+ * sanitize Checkboxes is used on an /action request
+ * take every paths and set resolved directories, paths acccordingly
+ */
 function sanitizeCheckboxes(req, res, next) {
   let paths = []
   let directories = []

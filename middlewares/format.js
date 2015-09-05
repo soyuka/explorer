@@ -2,6 +2,14 @@ import util from 'util'
 import rss from '../routes/rss.js'
 import HTTPError from '../lib/HTTPError.js'
 
+/**
+ * Handles Accept header to render the wanted format
+ * Extends res to add two methods:
+ * - renderBody, render the view with the requested body
+ * - handle, convenient method to redirect with information/error data
+ * @param Express app
+ * @return function
+ */
 function getFormat(app) {
   return function format(req, res, next) {
     res.renderBody = function(name, locals) {

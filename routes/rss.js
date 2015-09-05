@@ -1,6 +1,10 @@
 import RSS from 'rss'
 import os from 'os'
 
+/**
+ * rssTree if tree is requested as rss
+ * Change object res.locals.tree to an xml feed
+ */
 function rssTree(req, res, next) {
   let host = req.protocol + '://' + req.get('host')
 
@@ -25,7 +29,7 @@ function rssTree(req, res, next) {
     })
   })
 
-  res.send(feed.xml())
+  return res.send(feed.xml())
 }
 
 export default rssTree

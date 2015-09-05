@@ -1,5 +1,12 @@
 import HTTPError from '../lib/HTTPError.js'
 
+/**
+ * Error middleware
+ * Last called middlewares
+ * Send the formatted error to client with the correct code or redirect
+ * @param object config
+ * @return function
+ */
 function getError(config) {
   return function error(err, req, res, next) {
 
