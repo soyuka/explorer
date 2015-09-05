@@ -4,6 +4,11 @@ import moment from 'moment'
 
 let debug = require('debug')('explorer:middlewares:notify')
 
+/**
+ * Notify middlewares
+ * Calls every ipc plugin for the `info` method
+ * Sets res.locals.notifications to an array of plugins and the user notifications
+ */
 function notify(req, res, next) {
     
   if(!interactor.ipc) {

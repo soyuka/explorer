@@ -4,6 +4,11 @@ import p from 'path'
 import {handleSystemError} from '../lib/utils.js'
 let debug = require('debug')('explorer:trashSize')
 
+/**
+ * Gets the trash size
+ * @param object config
+ * @return function
+ */
 function trashSize(config) {
 
   return function (req, res, next) {

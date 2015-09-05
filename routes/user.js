@@ -59,6 +59,11 @@ function login(req, res, next) {
   })
 }
 
+/**
+ * @api {get} /notifications Get notifications
+ * @apiGroup User
+ * @apiName getNotifications
+ */
 function notifications(req, res, next) {
   return res.renderBody('notifications') 
 }
@@ -66,7 +71,7 @@ function notifications(req, res, next) {
 /**
  * @api {delete} /notifications Delete notifications
  * @apiGroup User
- * @apiName notifications
+ * @apiName deleteNotifications
  */
 function deleteNotifications(req, res, next) {
   
