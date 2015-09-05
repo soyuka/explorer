@@ -9,8 +9,11 @@ import {getConfiguration} from './lib/config.js'
 
 let fs = Promise.promisifyAll(require('fs'))
 
+var argv = require('minimist')(process.argv.slice(2))
+
 try {
   let config_path = firstExistingPath([
+    argv.c,
     p.join(process.env.HOME || '', './.config/explorer/config.yml'), 
     p.join(__dirname, './config.yml')
   ])
