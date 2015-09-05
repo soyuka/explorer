@@ -11,7 +11,7 @@
         - each notification in plugin
           %dd
             - if(notification.error)
-              %span.alert.warning= notification.error
+              %span.alert-box.warning= notification.error
             - else if(notification.path)
               %a{href: '/?path='+notification.path+'&search='+notification.name}= notification.message
             - else
