@@ -106,7 +106,7 @@
               %select{name: 'action'}
                 - each p in hooks
                   - if('action' in p)
-                    != p.action()
+                    != p.action(tree)
               -# - if(remove.disabled != true)
               -#   %option{value: 'remove'} Remove
             .large-3.columns
