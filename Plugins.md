@@ -1,6 +1,6 @@
 # Plugins
 
-## How does it work?
+## What is a Plugin?
 
 Plugins are basic node modules. They can be used through [npm](npmjs.org) or locally.
 
@@ -9,18 +9,18 @@ A plugin has three major components:
 - Router
 - Job 
 
-Hooks are used to print elements in the view so that the user can use our Job, our Router or both.
-The Router allows us to add api routes to explorer. This way you could build whole sub-applications linked to explorer. A complex example that use Views on top of the router can be seen [in the Upload plugin](https://github.com/soyuka/explorer/tree/master/plugins/upload).
-Job is a separated element for `long-polling` jobs. You don't want the user to wait for 2 minutes in front of the loading wheel before getting a response.
-Those are `forked` (running in the background) and they communicate with Explorer through [IPCEE](https://github.com/soyuka/IPCEE).
+**Hooks** are used to print elements in the view so that the user can use our Job, our Router or both.
 
-This looks complicated, it is under the hood, but it's done to make things simpler.
+The **Router** allows us to add api routes to Explorer. This way you could build whole sub-applications using explorer components. A complex example that use Views on top of the router can be seen [in the Upload plugin](https://github.com/soyuka/explorer/tree/master/plugins/upload).
+
+**Job** is a separated element for *long-polling* jobs. You don't want the user to wait for 2 minutes in front of the loading wheel before getting a response from a 40gb upload.
+Those are `forked` (running in the background) and they communicate with Explorer through [IPCEE](https://github.com/soyuka/IPCEE).
 
 ## Basic structure
 
 First expose an `index.js`: 
 
-```
+```javascript
 module.exports = {
   job: require('./job.js'),
   hooks: require('./hooks.js'),
@@ -29,13 +29,13 @@ module.exports = {
 }
 ```
 
-None of those is requested, you could need only hooks and router, or only job and hooks, or why not only static hooks. 
+None of those is requested, you could need *hooks and router*, or *job and hooks*, or why not only static hooks. 
 
 ### Hooks structure
 
 The hooks structure must be as following:
 
-```
+```javascript
 /**
  * registerHooks
  * @param object config explorer configuration
@@ -43,9 +43,10 @@ The hooks structure must be as following:
 function registerHooks(config) {
   return {
     directory: function(tree) {
+      dosomethingwith(config.plugins.pluginName.myConfigValue)
       return '' //expects a <dd><a href="#"></a></dd> element
     },
-    action: function() {
+    action: function(tree) {
       return '' //expects a <option value="plugin.method">Action</option>
     },
     element: function(element) {
@@ -65,9 +66,9 @@ function registerHooks(config) {
 The following registers `/plugin/someplugin` route that can be call from hooks.
 This will then call the Job.create method.
 
-```
+```javascript
 /**
- * unrarRouter
+ * Router
  * @param Express app our app instances
  * @param object utils explorer utils 
  **/
@@ -80,15 +81,18 @@ function Router(app, utils) {
 
     //explorer is adding a notification with info
     return res.handle('back', {info: 'Unrar launched'}, 201)
+    
+    //omg something failed
+    return next(new utils.HTTPError("I hate mondays", 418))
   }
 
-  //Use the prepareTree middleware if you work with paths (security, query sanitize etc.)
-  //Use the /plugin path to avoid conflicts
+  //Use the prepareTree middleware if you work with the tree (security, query sanitize etc.)
+  //Use the /plugin/pluginName path to avoid conflicts
   //this registers a route to /plugin/unrar
-  app.get('/plugin/unrar', utils.prepareTree, unrarPath)
+  app.get('/plugin/pluginName', utils.prepareTree, myRoute)
 }
 
-export default unrarRouter
+export default Router
 ```
 
 `utils` is an object with: 
@@ -98,7 +102,7 @@ export default unrarRouter
 
 ### Job
 
-```
+```javascript
 /**
  * Job
  * @param IPCEE ipc our process communication instance
@@ -114,26 +118,32 @@ Job.prototype.create = function(user, path) {
   var self = this
   
   //Notify user that we've started
-  self.stat.add(user.username, {message: `Unrar launched in ${path}`, name: p.basename(path)})
+  self.stat.add(user.username, {message: 'GO!'})
 
   //do some async stuff
 
-  //Notify user it's good to go!
-  return self.stat.add(user.username, {message: `${path} extracted from ${from} to ${to}`, path: path, name: to})
+  //Notify user it's good to go! A link will be set to /search?path=$path&search=$name
+  return self.stat.add(user.username, {message: 'Path action done!', path: path, name: name})
 
   //Can oviously fail with an error
-  return self.stat.add(user.username, {error: this.data.err.join(eol)})
+  return self.stat.add(user.username, {error: 'Sad story...'})
+
+   //IPC can help testing (https://github.com/soyuka/explorer/blob/d58a6cb6eda3aa7b15a81326eaae2e5fd9c619ce/test/api/archive.js#L34) or maybe for sockets 
+  self.ipc.send('archive.create', user.username, data)
+  
+  //Or to log system errors
+  self.ipc.send('error', err.stack)
 }
 
 /**
- * Called to get unrar notifications
+ * Called to get our job notifications
  **/
 Job.prototype.info = function() {
   return this.stat.get()
 }
 
 /**
- * Called to remove unrar notifications
+ * Called to remove our notifications
  **/
 Job.prototype.clear = function(user) {
   return this.stat.remove(user)
@@ -151,7 +161,7 @@ module.exports = Job
 
 ### Action hook
 
-The action hook expects an option value of "plugin.method" and will call your plugin method. To do so, you need to export routes in your index.js ([example](https://github.com/soyuka/explorer/blob/master/plugins/archive/index.js#L20)).
+The action hook expects an option value of "plugin.method" and will call your plugin method. To do so, you need to export routes in your `index.js` ([example](https://github.com/soyuka/explorer/blob/master/plugins/archive/index.js#L20)).
 
 ## Activate
 
@@ -159,7 +169,7 @@ The action hook expects an option value of "plugin.method" and will call your pl
 
 Hosted on npm, you can install the plugin with `explorer install plugin`, it must be added to the `config.yml`:
 
-```
+```yaml
 plugins:
   pluginName: 
     module: 'explorer-pluginName' # the npm package name
@@ -169,14 +179,14 @@ plugins:
 
 Put the plugin in `path-to-explorer/plugins/pluginName` and add it to the config:
 
-```
+```yaml
 plugins:
   pluginName: {}
 ```
 
 To debug your plugin activity you should launch explorer like this:
 
-```
+```bash
 DEBUG="explorer:job" babel-node index.js
 ```
 
