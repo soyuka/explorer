@@ -1,6 +1,6 @@
 ## From 1.x to 2.x
 
-Configuration must be updated, edit `~/.config/explorer/config.yml` and change the following:
+Configuration must be updated, edit `~/.config/explorer/config.yml` and add the following:
 
 ```
 remove: 
