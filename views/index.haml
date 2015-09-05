@@ -37,11 +37,9 @@
             %a{href: '/'}
               %i.icon-home
               Home
-          - if(upload.disabled != true)
-            %li
-              %a{href: '/upload'}
-                %i.icon-upload
-                Upload
+          - each p in hooks
+            - if('menu' in p)
+              != p.menu()
 
   .large-6.container.large-centered.columns
     - if(messages.info.length)

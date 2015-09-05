@@ -79,6 +79,7 @@ module.exports = function(config) {
     middlewares.optionsCookie,
   ]))
 
+  //this might be a separated router in the future
   registerPlugins(app)
 
   //Load routes

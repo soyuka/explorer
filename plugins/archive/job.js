@@ -14,7 +14,6 @@ function ArchiveJob(ipc = null, stat) {
 
 /**
  * Creates an archive
- * @see routes/tree.js
  * data : {
  *   name, temp, directories, paths, root, stream (string|http.ServerResponse), options (req.options)
  * }

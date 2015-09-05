@@ -1,5 +1,3 @@
-import haml from 'hamljs'
-
 function registerHooks(locals, config) {
   return {
     action: function() {

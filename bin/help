@@ -1,0 +1,5 @@
+
+Commands:
+- plugin [install|remove|update]
+- reload (reload configuration)
+- config

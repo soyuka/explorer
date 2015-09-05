@@ -33,20 +33,25 @@ require('./server.js')(config)
   if(config.https.enabled) {
     https.createServer(https_options, app).listen(config.https.port, e => !config.quiet ? console.log('HTTPS listening on %s', config.https.port) : 1)
   }
-}) 
+  
+  var plugins = app.get('plugins')
+  var plugins_paths = []
 
-fs.readdirAsync(config.plugin_path)
-.then(function(files) {
-  files = files.map(f => p.join(plugin_path, f))
+  for(var i in plugins) {
+    if('job' in plugins[i]) {
+      plugins_paths.push(plugins[i].path) 
+    }
+  }
 
   if(interactor.job) {
     console.error('Interactor already launched')
     return Promise.resolve()
   }
 
-  return interactor.run(files)
-})
+  return interactor.run(plugins_paths)
+
+}) 
 .catch(function(err) {
-  console.error('Error while launching database') 
+  console.error('Error while initializing explorer') 
   console.error(err.stack)
 })
