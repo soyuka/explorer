@@ -4,7 +4,6 @@ import p from 'path'
 import fs from 'fs'
 import Promise from 'bluebird'
 import prettyBytes from 'pretty-bytes'
-import isNumber from 'is-number'
 
 let download = new Download()
 let debug = require('debug')('explorer:job:upload')
