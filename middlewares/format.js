@@ -17,9 +17,11 @@ function getFormat(app) {
 
       res.format({
         'text/html': function() {
-          app.render(name, locals, function(err, body) {
+          return app.render(name, locals, function(err, body) {
             if(err) {
-              return next(new HTTPError(err, 500))
+              console.error(err)
+              req.flash('error', err)
+              //need a third arg to renderBody for callback with error 
             }
 
             return res.render('index.haml', util._extend(locals, {body: body}))
