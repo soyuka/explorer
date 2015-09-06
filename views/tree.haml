@@ -86,6 +86,9 @@
             %td= item.humanSize
             - if(canRemove)
               %td
+                - each p in hooks
+                  - if('element' in p)
+                    != p.element(item)
                 - if(remove.method == 'mv')
                   %a{href: '/remove?path=' + item.path}
                     %i.icon-trash
