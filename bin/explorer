@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-var npm = require('npm')
 var pm2 = require('pm2')
 var p = require('path')
 var fs = require('fs')
