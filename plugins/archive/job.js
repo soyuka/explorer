@@ -1,15 +1,41 @@
-import archiver from 'archiver'
-import http from 'http'
-import fs from 'fs'
-import p from 'path'
-import prettyBytes from 'pretty-bytes'
+'use strict';
 
-let debug = require('debug')('explorer:job:archive')
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
 
-function ArchiveJob(ipc = null, stat) {
-  if(!(this instanceof ArchiveJob)) { return new ArchiveJob(ipc, stat) }
-  this.ipc = ipc
-  this.stat = stat
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _archiver = require('archiver');
+
+var _archiver2 = _interopRequireDefault(_archiver);
+
+var _http = require('http');
+
+var _http2 = _interopRequireDefault(_http);
+
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
+var _prettyBytes = require('pretty-bytes');
+
+var _prettyBytes2 = _interopRequireDefault(_prettyBytes);
+
+var debug = require('debug')('explorer:job:archive');
+
+function ArchiveJob(ipc, stat) {
+  if (ipc === undefined) ipc = null;
+
+  if (!(this instanceof ArchiveJob)) {
+    return new ArchiveJob(ipc, stat);
+  }
+  this.ipc = ipc;
+  this.stat = stat;
 }
 
 /**
@@ -18,60 +44,61 @@ function ArchiveJob(ipc = null, stat) {
  *   name, temp, directories, paths, root, stream (string|http.ServerResponse), options (req.options)
  * }
  */
-ArchiveJob.prototype.create = function(data, user, config) {
-  let archive = archiver('zip') 
-  let self = this
+ArchiveJob.prototype.create = function (data, user, config) {
+  var archive = (0, _archiver2['default'])('zip');
+  var self = this;
 
-  archive.on('error', function(err) {
-    archive.abort()
-    if(!(data.stream instanceof http.ServerResponse)) {
-      self.ipc.send('error', err.stack)
-      return self.stat.add(user.username, {error: err.message})
+  archive.on('error', function (err) {
+    archive.abort();
+    if (!(data.stream instanceof _http2['default'].ServerResponse)) {
+      self.ipc.send('error', err.stack);
+      return self.stat.add(user.username, { error: err.message });
     } else {
       return data.stream.status(500).send(err);
     }
-  })
+  });
 
   //on stream closed we can end the request
-  archive.on('end', function() {
-    let b = archive.pointer()
+  archive.on('end', function () {
+    var b = archive.pointer();
 
-    debug('Archive wrote %d bytes', b)
+    debug('Archive wrote %d bytes', b);
 
-    if(!(data.stream instanceof http.ServerResponse)) {
-      self.ipc.send('archive.create', user.username, data)
-      return self.stat.add(user.username, {message: `${prettyBytes(b)} written in ${data.temp}`, path: p.dirname(data.temp), name: data.name})
+    if (!(data.stream instanceof _http2['default'].ServerResponse)) {
+      self.ipc.send('archive.create', user.username, data);
+      return self.stat.add(user.username, { message: '' + (0, _prettyBytes2['default'])(b) + ' written in ' + data.temp, path: _path2['default'].dirname(data.temp), name: data.name });
     }
-  })
+  });
 
-  if(data.stream instanceof http.ServerResponse) {
+  if (data.stream instanceof _http2['default'].ServerResponse) {
     //set the archive name
-    data.stream.attachment(`${data.name}.zip`)
-  } else if(typeof data.stream == 'string') {
+    data.stream.attachment('' + data.name + '.zip');
+  } else if (typeof data.stream == 'string') {
 
-    data.stream = fs.createWriteStream(data.stream) 
-    self.stat.add(user.username, {message: `Compressing data from ${data.root} to ${data.temp}`, name: data.name})
+    data.stream = _fs2['default'].createWriteStream(data.stream);
+    self.stat.add(user.username, { message: 'Compressing data from ' + data.root + ' to ' + data.temp, name: data.name });
   }
 
-  archive.pipe(data.stream)
+  archive.pipe(data.stream);
 
-  for(let i in data.paths) {
-    archive.append(fs.createReadStream(data.paths[i]), {name: p.basename(data.paths[i])}) 
+  for (var i in data.paths) {
+    archive.append(_fs2['default'].createReadStream(data.paths[i]), { name: _path2['default'].basename(data.paths[i]) });
   }
 
-  for(let i in data.directories) {
-    archive.directory(data.directories[i], data.directories[i].replace(data.root, ''))
+  for (var i in data.directories) {
+    archive.directory(data.directories[i], data.directories[i].replace(data.root, ''));
   }
 
-  archive.finalize()
-}
+  archive.finalize();
+};
 
-ArchiveJob.prototype.info = function() {
-  return this.stat.get()
-}
+ArchiveJob.prototype.info = function () {
+  return this.stat.get();
+};
 
-ArchiveJob.prototype.clear = function(user) {
-  return this.stat.remove(user)
-}
+ArchiveJob.prototype.clear = function (user) {
+  return this.stat.remove(user);
+};
 
-export default ArchiveJob
+exports['default'] = ArchiveJob;
+module.exports = exports['default'];
