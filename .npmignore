@@ -7,8 +7,8 @@ backup
 data/users
 !data/.gitkeep
 *.bak
-upload
-trash
-tmp
-doc
-test
+./upload
+./trash
+./tmp
+./doc
+./test
