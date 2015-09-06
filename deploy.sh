@@ -1,6 +1,7 @@
 #!/bin/bash
 DEBUG=''
 cmd=$1
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 babelize() {
   babel routes/*.js lib/**/*.js lib/*.js middlewares/*.js plugins/**/*.js index.js server.js --out-dir build/ &>/dev/null
@@ -25,6 +26,10 @@ if [[ $cmd == 'postinstall' ]]; then
   [ ! -f $config_path/config.yml ] && cp config.example.yml $config_path/config.yml
   [ ! -d $config_path/certs ] && cp -r ./certs $config_path/certs
   [ ! -d $config_path/trash ] && mkdir $config_path/trash
+
+  [ -d $NVM_BIN ] && ln -sf $DIR/bin/explorer $NVM_BIN/explorer
+  [ ! -d $NVM_BIN ] && echo "Failed to link binary. Add $DIR/bin to you PATH"
+
   exit 0
 fi
 
