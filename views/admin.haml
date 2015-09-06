@@ -29,7 +29,7 @@
             %th{colspan: 2} Ignore
           %tr.border-bottom
             - if(!config.remove.disabled)
-              %td= item.remove || config.remove.path
+              %td= item.trash || config.remove.path
             - else
               %td ∅
             - if(!config.archive.disabled)
