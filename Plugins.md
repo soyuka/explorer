@@ -137,6 +137,7 @@ Job.prototype.create = function(user, path) {
 
 /**
  * Called to get our job notifications
+ * required!
  **/
 Job.prototype.info = function() {
   return this.stat.get()
@@ -144,6 +145,7 @@ Job.prototype.info = function() {
 
 /**
  * Called to remove our notifications
+ * required!
  **/
 Job.prototype.clear = function(user) {
   return this.stat.remove(user)
