@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.0
+- Plugins implementation
+- Minor view fixes
+- Docs and comments
+
 ## 2.0.11
 - Improve docs
 - Serve files if images or text instead of forcing download
