@@ -10,6 +10,7 @@ babelize() {
   mv middlewares middlewares.bak
   mv plugins plugins.bak
   mv build/* ./
+  cp -r ./plugins.bak/upload/views ./plugins/upload/views
   rm -r build
 }
 
