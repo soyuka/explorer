@@ -1,6 +1,6 @@
 {
   "name": "xplorer",
-  "version": "v2.1.0",
+  "version": "v2.1.1",
   "description": "Explore and share. Highly-configurable directory listing made with nodejs",
   "main": "index.js",
   "bin": {
