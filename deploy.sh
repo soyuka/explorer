@@ -3,10 +3,11 @@ DEBUG=''
 cmd=$1
 
 babelize() {
-  babel routes/*.js lib/**/*.js lib/*.js middlewares/*.js index.js server.js --out-dir build/ &>/dev/null
+  babel routes/*.js lib/**/*.js lib/*.js middlewares/*.js plugins/**/*.js index.js server.js --out-dir build/ &>/dev/null
   mv lib lib.bak 
   mv routes routes.bak
   mv middlewares middlewares.bak
+  mv plugins plugins.bak
   mv build/* ./
   rm -r build
 }
@@ -61,7 +62,7 @@ git checkout -b deploy
 
 jq -r '.dependencies|keys[]|.|= "node_modules/" + .' package.json|xargs git add -f
 babelize
-rm -r lib.bak routes.bak middlewares.bak
+rm -r lib.bak routes.bak middlewares.bak plugins.bak
 git add .
 git add client/css -f
 git commit -q -m 'Compile dependencies'
