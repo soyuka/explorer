@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.1.0
+## 2.1.0-beta
 - Plugins implementation
 - Minor view fixes
 - Docs and comments
