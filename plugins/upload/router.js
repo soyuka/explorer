@@ -1,17 +1,45 @@
-import fs from 'fs'
-import express from 'express'
-import p from 'path'
-import moment from 'moment'
-import multer from 'multer'
+'use strict';
 
-import HTTPError from '../../lib/HTTPError.js'
-import {prepareTree} from '../../middlewares'
-import interactor from '../../lib/job/interactor.js'
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
 
-let debug = require('debug')('explorer:routes:upload')
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
+var _express = require('express');
+
+var _express2 = _interopRequireDefault(_express);
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
+var _moment = require('moment');
+
+var _moment2 = _interopRequireDefault(_moment);
+
+var _multer = require('multer');
+
+var _multer2 = _interopRequireDefault(_multer);
+
+var _libHTTPErrorJs = require('../../lib/HTTPError.js');
+
+var _libHTTPErrorJs2 = _interopRequireDefault(_libHTTPErrorJs);
+
+var _middlewares = require('../../middlewares');
+
+var _libJobInteractorJs = require('../../lib/job/interactor.js');
+
+var _libJobInteractorJs2 = _interopRequireDefault(_libJobInteractorJs);
+
+var debug = require('debug')('explorer:routes:upload');
 
 function getUpload(req, res, next) {
-  return res.renderBody('upload.haml', req.options)
+  return res.renderBody('upload.haml', req.options);
 }
 
 /**
@@ -21,56 +49,57 @@ function getUpload(req, res, next) {
  * @apiParam {string} links Links to download
  */
 function remoteUpload(req, res, next) {
-  let links = req.body.links.split('\r\n')
+  var links = req.body.links.split('\r\n');
 
-  links = links.filter(function(e) { return e.trim().length > 0 })
+  links = links.filter(function (e) {
+    return e.trim().length > 0;
+  });
 
-  if(links.length > req.options.upload.maxCount) {
-    return next(new HTTPError(`Max number of files exceeded (${req.options.upload.maxCount})`, 400))
+  if (links.length > req.options.upload.maxCount) {
+    return next(new _libHTTPErrorJs2['default']('Max number of files exceeded (' + req.options.upload.maxCount + ')', 400));
   }
 
-  interactor.ipc.send('call', 'upload.create', links, req.user, req.options)
+  _libJobInteractorJs2['default'].ipc.send('call', 'upload.create', links, req.user, req.options);
 
-  return res.handle('back', {info: 'Upload launched'}, 201)
+  return res.handle('back', { info: 'Upload launched' }, 201);
 }
 
 function canUpload(req, res, next) {
-  let opts = req.options.upload
+  var opts = req.options.upload;
 
-  if(opts.disabled)
-    return next(new HTTPError('Unauthorized', 401))
+  if (opts.disabled) return next(new _libHTTPErrorJs2['default']('Unauthorized', 401));
 
-  return next()
+  return next();
 }
 
-let Upload = function(app) {
-      
+var Upload = function Upload(app) {
+
   //Hacking views directory
-  let views = app.get('views')
-  views.push(p.join(__dirname, 'views'))
-  app.set('views', views)
+  var views = app.get('views');
+  views.push(_path2['default'].join(__dirname, 'views'));
+  app.set('views', views);
 
-  let config = app.get('config')
-  let pt = prepareTree(app)
+  var config = app.get('config');
+  var pt = (0, _middlewares.prepareTree)(app);
 
-  let storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      return cb(null, req.options.upload.path)
+  var storage = _multer2['default'].diskStorage({
+    destination: function destination(req, file, cb) {
+      return cb(null, req.options.upload.path);
     },
-    filename: function (req, file, cb) {
+    filename: function filename(req, file, cb) {
 
-      let original = file.originalname
-      let ext = p.extname(original)
-      let name = p.basename(original, ext) 
+      var original = file.originalname;
+      var ext = _path2['default'].extname(original);
+      var name = _path2['default'].basename(original, ext);
 
       //rename if exists
-      if(fs.existsSync(p.join(req.options.upload.path, original))) {
-        original =  name + '-' + Date.now() + ext
+      if (_fs2['default'].existsSync(_path2['default'].join(req.options.upload.path, original))) {
+        original = name + '-' + Date.now() + ext;
       }
 
-      return cb(null, original)
+      return cb(null, original);
     }
-  })
+  });
 
   /**
    * @api {post} /upload Upload
@@ -78,23 +107,20 @@ let Upload = function(app) {
    * @apiName upload
    * @apiParam {string[]} files
    */
-  let upload = multer({storage: storage})
+  var upload = (0, _multer2['default'])({ storage: storage });
 
-  app.get('/upload', pt, canUpload, getUpload)
-  app.post('/upload', pt, canUpload, 
-    upload.array('files', config.upload.maxCount),
-    function(req, res, next) {
-      let info = ''
+  app.get('/upload', pt, canUpload, getUpload);
+  app.post('/upload', pt, canUpload, upload.array('files', config.upload.maxCount), function (req, res, next) {
+    var info = '';
 
-      if(req.files.length == 1) {
-        info = `${req.files[0].originalname} uploaded to ${req.files[0].path}`
-      } else {
-        info = `${req.files.length} files uploaded to ${req.options.upload.path}`
-      }
-
-      return res.handle('upload', {info: info}, 200)
+    if (req.files.length == 1) {
+      info = '' + req.files[0].originalname + ' uploaded to ' + req.files[0].path;
+    } else {
+      info = '' + req.files.length + ' files uploaded to ' + req.options.upload.path;
     }
-  )
+
+    return res.handle('upload', { info: info }, 200);
+  });
 
   /**
    * @api {post} /remote-upload Remote Upload
@@ -102,9 +128,10 @@ let Upload = function(app) {
    * @apiName remoteUpload
    * @apiParam {string[]} links One link by line
    */
-  app.post('/remote-upload', pt, canUpload, remoteUpload)
+  app.post('/remote-upload', pt, canUpload, remoteUpload);
 
-  return app
-}
+  return app;
+};
 
-export default Upload
+exports['default'] = Upload;
+module.exports = exports['default'];
