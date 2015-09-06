@@ -1,9 +1,21 @@
-import job from './job.js'
-import router from './router.js'
-import registerHooks from './hooks.js'
+'use strict';
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _jobJs = require('./job.js');
+
+var _jobJs2 = _interopRequireDefault(_jobJs);
+
+var _routerJs = require('./router.js');
+
+var _routerJs2 = _interopRequireDefault(_routerJs);
+
+var _hooksJs = require('./hooks.js');
+
+var _hooksJs2 = _interopRequireDefault(_hooksJs);
 
 module.exports = {
-  hooks: registerHooks,
-  job: job,
-  router: router
-}
+  hooks: _hooksJs2['default'],
+  job: _jobJs2['default'],
+  router: _routerJs2['default']
+};
