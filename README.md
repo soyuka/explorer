@@ -246,6 +246,14 @@ plugins:
     module: 'explorer-unrar' 
 ```
 
+- [explorer-cksfv](https://github.com/soyuka/explorer-cksfv)
+
+```
+plugins:
+  - cksfv
+    module: 'explorer-cksfv'
+```
+
 ### Development
 
 [See plugins documentation](https://github.com/soyuka/explorer/blob/master/Plugins.md)
