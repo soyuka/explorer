@@ -1,8 +1,24 @@
-import {tree} from '../lib/tree.js'
-import prettyBytes from 'pretty-bytes'
-import p from 'path'
-import {handleSystemError} from '../lib/utils.js'
-let debug = require('debug')('explorer:trashSize')
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _libTreeJs = require('../lib/tree.js');
+
+var _prettyBytes = require('pretty-bytes');
+
+var _prettyBytes2 = _interopRequireDefault(_prettyBytes);
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
+var _libUtilsJs = require('../lib/utils.js');
+
+var debug = require('debug')('explorer:trashSize');
 
 /**
  * Gets the trash size
@@ -13,39 +29,38 @@ function trashSize(config) {
 
   return function (req, res, next) {
 
-    res.locals.trashSize = '0 B' 
+    res.locals.trashSize = '0 B';
 
-    if(config.remove.disabled || config.remove.method != 'mv') {
-      return next() 
+    if (config.remove.disabled || config.remove.method != 'mv') {
+      return next();
     }
 
-    let v = config.remove.path
+    var v = config.remove.path;
 
-    if(req.user.trash) {
-      v = p.resolve(req.user.home, req.user.trash)
+    if (req.user.trash) {
+      v = _path2['default'].resolve(req.user.home, req.user.trash);
     }
 
-    tree(v, {maxDepth: 1})
-    .then(function(tree) {
+    (0, _libTreeJs.tree)(v, { maxDepth: 1 }).then(function (tree) {
 
-      if(tree.tree.length == 0) {
-        return next()
-      }
-        
-      let size = 0;
-
-      for(var i in tree.tree) {
-        size += tree.tree[i].size
+      if (tree.tree.length == 0) {
+        return next();
       }
 
-      debug('Trash size %s', size)
+      var size = 0;
 
-      res.locals.trashSize = prettyBytes(size)
+      for (var i in tree.tree) {
+        size += tree.tree[i].size;
+      }
 
-      return next()
-    })
-    .catch(handleSystemError(next))
-  }
+      debug('Trash size %s', size);
+
+      res.locals.trashSize = (0, _prettyBytes2['default'])(size);
+
+      return next();
+    })['catch']((0, _libUtilsJs.handleSystemError)(next));
+  };
 }
 
-export default trashSize
+exports['default'] = trashSize;
+module.exports = exports['default'];
