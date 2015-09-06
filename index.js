@@ -51,6 +51,11 @@ require('./server.js')(config)
     return Promise.resolve()
   }
 
+  interactor.on('error', function(err) {
+    console.error('Interactor errored'); 
+    console.error(err); 
+  })
+
   return interactor.run(plugins_paths)
 
 }) 
