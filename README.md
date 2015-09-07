@@ -92,8 +92,8 @@ https:
   key: './certs/key.pem' # change those are dummies
   cert: './certs/cert.pem'
 plugins: # those are enable by default, use below options to disable them
-  - upload
-  - archive
+  upload: {}
+  archive: {}
 dev: false # more verbose error (stack)
 ```
 
@@ -231,9 +231,9 @@ In the `config.yml`:
 
 ```
 plugins:
-  - name:
+  name:
     module: 'npm-package-name'
-  - local-name: {} # located in path/to/explorer/plugins/local-name
+  local-name: {} # located in path/to/explorer/plugins/local-name
 ```
 
 ### Available plugins:
@@ -242,7 +242,7 @@ plugins:
 
 ```
 plugins:
-  - unrar:
+  unrar:
     module: 'explorer-unrar' 
 ```
 
@@ -250,7 +250,7 @@ plugins:
 
 ```
 plugins:
-  - cksfv
+  cksfv
     module: 'explorer-cksfv'
 ```
 
