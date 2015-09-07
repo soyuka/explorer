@@ -51,7 +51,7 @@ search:
   method: 'native' 
   # Custom search command (${search} will be replaced by the string) 
   command: "pt --nocolor --nogroup -l -i '${search}' ." # not used by native
-  max_depth: 10 # Default 10
+  maxDepth: 10 # Default 10
   concurrency: 100 # Default 100 (only used with native search)
   # String match score (only used with native search)
   maxScore: 0.5
@@ -61,7 +61,7 @@ pagination:
 # Be carefull with this next section as it will have an impact on performances
 tree:
   # When calculating directory size we stop at the max_depth
-  max_depth: 10 #Default 10
+  maxDepth: 10 #Default 10
   concurrency: 100 #Default 100
 remove: 
   # 'mv' will move files to a trash directory
@@ -302,7 +302,12 @@ $ node test.js Infinity
 reading files: 9ms
 ```
 
-[See bluebird docs](https://github.com/petkaantonov/bluebird/blob/master/API.md#option-concurrency)
+See [bluebird docs](https://github.com/petkaantonov/bluebird/blob/master/API.md#option-concurrency), `tree.concurrency` and `search.concurrency` configuration options.
+
+In the configuration there is a `tree.maxDepth` parameter. It's used when *estimating* the size of a directory, we'll stop recursivity when depth is more than 10. 
+10 is a lot actually, to improve performances you should lower the number. To get a more precise number increase it (this can get really slow, really fast).
+
+The `search.maxDepth` indicates wether to search in the directory or not if it's too deep. Search will go faster but you'll get less results. 
 
 ## Why?
 
