@@ -10,8 +10,14 @@ describe('user', function() {
   
   before(bootstrap.autoAgent)
 
-  it('should not be logged in', function(cb) {
+  it('should not be logged in (302)', function(cb) {
     this.request.get('/')
+    .expect(302)
+    .end(cb)
+  })
+
+  it('should not be logged in (401)', function(cb) {
+    this.request.get('/someotherpath')
     .expect(401)
     .end(cb)
   })
@@ -85,6 +91,12 @@ describe('user', function() {
 
   it('should be logged out', function(cb) {
     this.request.get('/')
+    .expect(302)
+    .end(cb)
+  })
+
+  it('should be logged out', function(cb) {
+    this.request.get('/someotherpath')
     .expect(401)
     .expect(function(res) {
       expect(res.body.redirect).to.equal('/login')
