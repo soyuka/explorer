@@ -26,7 +26,10 @@ function user(req, res, next) {
   }
 
   if(req.url != '/login' && (!user || !user.username)) {
-    return next(new HTTPError("Not authenticated", 401, '/login'))
+    if(req.url == '/')
+      return res.redirect('/login')
+    else
+      return next(new HTTPError("Not authenticated", 401, '/login'))
   } 
   
   if(user && user.username && !req.user) {
