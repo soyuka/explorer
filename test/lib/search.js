@@ -1,8 +1,4 @@
 import {searchMethod} from '../../lib/search.js'
-import p from 'path'
-import fs from 'fs'
-
-let fixtures = p.join(__dirname, '../fixtures/tree')
 
 describe('search', function() {
   it('should throw', function() {
@@ -46,32 +42,5 @@ describe('search', function() {
 
   it('should get the native search method', function() {
     expect(searchMethod('native')).to.be.a('function')
-  })
-
-  it('should native search smart caps', function(cb) {
-   searchMethod('native')('lowercamelcase', fixtures, fixtures)
-   .then(function(results) {
-     var found = false
-     //in case there are more than 1 results with upcoming tests
-     for(let i in results.tree) {
-       if(results.tree[i].name == 'lowerCamelCase') {
-          found = true 
-          break;
-       }
-     }
-
-    expect(found).to.be.true
-    cb()
-   })
-  })
-
-  it('should search with -dir filter', function(cb) {
-   searchMethod('native')('dir1 --dir', fixtures, fixtures)
-   .then(function(results) {
-     for(var i in results.tree) {
-       expect(results.tree[i].directory).to.be.true
-     }
-      cb()
-   })
   })
 })
