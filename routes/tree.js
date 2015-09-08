@@ -144,8 +144,11 @@ function search(req, res, next) {
 
   searchMethod(config.search.method, req.options)(req.options.search, req.options.path, req.options.root)
   .then(function(data) {
-    data = data ? data : this.data.out
-    return tree([].concat.apply([], data), req.options)
+    if(config.search.method == 'native') {
+      return data 
+    } else {
+      return tree([].concat.apply([], this.data.out), req.options)
+    }
   })
   .then(function(e) {
     res.locals = extend(res.locals, e, {search: req.query.search})
