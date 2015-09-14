@@ -9,7 +9,7 @@ import flash from 'connect-flash'
 import methodOverride from 'method-override'
 import morgan from 'morgan'
 import Promise from 'bluebird'
-import {registerPlugins} from './lib/plugins.js'
+import {registerPlugins, registerPluginsRoutes} from './lib/plugins.js'
 
 import {Users} from './lib/users.js'
 import * as routes from './routes'
@@ -34,13 +34,14 @@ module.exports = function(config) {
   app.set('view cache', true)
   app.set('views', [p.join(__dirname, 'views')])
 
+  //this registers plugins (app.set('plugins'))
+  registerPlugins(app)
+
   app.engine('.haml', function(str, options, fn) {
     options.locals = util._extend({}, options)
     //debug('template locals', options.locals)
     return hamljs.renderFile(str, 'utf-8', options, fn)
   })
-
-  app.set('plugins', registerPlugins(config))
 
   app.use(parallelMiddlewares([
     methodOverride(function(req, res) {
@@ -73,14 +74,18 @@ module.exports = function(config) {
     return next()
   })
 
-  app.use(middlewares.user)
+  app.use(middlewares.user(app))
 
   app.use(parallelMiddlewares([
     middlewares.format(app),
     middlewares.notify,
-    middlewares.optionsCookie,
-    middlewares.registerHooks(app)
+    middlewares.optionsCookie
   ]))
+
+  app.use(middlewares.registerHooks(app))
+
+  //register plugins routes
+  registerPluginsRoutes(app)
 
   //Load routes
   routes.Tree(app)

@@ -1,5 +1,11 @@
 # Plugins
 
+This is a work in progress! Api might change!
+
+TODO:
+- document `req.options` features accessible through prepareTree
+- same for sanitizeCheckboxes 
+
 ## What is a Plugin?
 
 Plugins are basic node modules. They can be used through [npm](npmjs.org) or locally.
@@ -25,11 +31,14 @@ module.exports = {
   job: require('./job.js'),
   hooks: require('./hooks.js'),
   router: require('./router.js'), //you might not need it if you're hooking an action on paths
-  name: 'pluginName' //the name you'll call the job on
+  name: 'pluginName', //the name you'll call the job on
+  allowKeyAccess: ['/allowThisRouteThroughKey']
 }
 ```
 
 None of those is requested, you could need *hooks and router*, or *job and hooks*, or why not only static hooks. 
+
+/!\ Don't export what you don't need so that they don't get called for nothing
 
 ### Hooks structure
 
@@ -53,13 +62,11 @@ function registerHooks(config) {
       return '' //expects a <a href="#"></a> 
     },
     menu: function() {
-      return '' //expects a <li><a href="#"></a></li>
+      return '' //expects a <li><a href="/p/pluginName/"></a></li>
     }
   }
 }
 ```
-
-/!\ Skip hooks you don't need so that they don't get called for nothing
 
 ### Router structure
 
@@ -69,10 +76,10 @@ This will then call the Job.create method.
 ```javascript
 /**
  * Router
- * @param Express app our app instances
+ * @param router express.Router
  * @param object utils explorer utils 
  **/
-function Router(app, utils) {
+function Router(router, utils) {
   var HTTPError = utils.HTTPError
 
   function myRoute(req, res, next) {
@@ -87,12 +94,14 @@ function Router(app, utils) {
   }
 
   //Use the prepareTree middleware if you work with the tree (security, query sanitize etc.)
-  //Use the /plugin/pluginName path to avoid conflicts
-  //this registers a route to /plugin/unrar
-  app.get('/plugin/pluginName', utils.prepareTree, myRoute)
+  //this registers a route to /p/pluginName/
+  router.get('/', utils.prepareTree, myRoute)
+
+  //with an action hook (see below), defining the route /p/pluginName/action/foo
+  router.post('/action/foo', doSomething)
 }
 
-export default Router
+module.exports = Router
 ```
 
 `utils` is an object with: 
@@ -108,9 +117,9 @@ export default Router
  * @param IPCEE ipc our process communication instance
  * @param Stat stat the Stat used for notifications
  **/
-function Job(ipc = null, stat) {
+function Job(ipc, stat) {
   if(!(this instanceof Job)) { return new Job(ipc, stat) }
-  this.ipc = ipc
+  this.ipc = ipc || null
   this.stat = stat
 }
 
@@ -163,9 +172,40 @@ module.exports = Job
 
 ### Action hook
 
-The action hook expects an option value of "plugin.method" and will call your plugin method. To do so, you need to export routes in your `index.js` ([example](https://github.com/soyuka/explorer/blob/master/plugins/archive/index.js#L20)).
+The action hooks don't behave like other hooks. We are hooking an `<option>` or `<optgroup>`, that will respond to the global tree form. The hook value will call a router method.
 
-## Activate
+For example, `pluginName.doSomething` will call `POST /p/pluginName/action/doSomething/`:
+
+```
+function registerHooks(config) {
+  return {
+    action: function(tree) {
+      return '<option value="pluginName.doSomething">'
+    } 
+  }
+}
+
+module.exports = registerHooks
+```
+
+The route is then defined like this:
+
+```
+function Router(router, utils) {
+
+  router.post('/action/doSomething', function(req, res, next) {
+    //do stuff with req.options.paths and req.options.directories
+  })
+
+  return router
+}
+
+module.exports = Router
+```
+
+You can see a working example [here](https://github.com/soyuka/explorer/tree/master/plugins/archive)
+
+## Configuration
 
 ### NPM
 
@@ -184,12 +224,6 @@ Put the plugin in `path-to-explorer/plugins/pluginName` and add it to the config
 ```yaml
 plugins:
   pluginName: {}
-```
-
-To debug your plugin activity you should launch explorer like this:
-
-```bash
-DEBUG="explorer:job" babel-node index.js
 ```
 
 ## Examples
