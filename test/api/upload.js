@@ -27,12 +27,12 @@ describe('upload', function() {
   before(bootstrap.login)
 
   it('should get upload', function(cb) {
-    this.request.get('/upload')
+    this.request.get('/p/upload')
     .end(cb)
   })
 
   it('should post file', function(cb) {
-    this.request.post('/upload')
+    this.request.post('/p/upload')
     .attach('files', p.join(__dirname, '../fixtures/tree/dir/1Mo.dat'))
     .end(function() {
       expect(getList()).to.deep.equal(['1Mo.dat'])
@@ -42,7 +42,7 @@ describe('upload', function() {
   })
 
   it('should post same file without replacing', function(cb) {
-    this.request.post('/upload')
+    this.request.post('/p/upload')
     .attach('files', p.join(__dirname, '../fixtures/tree/dir/1Mo.dat'))
     .end(function() {
 
@@ -54,7 +54,7 @@ describe('upload', function() {
 
   it('should post remote-upload', function(cb) {
     this.timeout(5000)
-    this.request.post('/remote-upload')
+    this.request.post('/p/upload/remote')
     .send({links: 'https://www.google.fr/images/srpr/logo11w.png'})
     .expect(201)
     .end(function() {

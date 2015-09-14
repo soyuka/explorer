@@ -1,11 +1,11 @@
-function registerHooks(config) {
+function registerHooks(config, url) {
   return {
     menu: function() {
 
       if(config.upload.disabled === true)
         return ''
 
-      return '<li><a href="/upload"><i class="icon-upload"></i>Upload</a></li>'
+      return '<li><a href="/p/upload"><i class="icon-upload"></i>Upload</a></li>'
     } 
   }
 }
