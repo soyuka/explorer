@@ -4,54 +4,42 @@ import p from 'path'
 import moment from 'moment'
 import multer from 'multer'
 
-import HTTPError from '../../lib/HTTPError.js'
-import {prepareTree} from '../../middlewares'
-import interactor from '../../lib/job/interactor.js'
-
 let debug = require('debug')('explorer:routes:upload')
 
-function getUpload(req, res, next) {
-  return res.renderBody('upload.haml', req.options)
-}
+let Upload = function(app, utils, config) {
+  
+  function canUpload(req, res, next) {
+    let opts = req.options.upload
 
-/**
- * @api {post} /remote-upload Remote Upload
- * @apiGroup Upload
- * @apiName remoteUpload
- * @apiParam {string} links Links to download
- */
-function remoteUpload(req, res, next) {
-  let links = req.body.links.split('\r\n')
+    if(opts.disabled)
+      return next(new utils.HTTPError('Unauthorized', 401))
 
-  links = links.filter(function(e) { return e.trim().length > 0 })
-
-  if(links.length > req.options.upload.maxCount) {
-    return next(new HTTPError(`Max number of files exceeded (${req.options.upload.maxCount})`, 400))
+    return next()
   }
 
-  interactor.ipc.send('call', 'upload.create', links, req.user, req.options)
+  function getUpload(req, res, next) {
+    return res.renderBody('upload.haml', req.options)
+  }
 
-  return res.handle('back', {info: 'Upload launched'}, 201)
-}
+  /**
+   * @api {post} /p/upload/remote Remote Upload
+   * @apiGroup Upload
+   * @apiName remoteUpload
+   * @apiParam {string} links Links to download
+   */
+  function remoteUpload(req, res, next) {
+    let links = req.body.links.split('\r\n')
 
-function canUpload(req, res, next) {
-  let opts = req.options.upload
+    links = links.filter(function(e) { return e.trim().length > 0 })
 
-  if(opts.disabled)
-    return next(new HTTPError('Unauthorized', 401))
+    if(links.length > req.options.upload.maxCount) {
+      return next(new utils.HTTPError(`Max number of files exceeded (${req.options.upload.maxCount})`, 400))
+    }
 
-  return next()
-}
+    utils.interactor.ipc.send('call', 'upload.create', links, req.user, req.options)
 
-let Upload = function(app) {
-      
-  //Hacking views directory
-  let views = app.get('views')
-  views.push(p.join(__dirname, 'views'))
-  app.set('views', views)
-
-  let config = app.get('config')
-  let pt = prepareTree(app)
+    return res.handle('back', {info: 'Upload launched'}, 201)
+  }
 
   let storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -73,15 +61,15 @@ let Upload = function(app) {
   })
 
   /**
-   * @api {post} /upload Upload
+   * @api {post} /p/upload Upload
    * @apiGroup Upload
    * @apiName upload
    * @apiParam {string[]} files
    */
   let upload = multer({storage: storage})
 
-  app.get('/upload', pt, canUpload, getUpload)
-  app.post('/upload', pt, canUpload, 
+  app.get('/', utils.prepareTree, canUpload, getUpload)
+  app.post('/', utils.prepareTree, canUpload, 
     upload.array('files', config.upload.maxCount),
     function(req, res, next) {
       let info = ''
@@ -96,13 +84,7 @@ let Upload = function(app) {
     }
   )
 
-  /**
-   * @api {post} /remote-upload Remote Upload
-   * @apiGroup Upload
-   * @apiName remoteUpload
-   * @apiParam {string[]} links One link by line
-   */
-  app.post('/remote-upload', pt, canUpload, remoteUpload)
+  app.post('/remote', utils.prepareTree, canUpload, remoteUpload)
 
   return app
 }
