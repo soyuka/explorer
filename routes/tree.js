@@ -194,34 +194,36 @@ function emptyTrash(req, res, next) {
  * @apiName compress
  * @apiParam {string[]} paths Array of paths and directories
  * @apiParam {string} [name="archive-Date.getTime()"] Archive name
- * @apiParam {string} action Download, archive, remove
+ * @apiParam {string} action Download, archive, remove (see plugins docs)
  */
-function treeAction(plugins) {
+function treeAction(app) {
+  let plugins = app.get('plugins')
+
   return function(req, res, next) {
+
     if(!req.body.action) {
       return handleSystemError(next)("Action is needed", 400) 
     }
 
     let action = req.body.action.split('.')
     let plugin = action.shift()
-    let method = action.shift()
+    let actionName = action.shift()
 
     if(!(plugin in plugins)) {
-      return new HTTPError(`Plugin ${plugin} is not available`, 400) 
+      return new HTTPError(`Plugin ${plugin} not found`, 404) 
     }
 
-    if(!~plugins[plugin].actionMethods.indexOf(method)) {
-      return new HTTPError(`Method ${plugin}.${method} is not accepted`, 403) 
-    }
-    
-    return plugins[plugin][method](req, res, next)
+    //we're on POST /, /p/pluginName/action/actionName
+    req.url = p.join(req.url, 'p', plugin, 'action', actionName)
+
+    return app._router.handle(req, res, next)
   }
 }
 
 let Tree = function(app) {
   let pt = prepareTree(app)
 
-  app.post('/', pt, sanitizeCheckboxes, treeAction(app.get('plugins')))
+  app.post('/', pt, sanitizeCheckboxes, treeAction(app))
   app.get('/', pt, getTree, render)
   app.get('/search', pt, search, render)
   app.get('/download', pt, download)
