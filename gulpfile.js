@@ -3,6 +3,21 @@ var sass = require('gulp-sass')
 var concat = require('gulp-concat')
 var minify = require('gulp-minify-css')
 var rename = require('gulp-rename')
+var babel = require('gulp-babel')
+var fs = require('fs')
+// var shell = require('gulp-shell')
+
+var jsDirectories = ['bin', 'lib', 'middlewares', 'plugins', 'routes']
+var jsGlob = function(prefix) {
+  return jsDirectories.map(function(e) { 
+    return [
+      [prefix, e, '**', '*.js'].join('/'), 
+      [prefix, e, '*.js'].join('/')
+    ]
+  })
+  .reduce(function(a, b) { return a.concat(b) })
+  .concat(['!./gulpfile.js', './*.js'])
+}
 
 gulp.task('styles', function() {
   return gulp.src('./client/scss/*.scss')
@@ -16,7 +31,36 @@ gulp.task('styles', function() {
   .pipe(gulp.dest('./client/css'))
 })
 
+gulp.task('babelize', function() {
+  return gulp.src(jsGlob('.'), {base: './'})
+  .pipe(babel())
+  .pipe(gulp.dest('./dist/'))
+})
+
+gulp.task('prepublish:backup', function() {
+  return gulp.src(jsGlob('.'), {base: './'})
+  .pipe(gulp.dest('./src'))
+})
+
+//git stash to revert
+gulp.task('prepublish:babelize', ['babelize', 'prepublish:backup'], function() {
+  return gulp.src(jsGlob('./dist'), {base: './dist'})
+  .pipe(rename(function(path) {
+    path.dirname = path.dirname.replace('..', '.')
+  }))
+  .pipe(gulp.dest('.'))
+})
+
+gulp.task('prepublish:restore', function() {
+  return gulp.src(jsGlob('./src'), {base: './src'})
+  .pipe(rename(function(path) {
+    path.dirname = path.dirname.replace('..', '.')
+  }))
+  .pipe(gulp.dest('.'))
+})
+
 gulp.task('default', ['styles'])
+// gulp.task('prepublish', 'prepublish:babelize', shell.task('npm publish'), 'prepublish:restore')
 
 gulp.task('watch', ['default'], function() {
   gulp.watch('./client/scss/*.scss', ['styles'])

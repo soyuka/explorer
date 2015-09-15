@@ -2,13 +2,5 @@ coverage
 bower_components
 node_modules
 config.yml
-!test/fixtures/config.yml
-backup
-data/users
-!data/.gitkeep
-*.bak
-./upload
-./trash
-./tmp
-./doc
 ./test
+.DS_Store

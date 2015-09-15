@@ -111,8 +111,6 @@ function deletePath(req, res, next) {
     return next(new HTTPError('Not acceptable', 406))
   }
 
-  debug('Deleting %s', path)
-
   let cb = function(err, newPath) {
     if(err) {
       return handleSystemError(next)(err)
@@ -122,9 +120,11 @@ function deletePath(req, res, next) {
   }
 
   if(opts.remove.method == 'rm') {
+    debug('Deleting %s', path)
     return rimraf(path, cb)
   } else {
     let t = p.join(opts.remove.path, p.basename(path) + '.' + moment().format('YYYYMMDDHHmmss'))
+    debug('Moving %s to %s', path, t)
     return fs.rename(path, t, function(err) {
       return cb(err, t)
     }) 
