@@ -2,7 +2,7 @@
 
 Explore and share. Highly-configurable directory listing made with nodejs.
 
-![Screenshot](https://raw.githubusercontent.com/soyuka/explorer/master/screen.png)
+![Screenshot](https://raw.githubusercontent.com/soyuka/explorer/master/doc/screen.png)
 
 - [Requirements](#requirements)
 - [Install](#install)
@@ -137,7 +137,7 @@ http GET localhost:4859/?key=get-your-key-from-settings Accept:application/rss+x
 
 ## Update
 
-[From 1.x to 2.x see configuration migration](https://github.com/soyuka/explorer/blob/master/Migration.md).
+[From 1.x to 2.x see configuration migration](https://github.com/soyuka/explorer/blob/master/doc/Migration.md).
 
 ### As a pm2 module
 
@@ -256,7 +256,7 @@ plugins:
 
 ### Development
 
-[See plugins documentation](https://github.com/soyuka/explorer/blob/master/Plugins.md)
+[See plugins documentation](https://github.com/soyuka/explorer/blob/master/doc/Plugins.md)
 
 ## Development
 

@@ -17,8 +17,7 @@
   "scripts": {
     "test": "mocha --compilers js:babel/register",
     "coverage": "istanbul cover _mocha -- --compilers js:babel/register",
-    "postpublish": "git stash && rm -r lib.bak routes.bak middlewares.bak plugins.bak",
-    "postinstall": "bash deploy.sh postinstall",
+    "postinstall": "bash scripts/postinstall.sh",
     "docs": "apidoc -i routes -o doc/api"
   },
   "engines": {
@@ -75,10 +74,12 @@
     "chai": "^3.2.0",
     "gulp": "^3.9.0",
     "gulp-add-src": "^0.2.0",
+    "gulp-babel": "^5.2.1",
     "gulp-concat": "^2.6.0",
     "gulp-minify-css": "^1.2.0",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.0.4",
+    "gulp-shell": "^0.4.3",
     "methods": "^1.1.1",
     "mocha": "^2.2.5",
     "superagent": "^1.3.0",
