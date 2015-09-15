@@ -12,7 +12,7 @@ let config = getConfiguration(config_path)
 config.database = p.join(__dirname, './fixtures/users')
 
 if(!fs.existsSync(config.database)) {
-  fs.writeFileSync(config.database, fs.readFileSync(p.join(__dirname, '/../users.default')))
+  fs.writeFileSync(config.database, fs.readFileSync(p.join(__dirname, '/../doc/examples/data/users')))
 }
 
 let options = {
