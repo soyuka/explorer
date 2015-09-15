@@ -305,7 +305,7 @@ reading files: 9ms
 See [bluebird docs](https://github.com/petkaantonov/bluebird/blob/master/API.md#option-concurrency), `tree.concurrency` and `search.concurrency` configuration options.
 
 In the configuration there is a `tree.maxDepth` parameter. It's used when *estimating* the size of a directory, we'll stop recursivity when depth is more than 10. 
-10 is a lot actually, to improve performances you should lower the number. To get a more precise number increase it (this can get really slow, really fast).
+10 is a lot actually, to improve performances you should lower the number. To get a more precise number increase it.
 
 The `search.maxDepth` indicates wether to search in the directory or not if it's too deep. Search will go faster but you'll get less results. 
 
