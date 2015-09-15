@@ -1,32 +1,43 @@
-import p from 'path'
+'use strict';
 
-let debug = require('debug')('explorer:middlewares:registerHooks')
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
+var debug = require('debug')('explorer:middlewares:registerHooks');
 
 //Register plugins, should be called just before rendering (after prepareTree)
 function registerHooks(app) {
 
-  let plugins = app.get('plugins')
-  let config = app.get('config')
+  var plugins = app.get('plugins');
+  var config = app.get('config');
 
-  return function(req, res, next) {
-    let hooks = {}
+  return function (req, res, next) {
+    var hooks = {};
 
     /**
      * @see plugins documentation
      */
-    for(let name in plugins) {
-      if('hooks' in plugins[name]) {
-        debug('Registering hooks for %s', name)
-        hooks[name] = plugins[name].hooks(config, p.join('/p', name)) 
+    for (var _name in plugins) {
+      if ('hooks' in plugins[_name]) {
+        debug('Registering hooks for %s', _name);
+        hooks[_name] = plugins[_name].hooks(config, _path2['default'].join('/p', _name));
       }
     }
 
-    res.locals.hooks = hooks
+    res.locals.hooks = hooks;
 
-    debug('Hooks', res.locals.hooks)
+    debug('Hooks', res.locals.hooks);
 
-    return next()
-  }
+    return next();
+  };
 }
 
-export default registerHooks
+exports['default'] = registerHooks;
+module.exports = exports['default'];

@@ -1,17 +1,42 @@
-import fs from 'fs'
-import p from 'path'
-import moment from 'moment'
-import multer from 'multer'
-import job from './job.js'
-import Stat from '../../lib/job/stat.js'
+'use strict';
 
-let debug = require('debug')('explorer:routes:archive')
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
 
-let Upload = function(router, utils) {
-  
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
+var _moment = require('moment');
+
+var _moment2 = _interopRequireDefault(_moment);
+
+var _multer = require('multer');
+
+var _multer2 = _interopRequireDefault(_multer);
+
+var _jobJs = require('./job.js');
+
+var _jobJs2 = _interopRequireDefault(_jobJs);
+
+var _libJobStatJs = require('../../lib/job/stat.js');
+
+var _libJobStatJs2 = _interopRequireDefault(_libJobStatJs);
+
+var debug = require('debug')('explorer:routes:archive');
+
+var Upload = function Upload(router, utils) {
+
   function getData(req) {
-    let name = req.body.name || 'archive'+new Date().getTime()
-    let temp = p.join(req.options.archive.path || './', `${name}.zip`)
+    var name = req.body.name || 'archive' + new Date().getTime();
+    var temp = _path2['default'].join(req.options.archive.path || './', name + '.zip');
 
     return {
       name: name,
@@ -19,29 +44,29 @@ let Upload = function(router, utils) {
       temp: temp,
       directories: req.options.directories,
       root: req.options.root
-    }
+    };
   }
 
-  router.post('/action/download', function(req, res, next) {
-    let data = getData(req)
-    data.stream = res
-    let stat = new Stat('archive')
+  router.post('/action/download', function (req, res, next) {
+    var data = getData(req);
+    data.stream = res;
+    var stat = new _libJobStatJs2['default']('archive');
 
-    let archive = new job(null, stat)
-    return archive.create(data, req.user, req.options)
-  })
+    var archive = new _jobJs2['default'](null, stat);
+    return archive.create(data, req.user, req.options);
+  });
 
-  router.post('/action/compress', function(req, res, next) {
-    if(req.options.archive.disabled)
-      return next(new HTTPError('Unauthorized', 401))
-  
-    let data = getData(req)
-    data.stream = data.temp
-    utils.interactor.ipc.send('call', 'archive.create', data, req.user, req.options)
-    return res.handle('back', {info: 'Archive created'}, 201)
-  })
+  router.post('/action/compress', function (req, res, next) {
+    if (req.options.archive.disabled) return next(new HTTPError('Unauthorized', 401));
 
-  return router
-}
+    var data = getData(req);
+    data.stream = data.temp;
+    utils.interactor.ipc.send('call', 'archive.create', data, req.user, req.options);
+    return res.handle('back', { info: 'Archive created' }, 201);
+  });
 
-export default Upload
+  return router;
+};
+
+exports['default'] = Upload;
+module.exports = exports['default'];

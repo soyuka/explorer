@@ -1,13 +1,18 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
 function registerHooks(config, url) {
   return {
-    menu: function() {
+    menu: function menu() {
 
-      if(config.upload.disabled === true)
-        return ''
+      if (config.upload.disabled === true) return '';
 
-      return '<li><a href="/p/upload"><i class="icon-upload"></i>Upload</a></li>'
-    } 
-  }
+      return '<li><a href="/p/upload"><i class="icon-upload"></i>Upload</a></li>';
+    }
+  };
 }
 
-export default registerHooks
+exports['default'] = registerHooks;
+module.exports = exports['default'];
