@@ -21,33 +21,37 @@ if [ -z $version ]; then
   version='patch'
 fi
 
+npm config set git-tag-version false
+tag=$(npm version $version)
+
+#v0.0.1 => 0.0.1
+previous="${previous:1:${#previous}}"
+current="${tag:1:${#tag}}"
+
+perl -pi -e "s,$previous,$current,g" README.md
+
+git add package.json README.md
+
+git commit -m $tag
+
+git tag -a $tag -m $tag
+
+npm config set git-tag-version true
+git push --tags
+
+# Pack
 git checkout -b deploy
 
 jq -r '.dependencies|keys[]|.|= "node_modules/" + .' package.json|xargs git add -f
-babelize
-rm -r lib.bak routes.bak middlewares.bak plugins.bak
+gulp prepublish:babelize
 git add .
 git add client/css -f
-git commit -q -m 'Compile dependencies'
+git commit -q -m 'Pack dependencies'
 
-tag=$(npm version $version)
+git archive --format=tar --prefix=explorer/ HEAD > "$tag.tar.gz"
 
-git push --tags
-git reset -q HEAD~2
-git stash -q
+git reset -q HEAD~1
 
 git checkout master
 git branch -D deploy
 
-jq --arg tag $tag '.version |= $tag' package.json > package.tmp.json
-mv package.tmp.json package.json
-
-#v0.0.1 => 0.0.1
-previous="${previous:1:${#previous}}"
-tag="${tag:1:${#tag}}"
-
-perl -pi -e "s,$previous,$tag,g" README.md
-
-git add package.json README.md
-
-git commit -q -m "v$tag"
