@@ -4,9 +4,25 @@ var p = require('path')
 var fs = require('fs')
 var Spawner = require('promise-spawner')
 var eol = require('os').EOL
+var yamljs = require('yamljs')
+var utils = require('../lib/utils.js')
+var getConfiguration = require('../lib/config.js').getConfiguration
 
 var argv = require('minimist')(process.argv.slice(2))
 var command = argv._.shift()
+
+try {
+  var config_path = utils.firstExistingPath([
+    argv.c,
+    p.join(process.env.HOME || '', './.config/explorer/config.yml'), 
+    p.join(__dirname, './config.yml')
+  ])
+
+  var config = getConfiguration(config_path)
+} catch(e) {
+  console.log('No config file!')
+  throw e
+}
 
 function handleCliError(err) {
   console.error(err.stack)
@@ -39,6 +55,17 @@ function pluginCommand(args) {
   spawner.out.pipe(process.stdout)
   spawner.err.pipe(process.stderr)
 
+  if(args._.length == 0) {
+    for(var i in config.plugins) {
+      if(config.plugins[i].module !== undefined)
+        args._.push(config.plugins[i].module)
+    }
+  }
+
+  if(args._.length == 0) {
+    exit("No plugins to install")(1)
+  }
+
   var cwd = p.resolve(__dirname, '..')
   var command = ['npm', command, '--prefix='+cwd].concat(args._).join(' ')
 
@@ -46,10 +73,10 @@ function pluginCommand(args) {
 
   spawner.sp(command, {cwd: cwd})
   .then(function(code) {
-    return exit("Plugin installed, don't forget to add it to the config")
+    return exit("Plugin installed, don't forget to add it to the config")(0)
   })
   .catch(function(code) {
-    return exit('Command %s failed with code %d', command, code) 
+    return exit('Command %s failed with code %d', command, code)(code)
   })
 }
 
