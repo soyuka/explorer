@@ -33,10 +33,6 @@
             %a{href: '/logout'}
               %i.icon-logout
         %ul.left
-          %li
-            %a{href: '/'}
-              %i.icon-home
-              Home
           - each p in hooks
             - if('menu' in p)
               != p.menu()
@@ -59,16 +55,4 @@
 :javascript
   var confirmDeletion = function(e) {
     return confirm('Are you sure?')
-  }
-
-  var options = document.getElementById('options')
-
-  options.style.display = 'none'
-
-  var toggleOptions = function(e) {
-    var display = options.style.display 
-    display = display == '' ? 'none' : ''
-
-    e.target.text = display == '' ? 'Hide options' : 'Show options'
-    options.style.display = display
   }

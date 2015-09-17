@@ -1,36 +1,6 @@
 .row.container
   .large-12.xlarge-12.columns
 
-    -# Sort
-    %form#options{method: 'GET', action: ''}
-      .row
-        .columns.large-3
-          .row
-            .columns.large-3
-              %label.inline{for: 'sort'} Sort
-            .columns.large-9
-              %select{name: 'sort', id: 'sort'}
-                %option{value: 'name', selected: sort == 'name'} Name
-                %option{value: 'time', selected: sort == 'time'} Time
-                %option{value: 'size', selected: sort == 'size'} Size
-        .columns.large-3
-          %input{type: 'radio', id: 'order_asc', name: 'order', value: 'asc', checked: order == 'asc'} 
-          %label.inline{for: 'order_asc'} Asc
-          %input{type: 'radio', id: 'order_desc', name: 'order', value: 'desc', checked: order == 'desc'} 
-          %label.inline{for: 'order_desc'} Desc
-        .columns.large-2
-          .row
-            .columns.large-3
-              %label.inline{for: 'limit'} Limit
-            .columns.large-9
-              %input{type: 'number', id: 'limit', name: 'limit', value: limit}
-        .columns.large-2.end
-          %button.postfix.secondary{type: 'submit'} Update
-          %input{type: 'hidden', name: 'search', value: search}
-          %input{type: 'hidden', name: 'path', value: path}
-
-    %a.left{href: '#', onclick: 'toggleOptions(event)'} Show options
-
     -# Search
     .row
       .columns.large-5.small-12.right
@@ -51,6 +21,34 @@
         %li
           %a{href: '/?path=' + b.path}= b.name
       
+    -# Sort
+    %form#options{method: 'GET', action: ''}
+      .row
+        .columns.large-3
+          .row
+            .columns.large-3
+              %label.inline{for: 'sort'} Sort
+            .columns.large-9
+              %select{name: 'sort', id: 'sort'}
+                %option{value: 'name', selected: sort == 'name'} Name
+                %option{value: 'time', selected: sort == 'time'} Time
+                %option{value: 'size', selected: sort == 'size'} Size
+        .columns.large-2
+          %input{type: 'radio', id: 'order_asc', name: 'order', value: 'asc', checked: order == 'asc'} 
+          %label.inline{for: 'order_asc'} Asc
+          %input{type: 'radio', id: 'order_desc', name: 'order', value: 'desc', checked: order == 'desc'} 
+          %label.inline{for: 'order_desc'} Desc
+        .columns.large-2
+          .row
+            .columns.large-3
+              %label.inline{for: 'limit'} Limit
+            .columns.large-9
+              %input{type: 'number', id: 'limit', name: 'limit', value: limit}
+        .columns.large-offset-2.large-2
+          %button.postfix.secondary{type: 'submit'} Update
+          %input{type: 'hidden', name: 'search', value: search}
+          %input{type: 'hidden', name: 'path', value: path}
+
     -# Tree
     %form{method: 'POST', action: '/'}
       %table
