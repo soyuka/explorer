@@ -48,7 +48,7 @@ git push --tags
 git checkout -b deploy
 
 jq -r '.dependencies|keys[]|.|= "node_modules/" + .' package.json|xargs git add -f
-gulp prepublish:babelize
+gulp publish:babelize
 git add .
 git add client/css -f
 git commit -q -m 'Pack dependencies'
@@ -59,4 +59,4 @@ git reset -q HEAD~1
 
 git checkout master
 git branch -D deploy
-gulp prepublish:clean
+gulp publish:clean

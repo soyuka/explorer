@@ -4,7 +4,7 @@ var concat = require('gulp-concat')
 var minify = require('gulp-minify-css')
 var rename = require('gulp-rename')
 var babel = require('gulp-babel')
-var fs = require('fs')
+var promise = require('bluebird').Promise
 var Spawner = require('promise-spawner')
 var del = require('del')
 
@@ -38,13 +38,13 @@ gulp.task('babelize', function() {
   .pipe(gulp.dest('./dist/'))
 })
 
-gulp.task('prepublish:backup', function() {
+gulp.task('publish:backup', ['babelize'], function() {
   return gulp.src(jsGlob('.'), {base: './'})
   .pipe(gulp.dest('./src'))
 })
 
 //git stash to revert
-gulp.task('prepublish:babelize', ['babelize', 'prepublish:backup'], function() {
+gulp.task('publish:babelize', ['publish:backup'], function() {
   return gulp.src(jsGlob('./dist'), {base: './dist'})
   .pipe(rename(function(path) {
     path.dirname = path.dirname.replace('..', '.')
@@ -52,11 +52,7 @@ gulp.task('prepublish:babelize', ['babelize', 'prepublish:backup'], function() {
   .pipe(gulp.dest('.'))
 })
 
-gulp.task('prepublish:clean', ['prepublish:restore'], function() {
-  return del(['./dist', './src'])  
-})
-
-gulp.task('prepublish:restore', function() {
+gulp.task('publish:restore', function() {
   return gulp.src(jsGlob('./src'), {base: './src'})
   .pipe(rename(function(path) {
     path.dirname = path.dirname.replace('..', '.')
@@ -64,16 +60,26 @@ gulp.task('prepublish:restore', function() {
   .pipe(gulp.dest('.'))
 })
 
-gulp.task('prepublish:npm', ['prepublish:babelize'], function() {
-  var spawn = new Spawner()
-  spawn.out.pipe(process.stdout)
-  spawn.err.pipe(process.stdout)
-
-  return spawn.sp('npm publish')
+gulp.task('publish:clean', ['publish:restore'], function() {
+  return del(['./dist', './src'])  
 })
 
-gulp.task('default', ['styles'])
-gulp.task('publish', ['prepublish:npm', 'prepublish:clean'])
+gulp.task('publish:npm', ['publish:babelize'], function() {
+  var spawn = new Spawner()
+  spawn.out.pipe(process.stdout)
+  spawn.err.pipe(process.stderr)
+
+  return spawn.sp('npm publish', {cwd: __dirname})
+  .catch(function(){
+    console.error('Npm publish failed')
+    //resolving to go to next task
+    return Promise.resolve()
+  })
+})
+
+gulp.task('publish', ['publish:npm'], function() {
+  return gulp.start('publish:clean')
+})
 
 gulp.task('watch', ['default'], function() {
   gulp.watch('./client/scss/*.scss', ['styles'])
