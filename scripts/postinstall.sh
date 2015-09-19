@@ -1,10 +1,10 @@
 #!/bin/bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
 if [ ! -z $HOME ]; then
   config_path="$HOME/.config/explorer"
 else
-  config_path="./"
+  config_path="$DIR"
 fi
 
 [ ! -d $config_path ] && mkdir -p $config_path
