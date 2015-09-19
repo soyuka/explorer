@@ -59,3 +59,4 @@ git reset -q HEAD~1
 
 git checkout master
 git branch -D deploy
+gulp prepublish:clean

@@ -72,6 +72,7 @@
     "babel": "^5.8.21",
     "babel-runtime": "^5.8.20",
     "chai": "^3.2.0",
+    "del": "^2.0.2",
     "gulp": "^3.9.0",
     "gulp-add-src": "^0.2.0",
     "gulp-babel": "^5.2.1",

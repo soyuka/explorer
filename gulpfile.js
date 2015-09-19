@@ -6,6 +6,7 @@ var rename = require('gulp-rename')
 var babel = require('gulp-babel')
 var fs = require('fs')
 var shell = require('gulp-shell')
+var del = require('del')
 
 var jsDirectories = ['bin', 'lib', 'middlewares', 'plugins', 'routes']
 var jsGlob = function(prefix) {
@@ -51,6 +52,10 @@ gulp.task('prepublish:babelize', ['babelize', 'prepublish:backup'], function() {
   .pipe(gulp.dest('.'))
 })
 
+gulp.task('prepublish:clean', ['prepublish:restore'], function() {
+  return del(['./dist', './src'])  
+})
+
 gulp.task('prepublish:restore', function() {
   return gulp.src(jsGlob('./src'), {base: './src'})
   .pipe(rename(function(path) {
@@ -62,7 +67,7 @@ gulp.task('prepublish:restore', function() {
 gulp.task('prepublish:npm', ['prepublish:babelize'], shell.task('npm publish'))
 
 gulp.task('default', ['styles'])
-gulp.task('publish', ['prepublish:npm', 'prepublish:restore'])
+gulp.task('publish', ['prepublish:npm', 'prepublish:clean'])
 
 gulp.task('watch', ['default'], function() {
   gulp.watch('./client/scss/*.scss', ['styles'])
