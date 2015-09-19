@@ -1,4 +1,9 @@
 #!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+cd $DIR/..
+
 version=$2
 previous=$(jq -r .version package.json)
 
@@ -54,4 +59,3 @@ git reset -q HEAD~1
 
 git checkout master
 git branch -D deploy
-
