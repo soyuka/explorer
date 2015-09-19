@@ -5,7 +5,7 @@ var minify = require('gulp-minify-css')
 var rename = require('gulp-rename')
 var babel = require('gulp-babel')
 var fs = require('fs')
-var shell = require('gulp-shell')
+var Spawner = require('promise-spawner')
 var del = require('del')
 
 var jsDirectories = ['bin', 'lib', 'middlewares', 'plugins', 'routes']
@@ -64,7 +64,13 @@ gulp.task('prepublish:restore', function() {
   .pipe(gulp.dest('.'))
 })
 
-gulp.task('prepublish:npm', ['prepublish:babelize'], shell.task('npm publish'))
+gulp.task('prepublish:npm', ['prepublish:babelize'], function() {
+  var spawn = new Spawner()
+  spawn.out.pipe(process.stdout)
+  spawn.err.pipe(process.stdout)
+
+  return spawn.sp('npm publish')
+})
 
 gulp.task('default', ['styles'])
 gulp.task('publish', ['prepublish:npm', 'prepublish:clean'])
