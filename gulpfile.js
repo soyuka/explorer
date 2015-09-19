@@ -5,7 +5,7 @@ var minify = require('gulp-minify-css')
 var rename = require('gulp-rename')
 var babel = require('gulp-babel')
 var fs = require('fs')
-// var shell = require('gulp-shell')
+var shell = require('gulp-shell')
 
 var jsDirectories = ['bin', 'lib', 'middlewares', 'plugins', 'routes']
 var jsGlob = function(prefix) {
@@ -59,8 +59,10 @@ gulp.task('prepublish:restore', function() {
   .pipe(gulp.dest('.'))
 })
 
+gulp.task('prepublish:npm', ['prepublish:babelize'], shell.task('npm publish'))
+
 gulp.task('default', ['styles'])
-// gulp.task('prepublish', 'prepublish:babelize', shell.task('npm publish'), 'prepublish:restore')
+gulp.task('publish', ['prepublish:npm', 'prepublish:restore'])
 
 gulp.task('watch', ['default'], function() {
   gulp.watch('./client/scss/*.scss', ['styles'])
