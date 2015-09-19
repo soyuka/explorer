@@ -1,4 +1,5 @@
 var gulp = require('gulp')
+var gutil = require('gulp-util')
 var sass = require('gulp-sass')
 var concat = require('gulp-concat')
 var minify = require('gulp-minify-css')
@@ -17,7 +18,7 @@ var jsGlob = function(prefix) {
     ]
   })
   .reduce(function(a, b) { return a.concat(b) })
-  .concat(['!./gulpfile.js', './*.js'])
+  .concat(['!'+prefix+'/gulpfile.js', prefix + '/*.js'])
 }
 
 gulp.task('styles', function() {
@@ -43,20 +44,13 @@ gulp.task('publish:backup', ['babelize'], function() {
   .pipe(gulp.dest('./src'))
 })
 
-//git stash to revert
 gulp.task('publish:babelize', ['publish:backup'], function() {
   return gulp.src(jsGlob('./dist'), {base: './dist'})
-  .pipe(rename(function(path) {
-    path.dirname = path.dirname.replace('..', '.')
-  }))
-  .pipe(gulp.dest('.'))
+  .pipe(gulp.dest('./'))
 })
 
 gulp.task('publish:restore', function() {
   return gulp.src(jsGlob('./src'), {base: './src'})
-  .pipe(rename(function(path) {
-    path.dirname = path.dirname.replace('..', '.')
-  }))
   .pipe(gulp.dest('.'))
 })
 
@@ -65,13 +59,13 @@ gulp.task('publish:clean', ['publish:restore'], function() {
 })
 
 gulp.task('publish:npm', ['publish:babelize'], function() {
-  var spawn = new Spawner()
-  spawn.out.pipe(process.stdout)
-  spawn.err.pipe(process.stderr)
+  var spawn = new Spawner({
+    out: function(d) { return gutil.log(gutil.colors.green(d)) },
+    err: function(d) { return gutil.log(gutil.colors.red(d)) },
+  })
 
   return spawn.sp('npm publish', {cwd: __dirname})
   .catch(function(){
-    console.error('Npm publish failed')
     //resolving to go to next task
     return Promise.resolve()
   })
