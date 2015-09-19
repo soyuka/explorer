@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.2.7-beta
+- add binary to help installing plugins and reloading explorer
+- refactor native search :
+  - use tree lib instead of code duplication
+  - implement search filters (--dir)
+  - use Jaro Winkler distance
+- improved plugins managment 
+  - plugins are using a detached router on /p/pluginName
+  - better hooks management
+  - docs improvement ([see here](https://github.com/soyuka/explorer/blob/master/doc/Plugins.md))
+- Main directory cleanup
+  - moved configuration examples to `doc/examples`
+  - default configuration is taken from `doc/example`
+- refactor deployment/publish scripts
+
 ## 2.1.0-beta
 - Plugins implementation
 - Minor view fixes
