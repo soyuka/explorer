@@ -149,30 +149,21 @@ pm2 install xplorer
 
 ```
 cd /path/to/your/explorer
-curl -L https://github.com/soyuka/explorer/archive/v1.0.6.tar.gz | tar xz --strip-components 1
+curl -L https://github.com/soyuka/explorer/archive/vx.x.x.tar.gz | tar xz --strip-components 1
 npm rebuild
 ```
+
 ## More installation methods 
 
 ### Tarball package
 
-Download, unpack, configure, launch :
+Download latest release, unpack, configure, launch :
 
 ```bash
-curl -L https://github.com/soyuka/explorer/archive/v22222.2.7.2.tar.gz | tar xz
-cd explorer-22222.2.7.2
-cp config.example.yml config.yml #copy default configuration
-cp users.default data/users #copy default database
+cp doc/examples/config.example.yml config.yml #copy default configuration
+cp -r doc/examples/data data #copy default database
 npm rebuild
 ```
-
-#### Mirror
-
-```bash
-curl -L http://lab.wareziens.net/soyuka/explorer/repository/archive.tar.gz?ref=v22222.2.7.2 | tar xz
-```
-
-Check `IP:4859`, login with `admin:admin`. Don't forget to change the password!
 
 #### From git
 

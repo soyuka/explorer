@@ -29,13 +29,7 @@ fi
 npm config set git-tag-version false
 tag=$(npm version $version)
 
-#v0.0.1 => 0.0.1
-previous="${previous:1:${#previous}}"
-current="${tag:1:${#tag}}"
-
-perl -pi -e "s,$previous,$current,g" README.md
-
-git add package.json README.md
+git add package.json 
 
 git commit -m $tag
 
