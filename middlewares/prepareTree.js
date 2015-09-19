@@ -1,5 +1,5 @@
 import p from 'path'
-import mm from 'minimatch'
+import mm from 'micromatch'
 import fs from 'fs'
 
 import {sort} from '../lib/sort.js'
@@ -91,14 +91,14 @@ function prepareTree(app) {
     if(req.user.ignore) {
 
       for(let i in req.user.ignore) {
-        if(mm(opts.path, req.user.ignore[i])) {
+        if(mm.isMatch(opts.path, req.user.ignore[i])) {
           return next(new HTTPError('Forbidden', 403)) 
         }
       }
 
       opts.skip = function(v) {
         for(let i in req.user.ignore)  {
-          if(mm(v, req.user.ignore[i])) {
+          if(mm.isMatch(v, req.user.ignore[i])) {
             return false 
           }
         }

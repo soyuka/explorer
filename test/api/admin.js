@@ -1,5 +1,5 @@
 var user = {username: 'test', password: 'test', home: __dirname + '/../fixtures/tree', key: 1, admin: 1, readonly: 0}
-var mm = require('minimatch')
+var mm = require('micromatch')
 
 describe('admin', function() {
 
@@ -118,7 +118,7 @@ describe('admin', function() {
     .expect(function(res) {
       let tree = res.body.tree
       for(var i in tree) {
-        expect(mm(tree[i].name, 'dir*')).to.be.false
+        expect(mm.isMatch(tree[i].name, 'dir*')).to.be.false
       }
     })
     .end(cb)
