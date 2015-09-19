@@ -159,8 +159,8 @@ npm rebuild
 Download, unpack, configure, launch :
 
 ```bash
-curl -L https://github.com/soyuka/explorer/archive/v2222.2.6.2.tar.gz | tar xz
-cd explorer-2222.2.6.2
+curl -L https://github.com/soyuka/explorer/archive/v22222.2.7.2.tar.gz | tar xz
+cd explorer-22222.2.7.2
 cp config.example.yml config.yml #copy default configuration
 cp users.default data/users #copy default database
 npm rebuild
@@ -169,7 +169,7 @@ npm rebuild
 #### Mirror
 
 ```bash
-curl -L http://lab.wareziens.net/soyuka/explorer/repository/archive.tar.gz?ref=v2222.2.6.2 | tar xz
+curl -L http://lab.wareziens.net/soyuka/explorer/repository/archive.tar.gz?ref=v22222.2.7.2 | tar xz
 ```
 
 Check `IP:4859`, login with `admin:admin`. Don't forget to change the password!
