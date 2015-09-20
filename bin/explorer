@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-var pm2 = require('pm2')
 var p = require('path')
 var fs = require('fs')
 var Spawner = require('promise-spawner')
@@ -24,14 +23,12 @@ try {
   throw e
 }
 
-function handleCliError(err) {
-  console.error(err.stack)
-  return process.exit(1)
-}
+var spawner = new Spawner()
 
 function exit() {
   console.log.apply(console, arguments)
   return function(code) {
+    if(code instanceof Error) console.error(err.stack)
     if(typeof code == 'undefined') code = 0
     return process.exit(code)
   }
@@ -43,17 +40,6 @@ function help() {
 
 function pluginCommand(args) {
   var command = args._.shift()
-
-  var modifier = function(prefix) {
-    return function(d) {
-      return 'npm' + prefix + ': ' + d + eol 
-    }
-  }
-
-  var spawner = new Spawner({out: modifier('out'), err: modifier('err')})
-
-  spawner.out.pipe(process.stdout)
-  spawner.err.pipe(process.stderr)
 
   if(args._.length == 0) {
     for(var i in config.plugins) {
@@ -71,39 +57,33 @@ function pluginCommand(args) {
 
   console.log('Executing %s', command)
 
+  //@todo improve through stream + log
+  spawner.out.pipe(process.stdout)
+  spawner.err.pipe(process.stderr)
+
   spawner.sp(command, {cwd: cwd})
-  .then(function(code) {
-    return exit("Plugin installed, don't forget to add it to the config")(0)
-  })
-  .catch(function(code) {
-    return exit('Command %s failed with code %d', command, code)(code)
-  })
+  .then(exit("Plugin installed, don't forget to add it to the config"))
+  .catch(exit('Command %s failed with code %d', command, code))
 }
 
 function reload() {
-  pm2.connect(function(err) {
-    if(err) {
-      return handleCliError(err) 
+
+  spawner.sp('pm2 jlist')
+  .then(function() {
+    
+    var d = JSON.parse(this.data.out)
+      .filter(function(e) {
+        return e.name == 'xplorer'
+      })
+
+    if(d.length == 0) {
+      return exit("Could not find 'xplorer' in pm2, explorer might not be running or was not installed with 'pm2 install xplorer'")(1)
     }
 
-    pm2.describe('xplorer', function(err, list) {
-      if(err) {
-        return handleCliError(err) 
-      }
-
-      if(list.length == 0) {
-        return exit("Could not find 'xplorer' in pm2, explorer might not be running or was not installed with 'pm2 install xplorer'")(1)
-      }
-
-      pm2.restart('xplorer', function(err) {
-        if(err) {
-          return handleCliError(err)
-        }
-
-        return exit('Explorer has restarted')(0)
-      })
-    }) 
+    return spawner.sp('pm2 restart xplorer')
+    .then(exit('Explorer has restarted'))
   })
+  .catch(exit('Command pm2 failed'))
 }
 
 switch (command) {
