@@ -75,6 +75,8 @@ gulp.task('publish', ['publish:npm'], function() {
   return gulp.start('publish:clean')
 })
 
+gulp.task('default', ['styles'])
+
 gulp.task('watch', ['default'], function() {
   gulp.watch('./client/scss/*.scss', ['styles'])
 })
