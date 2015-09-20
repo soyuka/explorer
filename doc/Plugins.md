@@ -48,8 +48,10 @@ The hooks structure must be as following:
 /**
  * registerHooks
  * @param object config explorer configuration
+ * @param string url the base url of your plugin (/p/pluginName)
+ * @param mixed user the user object, null if no user
  */
-function registerHooks(config) {
+function registerHooks(config, url, user) {
   return {
     directory: function(tree) {
       dosomethingwith(config.plugins.pluginName.myConfigValue)
