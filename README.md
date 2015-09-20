@@ -170,8 +170,8 @@ npm rebuild
 ```
 git clone git@github.com:soyuka/explorer
 cd explorer
-cp config.example.yml config.yml #copy default configuration
-cp users.default data/users #copy default database
+cp doc/examples/config.example.yml config.yml #copy default configuration
+cp -r doc/examples/data data #copy default database
 npm install #install packages
 ```
 
