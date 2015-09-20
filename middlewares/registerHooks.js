@@ -17,7 +17,7 @@ function registerHooks(app) {
     for(let name in plugins) {
       if('hooks' in plugins[name]) {
         debug('Registering hooks for %s', name)
-        hooks[name] = plugins[name].hooks(config, p.join('/p', name)) 
+        hooks[name] = plugins[name].hooks(config, p.join('/p', name), req.user) 
       }
     }
 
