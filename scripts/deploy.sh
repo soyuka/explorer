@@ -41,6 +41,8 @@ git push --tags
 # Pack
 git checkout -b deploy
 
+npm dedupe
+
 jq -r '.dependencies|keys[]|.|= "node_modules/" + .' package.json|xargs git add -f
 gulp publish:babelize
 git add .
