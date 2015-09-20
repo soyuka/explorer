@@ -11,11 +11,6 @@
           .columns.large-3
             %button.button.postfix.primary{type: 'submit'} Search
 
-    .row
-      .columns.large-2
-        - if(search)
-          %p= num + ' results'
-
     %ul.breadcrumbs
       - each b in breadcrumb
         %li
@@ -112,9 +107,14 @@
               -#   %option{value: 'remove'} Remove
             .large-3.columns
               %input{type: 'text', name: 'name', placeholder: 'archive' + new Date().getTime()}
-            .large-2.columns.end
+            .large-2.columns
               %button.postfix{type: 'submit'}
                 Submit
+            .large-4.columns.end.text-right
+              - if(num == 1)
+                %p= num + ' result'
+              - else
+                %p= num + ' results'
 
     -# Pagination
     .pagination-centered
