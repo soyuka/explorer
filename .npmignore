@@ -2,7 +2,8 @@ coverage
 bower_components
 node_modules
 config.yml
-./test
+test
 .DS_Store
-./src
-./dist
+src
+dist
+*.tar.gz
