@@ -111,11 +111,12 @@
               %button.postfix{type: 'submit'}
                 Submit
             .large-4.columns.end.text-right
-              - if(num == 1)
-                %p= num + ' result'
-              - else
-                %p= num + ' results'
-
+              %p
+                - if(num == 1)
+                  = num + ' result'
+                - else
+                  = num + ' results'
+                = ' (' + size + ')'
     -# Pagination
     .pagination-centered
       %ul.pagination
