@@ -26,9 +26,10 @@ try {
 var spawner = new Spawner()
 
 function exit() {
-  console.log.apply(console, arguments)
+  var args = arguments
   return function(code) {
-    if(code instanceof Error) console.error(err.stack)
+    console.log.apply(console, args)
+    if(code instanceof Error) console.error(code.stack)
     if(typeof code == 'undefined') code = 0
     return process.exit(code)
   }
