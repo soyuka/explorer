@@ -36,6 +36,11 @@ describe('search', function() {
     .end(cb)
   })
 
+  it('should get search without search', function(cb) {
+    this.request.get('/search?path=dir&search=')
+    .end(cb)
+  })
+
   after(bootstrap.logout)
   after(bootstrap.removeAgent)
 })
