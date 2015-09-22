@@ -63,7 +63,7 @@ function pluginCommand(args) {
 
   spawner.sp(command, {cwd: cwd})
   .then(exit("Plugin installed, don't forget to add it to the config"))
-  .catch(exit('Command %s failed with code %d', command, code))
+  .catch(exit('Command %s failed with code %d', command))
 }
 
 function reload() {
