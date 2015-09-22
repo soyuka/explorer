@@ -25,3 +25,8 @@ describe('job', function() {
   require('./job/memory.js')
   require('./job/stat.js')
 })
+
+describe('cache', function() {
+  require('./cache/cache.js')('memory', require('../lib/cache/memory.js')(bootstrap.config))
+  require('./cache/cache.js')('redis', require('../lib/cache/redis.js')(bootstrap.config))
+})
