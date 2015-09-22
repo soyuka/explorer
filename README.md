@@ -94,6 +94,10 @@ https:
 plugins: # those are enable by default, use below options to disable them
   upload: {}
   archive: {}
+cache: 'memory' # redis is available too
+redis: 
+  host: 'redis://127.0.0.1:6379'
+  # host: 'somesocket.sock'
 dev: false # more verbose error (stack)
 ```
 

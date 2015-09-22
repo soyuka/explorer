@@ -107,6 +107,10 @@ function prepareTree(app) {
       } 
     }
 
+    if(config.cache) {
+      opts.cache = require('../lib/cache')(config)
+    }
+
     req.options = opts
 
     //forcing accept header to rss

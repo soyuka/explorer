@@ -25,3 +25,15 @@ describe('job', function() {
   require('./job/memory.js')
   require('./job/stat.js')
 })
+
+describe('cache', function() {
+  require('./cache/cache.js')('memory', require('../lib/cache/memory.js')(bootstrap.config))
+
+  var redis = require('redis').createClient()
+  .on('connect', function() {
+    require('./cache/cache.js')('redis', require('../lib/cache/redis.js')(bootstrap.config))
+  })
+  //register event to avoid the Exception
+  .on('error', function(err) {
+  })
+})
