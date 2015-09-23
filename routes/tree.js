@@ -140,9 +140,11 @@ function deletePath(req, res, next) {
 function search(req, res, next) {
   let config = req.config
 
-  debug('Search with %s, %s', config.search.method, req.options.search, req.options.path)
+  debug('Search %s with %s in %s', req.options.search, config.search.method, req.options.path)
 
-  searchMethod(config.search.method, req.options)(req.options.search, req.options.path, req.options.root)
+  let method = searchMethod(config.search.method, config.search)
+  
+  return method(req.options.search, req.options.path, req.options.root)
   .then(function(data) {
     if(config.search.method == 'native') {
       return data 
