@@ -1,13 +1,13 @@
 .row.container
   .columns.large-12
     %h3 Upload
-      %form{method: 'POST', action: '/upload', enctype: 'multipart/form-data'}
+      %form{method: 'POST', action: '/p/upload', enctype: 'multipart/form-data'}
         %label{for: 'files'} Files
         %input{type: 'file', id: 'files', name: 'files', multiple: true}
         %button.small{type: 'submit'}
           Send
     %h3 Remote upload
-      %form{method: 'POST', action: '/remote-upload'}
+      %form{method: 'POST', action: '/p/remote-upload'}
         %label{for: 'links'} Links (one by line)
         %textarea{rows: 7, name: 'links', id: 'links'}
         %button.small{type: 'submit'}
