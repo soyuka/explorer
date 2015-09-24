@@ -113,3 +113,9 @@ img.logo {
         margin-bottom: 0; 
      }
 }
+
+@media screen and (min-width: 1024px) {
+    .row {
+        max-width: 73.5rem;
+    }
+}
