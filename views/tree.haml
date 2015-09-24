@@ -89,11 +89,6 @@
                   %a{onclick: 'return confirmDeletion(event)', href: '/remove?path=' + item.path}
                     %i.icon-trash
 
-      %dl#directory-hooks
-        - each p in hooks
-          - if('directory' in p)
-            != p.directory(tree)
-
       -# Action button
       .row
         .small-12.columns
@@ -117,6 +112,12 @@
                 - else
                   = num + ' results'
                 = ' (' + size + ')'
+
+    %dl#directory-hooks
+      - each p in hooks
+        - if('directory' in p)
+          != p.directory(tree)
+
     -# Pagination
     .pagination-centered
       %ul.pagination
