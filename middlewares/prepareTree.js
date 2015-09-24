@@ -57,23 +57,24 @@ function prepareTree(app) {
       }
     })
 
-    ;['remove', 'archive', 'upload'].forEach(function(e) {
-      res.locals[e] = config[e]
-    })
-
     let opts = extend({},
       res.locals,
       config.tree, 
       config.pagination
     )
 
-    if(req.user) {
-      for(let i in req.user) {
-        if (~['remove', 'archive', 'upload'].indexOf(i) && req.user[i] != '' && req.user[i] != req.user.home) {
-          opts[i].path = p.resolve(req.user.home, req.user[i])
-        }
+    //@TODO refactor this:
+    //- remove as a plugin
+    //- archive and upload should parse their own config
+    ;['remove', 'archive', 'upload'].forEach(function(e) {
+      res.locals[e] = opts[e] = config[e]
+
+      var k = e == 'remove' ? 'trash' : e
+
+      if(req.user[k] && req.user[k] != '' && req.user[k] != req.user.home) {
+        opts[e].path = p.resolve(req.user.home, req.user[k])
       }
-    }
+    })
 
     if(!!req.user.readonly === true || opts.remove.disabled || opts.path == opts.remove.trash) {
       res.locals.canRemove = false 
