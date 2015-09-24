@@ -3,6 +3,16 @@ branches:
   only:
     - master
     - development
+env:
+  - CXX=g++-4.8
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
+
 node_js:
    - "iojs"
    - "iojs-v2.5.0"
@@ -15,3 +25,5 @@ matrix:
     - node_js: "4.1"
 services:
   - redis-server
+
+sudo: false
