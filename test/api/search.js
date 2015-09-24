@@ -31,6 +31,13 @@ describe('search', function() {
     this.request.get('/search?path=dir&search=nonexistant')
     .expect(function(res) {
       expect(res.body.tree).to.have.length.of(0) 
+    })
+    .end(cb)
+  })
+
+  it('should get search with path and have a two-sized breadcrumb', function(cb) {
+    this.request.get('/search?path=dir&search=nonexistant')
+    .expect(function(res) {
       expect(res.body.breadcrumb).to.have.length.of(2)
     })
     .end(cb)
