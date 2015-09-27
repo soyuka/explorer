@@ -1,3 +1,4 @@
+"use strict";
 /**
  * optionsCookie middlewares handles the cookies for sort, order 
  * sets req.query accordingly
@@ -25,4 +26,4 @@ function optionsCookie(req, res, next) {
   return next()
 }
 
-export default optionsCookie
+module.exports = optionsCookie

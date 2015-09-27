@@ -186,8 +186,7 @@ Installed as a pm2 module explorer will already be daemonized.
 #### Development
 
 ```bash
-npm i babel-node -g
-DEBUG="explorer:*" babel-node index.js
+DEBUG="explorer:*" node --harmony index.js
 ```
 
 #### Daemonize with pm2
@@ -195,19 +194,6 @@ DEBUG="explorer:*" babel-node index.js
 ```bash
 npm i pm2 -g
 pm2 start --node-args="--harmony" --name explorer index.js
-```
-
-Or
-
-```bash
-pm2 --next-gen-js --name explorer start index.js
-```
-
-Or with babel-node:
-
-```bash
-npm i pm2 babel-node -g
-pm2 --interpreter babel-node --name explorer start index.js
 ```
 
 ## Plugins
@@ -256,10 +242,9 @@ plugins:
 ## Development
 
 Clone [see From git](#from-git)
-The easiest is to compile with babel for ES6 compatibility:
 
 ```bash
-DEBUG="explorer:*" babel-node index.js -c config.example.dev.yml
+DEBUG="explorer:*" node --harmony index.js -c config.example.dev.yml
 ```
 
 Sass is compiled with gulp: 
@@ -275,7 +260,7 @@ To get stack traces from errors use `dev: true` in your configuration file.
 Tests are using their own configuration file `test/fixtures/config.yml`:
 
 ```bash
-mocha --compilers js:babel/register
+mocha --harmony
 ```
 
 ### Api docs

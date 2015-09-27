@@ -1,8 +1,9 @@
-import Promise from 'bluebird'
-import {User} from '../lib/users.js'
-import {trashSize, prepareTree} from '../middlewares'
-import {handleSystemError} from '../lib/utils.js'
-import HTTPError from '../lib/HTTPError.js'
+"use strict";
+var Promise = require('bluebird')
+var User = require('../lib/data/user.js')
+var middlewares = require('../middlewares')
+var handleSystemError = require('../lib/utils.js').handleSystemError
+var HTTPError = require('../lib/HTTPError.js')
 
 function settings(req, res) {
   return res.renderBody('settings.haml', {user: req.user})
@@ -16,13 +17,13 @@ function settings(req, res) {
  */
 function updateSettings(req, res, next) {
 
-  let u = req.users.get(req.user.username)
+  var u = req.users.get(req.user.username)
 
   if(!u) {
     return handleSystemError(next)('User not found', 404)
   }
 
-  let ignore = ['home', 'admin', 'readonly', 'ignore']
+  var ignore = ['home', 'admin', 'readonly', 'ignore']
 
   if(req.user.readonly) {
     ignore = ignore.concat(['trash', 'archive'])
@@ -39,13 +40,13 @@ function updateSettings(req, res, next) {
   .catch(handleSystemError(next))
 }
 
-let Settings = function(app) {
-  let config = app.get('config')
+var Settings = function(app) {
+  var config = app.get('config')
 
-  app.get('/settings', trashSize(config), prepareTree(app), settings)
+  app.get('/settings', middlewares.trashSize(config), middlewares.prepareTree(app), settings)
   app.put('/settings', updateSettings)
 
   return app
 }
 
-export {Settings}
+module.exports = Settings

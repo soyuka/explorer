@@ -1,14 +1,15 @@
-import RSS from 'rss'
-import os from 'os'
+"use strict";
+var RSS = require('rss')
+var os = require('os')
 
 /**
  * rssTree if tree is requested as rss
  * Change object res.locals.tree to an xml feed
  */
 function rssTree(req, res, next) {
-  let host = req.protocol + '://' + req.get('host')
+  var host = req.protocol + '://' + req.get('host')
 
-  let feed = new RSS({
+  var feed = new RSS({
     title: 'Explorer - ' + os.hostname(),
     description: 'File listing',
     feed_url: host + req.originalUrl,
@@ -17,7 +18,7 @@ function rssTree(req, res, next) {
     pubDate: Date.now(),
   })
 
-  let tree = res.locals.tree
+  var tree = res.locals.tree
 
   tree.forEach(function(e) {
     feed.item({
@@ -32,4 +33,4 @@ function rssTree(req, res, next) {
   return res.send(feed.xml())
 }
 
-export default rssTree
+module.exports = rssTree

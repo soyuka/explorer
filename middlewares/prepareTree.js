@@ -1,19 +1,22 @@
-import p from 'path'
-import mm from 'micromatch'
-import fs from 'fs'
+"use strict";
+var p = require('path')
+var mm = require('micromatch')
+var fs = require('fs')
+var HTTPError = require('../lib/HTTPError.js')
+var sort = require('../lib/sort.js')
 
-import {sort} from '../lib/sort.js'
-import {extend, buildUrl, secureString, higherPath, handleSystemError} from '../lib/utils.js'
-import HTTPError from '../lib/HTTPError.js'
+var sort = require('../lib/sort.js')
+var utils = require('../lib/utils.js')
 
-let debug = require('debug')('explorer:middlewares:prepareTree')
+var debug = require('debug')('explorer:middlewares:prepareTree')
+
 /**
  * Prepare tree locals et validate queries 
  * @param Express app
  * @return function 
  */
 function prepareTree(app) {
-  let config = app.get('config')
+  var config = app.get('config')
 
   return function(req, res, next) {
     //should be an app.param
@@ -36,19 +39,19 @@ function prepareTree(app) {
       req.query.path = './'
     
     if(req.query.search && config.search.method !== 'native') {
-      req.query.search = secureString(req.query.search)
+      req.query.search = utils.secureString(req.query.search)
     }
 
-    res.locals = extend(res.locals, {
+    res.locals = utils.extend(res.locals, {
       search: req.query.search,
       sort: req.query.sort || '',
       order: req.query.order || '',
       page: req.query.page,
       root: p.resolve(req.user.home),
-      path: higherPath(req.user.home, req.query.path),
-      parent: higherPath(req.user.home, p.resolve(req.query.path, '..')),
-      buildUrl: buildUrl,
-      extend: extend,
+      path: utils.higherPath(req.user.home, req.query.path),
+      parent: utils.higherPath(req.user.home, p.resolve(req.query.path, '..')),
+      buildUrl: utils.buildUrl,
+      extend: utils.extend,
       urlOptions: {
         limit: req.query.limit,
         order: req.query.order,
@@ -57,7 +60,7 @@ function prepareTree(app) {
       }
     })
 
-    let opts = extend({},
+    var opts = utils.extend({},
       res.locals,
       config.tree, 
       config.pagination
@@ -125,40 +128,4 @@ function prepareTree(app) {
   }
 }
 
-/**
- * sanitize Checkboxes is used on an /action request
- * take every paths and set resolved directories, paths acccordingly
- */
-function sanitizeCheckboxes(req, res, next) {
-  let paths = []
-  let directories = []
-
-  if(typeof req.body.path == 'string')
-    req.body.path = [req.body.path]
-
-  //validating paths
-  for(let i in req.body.path) {
-    let path = higherPath(req.options.root, req.body.path[i]) 
-
-    if(path != req.options.root) {
-      try {
-        var stat = fs.statSync(path)
-      } catch(err) {
-        return handleSystemError(next)(err)
-      }
-
-      if(stat.isDirectory()) {
-        directories.push(path)
-      } else {
-        paths.push(path)
-      }
-    }
-  }
-
-  req.options.directories = directories
-  req.options.paths = paths
-
-  return next()
-}
-
-export {prepareTree, sanitizeCheckboxes}
+module.exports = prepareTree

@@ -1,25 +1,25 @@
-import express from 'express'
-import p from 'path'
-import util from 'util'
-import hamljs from 'hamljs'
-import cookieParser from 'cookie-parser'
-import bodyParser from 'body-parser'
-import session from 'express-session'
-import flash from 'connect-flash'
-import methodOverride from 'method-override'
-import morgan from 'morgan'
-import Promise from 'bluebird'
-import {registerPlugins, registerPluginsRoutes} from './lib/plugins.js'
+var express = require('express')
+var p = require('path')
+var util = require('util')
+var hamljs = require('hamljs')
+var cookieParser = require('cookie-parser')
+var bodyParser = require('body-parser')
+var session = require('express-session')
+var flash = require('connect-flash')
+var methodOverride = require('method-override')
+var morgan = require('morgan')
+var Promise = require('bluebird')
+var HTTPError = require('./lib/HTTPError.js')
+var plugins = require('./lib/plugins.js')
 
-import {Users} from './lib/users.js'
-import * as routes from './routes'
-import HTTPError from './lib/HTTPError.js'
-import * as middlewares from './middlewares'
-import {parallelMiddlewares} from './lib/utils.js'
+var Users = require('./lib/data/users.js')
+var routes = require('./routes')
+var middlewares = require('./middlewares')
+var parallelMiddlewares = require('./lib/utils.js').parallelMiddlewares
 
-let fs = Promise.promisifyAll(require('fs'))
-let debug = require('debug')('explorer:server')
-let app = express()
+var fs = Promise.promisifyAll(require('fs'))
+var debug = require('debug')('explorer:server')
+var app = express()
 
 module.exports = function(config) {
 
@@ -35,7 +35,7 @@ module.exports = function(config) {
   app.set('views', [p.join(__dirname, 'views')])
 
   //this registers plugins (app.set('plugins'))
-  registerPlugins(app)
+  plugins.registerPlugins(app)
 
   app.engine('.haml', function(str, options, fn) {
     options.locals = util._extend({}, options)
@@ -46,7 +46,7 @@ module.exports = function(config) {
   app.use(parallelMiddlewares([
     methodOverride(function(req, res) {
         if (req.body && typeof req.body === 'object' && '_method' in req.body) {
-          let method = req.body._method
+          var method = req.body._method
           delete req.body._method
           return method
         }
@@ -85,7 +85,7 @@ module.exports = function(config) {
   app.use(middlewares.registerHooks(app))
 
   //register plugins routes
-  registerPluginsRoutes(app)
+  plugins.registerPluginsRoutes(app)
 
   //Load routes
   routes.Tree(app)
@@ -95,8 +95,7 @@ module.exports = function(config) {
 
   app.use(middlewares.error(config))
 
-  //where is this ES6 feature?
-  let users = new Users({database: p.resolve(__dirname, config.database)})
+  var users = new Users({database: p.resolve(__dirname, config.database)})
 
   //load users from file to memory
   return users.load()

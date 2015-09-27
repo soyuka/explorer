@@ -1,8 +1,9 @@
-import {tree} from '../lib/tree.js'
-import prettyBytes from 'pretty-bytes'
-import p from 'path'
-import {handleSystemError} from '../lib/utils.js'
-let debug = require('debug')('explorer:trashSize')
+"use strict";
+var tree = require('../lib/tree.js')
+var prettyBytes = require('pretty-bytes')
+var p = require('path')
+var handleSystemError = require('../lib/utils.js').handleSystemError
+var debug = require('debug')('explorer:trashSize')
 
 /**
  * Gets the trash size
@@ -19,7 +20,7 @@ function trashSize(config) {
       return next() 
     }
 
-    let v = config.remove.path
+    var v = config.remove.path
 
     if(req.user.trash) {
       v = p.resolve(req.user.home, req.user.trash)
@@ -32,9 +33,9 @@ function trashSize(config) {
         return next()
       }
         
-      let size = 0;
+      var size = 0;
 
-      for(var i in tree.tree) {
+      for(let i in tree.tree) {
         size += tree.tree[i].size
       }
 
@@ -48,4 +49,4 @@ function trashSize(config) {
   }
 }
 
-export default trashSize
+module.exports = trashSize

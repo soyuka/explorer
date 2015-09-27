@@ -1,3 +1,4 @@
+"use strict";
 var methods = require('methods')
 var http = require('http')
 var https = require('https')
@@ -24,7 +25,7 @@ module.exports = function(app, options){
       }
 
       if(options.headers) {
-        for(var header in options.headers) {
+        for(let header in options.headers) {
           req.set(header, options.headers[header])
         }
       }

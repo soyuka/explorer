@@ -1,21 +1,22 @@
-import p from 'path'
-import fs from 'fs'
-import util from 'util' 
-import {expect} from 'chai'
-import Promise from 'bluebird'
-import {getConfiguration} from '../lib/config.js'
-import app from '../server.js'
+"use strict";
+var p = require('path')
+var fs = require('fs')
+var util = require('util') 
+var expect = require('chai').expect
+var Promise = require('bluebird')
+var getConfiguration = require('../lib/config.js')
+var app = require('../server.js')
 
-let config_path = p.join(__dirname, './fixtures/config.yml')
+var config_path = p.join(__dirname, './fixtures/config.yml')
 
-let config = getConfiguration(config_path)
+var config = getConfiguration(config_path)
 config.database = p.join(__dirname, './fixtures/users')
 
 if(!fs.existsSync(config.database)) {
   fs.writeFileSync(config.database, fs.readFileSync(p.join(__dirname, '/../doc/examples/data/users')))
 }
 
-let options = {
+var options = {
   headers: []
 }
 
@@ -28,8 +29,7 @@ module.exports = {
   options: options,
   login: function(cb) {
     this.request.post('/login')
-    .set('Accept', 'text/html')
-    .expect(302)
+    .expect(200)
     .send({username: 'admin', password: 'admin'})
     .expect(function(res) {
       expect(res.headers['set-cookie']).not.to.be.undefined
@@ -38,8 +38,7 @@ module.exports = {
   },
   logout: function(cb) {
     this.request.get('/logout')
-    .set('Accept', 'text/html')
-    .expect(302)
+    .expect(200)
     .expect(function(res) {
       expect(res.headers['set-cookie']).not.to.be.undefined
     })
@@ -71,6 +70,3 @@ module.exports = {
     return cb()
   }
 }
-
-
-

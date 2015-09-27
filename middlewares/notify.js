@@ -1,8 +1,9 @@
-import interactor from '../lib/job/interactor.js'
-import util from 'util'
-import moment from 'moment'
+"use strict";
+var interactor = require('../lib/job/interactor.js')
+var util = require('util')
+var moment = require('moment')
 
-let debug = require('debug')('explorer:middlewares:notify')
+var debug = require('debug')('explorer:middlewares:notify')
 
 /**
  * Notify middlewares
@@ -21,24 +22,24 @@ function notify(req, res, next) {
 
     debug('Notifications %o', data)
 
-    let num = 0
-    let user_data = {}
+    var num = 0
+    var user_data = {}
 
     if(!req.user) {
       res.locals.notifications = {num: num}
       return next()
     }
 
-    let notifications = {}
-    let username = req.user.username
+    var notifications = {}
+    var username = req.user.username
 
-    for(var plugin in data) {
+    for(let plugin in data) {
       if(typeof data[plugin] == 'object') {
         if(username in data[plugin]) {
           num += Object.keys(data[plugin][username]).length
           user_data[plugin] = data[plugin][username]
 
-          for(var i in user_data[plugin]) {
+          for(let i in user_data[plugin]) {
             user_data[plugin][i].fromNow = moment(user_data[plugin][i].time).fromNow()
           }
 
@@ -58,4 +59,4 @@ function notify(req, res, next) {
   interactor.ipc.send('get', 'info')
 }
 
-export default notify
+module.exports = notify
