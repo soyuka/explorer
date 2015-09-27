@@ -113,7 +113,7 @@ var Admin = function(app) {
 
     req.users.delete(req.params.username)
     .then(function() {
-      req.flash('info', `User ${req.params.username} deleted`)
+      req.flash('info', 'User '+req.params.username+' deleted')
       return res.handle('/a') 
     })
     .catch(utils.handleSystemError(next))
@@ -138,7 +138,7 @@ var Admin = function(app) {
     .then(function(user) {
       return req.users.put(user)
       .then(function() {
-        req.flash('info', `User ${user.username} created`)
+        req.flash('info', 'User '+user.username+' created')
         return res.handle('/a', {user: user}, 201)
       })
     })
@@ -162,7 +162,7 @@ var Admin = function(app) {
     .then(function(user) {
       return req.users.put(user)
       .then(function() {
-        req.flash('info', `User ${user.username} updated`)
+        req.flash('info', 'User '+user.username+' updated')
         return res.handle('/a')
       })
     })

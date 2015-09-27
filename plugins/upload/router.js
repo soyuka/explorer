@@ -33,7 +33,7 @@ var Upload = function(app, utils, config) {
     links = links.filter(function(e) { return e.trim().length > 0 })
 
     if(links.length > req.options.upload.maxCount) {
-      return next(new utils.HTTPError(`Max number of files exceeded (${req.options.upload.maxCount})`, 400))
+      return next(new utils.HTTPError('Max number of files exceeded ('+req.options.upload.maxCount+')', 400))
     }
 
     utils.interactor.ipc.send('call', 'upload.create', links, req.user, req.options)
@@ -75,9 +75,9 @@ var Upload = function(app, utils, config) {
       var info = ''
 
       if(req.files.length == 1) {
-        info = `${req.files[0].originalname} uploaded to ${req.files[0].path}`
+        info = req.files[0].originalname + ' uploaded to ' + req.files[0].path
       } else {
-        info = `${req.files.length} files uploaded to ${req.options.upload.path}`
+        info = req.files.length + ' files uploaded to ' + req.options.upload.path
       }
 
       return res.handle('upload', {info: info}, 200)

@@ -56,7 +56,7 @@ function requestAsync(url, destination) {
       }
 
       if(size > 0) {
-        return resolve({path: destination, name: file.basename, message: `${url} was uploaded successfully to ${file.path} (${prettyBytes(size)})`})
+        return resolve({path: destination, name: file.basename, message: url + ' was uploaded successfully to '+file.path+' ('+prettyBytes(size)+')'})
       }
 
       debug('No size')
@@ -67,7 +67,7 @@ function requestAsync(url, destination) {
         } 
 
         size = fstat.size
-        return resolve({path: destination, name: file.basename, message: `${url} was uploaded successfully to ${file.path} (${prettyBytes(size)})`})
+        return resolve({path: destination, name: file.basename, message: url + ' was uploaded successfully to '+file.path+' (' + prettyBytes(size) + ')'})
 
       })
     })
@@ -95,7 +95,7 @@ function UploadJob(ipc , stat) {
 UploadJob.prototype.create = function(urls, user, config) {
   var self = this
 
-  this.stat.add(user.username, {message: `Downloading ${urls.join(', ')} to ${config.upload.path}`})
+  this.stat.add(user.username, {message: 'Downloading '+urls.join(', ')+' to ' + config.upload.path})
 
   return Promise.map(urls, function(e) {
     return requestAsync(e, config.upload.path)

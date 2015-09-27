@@ -212,7 +212,7 @@ function treeAction(app) {
     var actionName = action.shift()
 
     if(!(plugin in plugins)) {
-      return new HTTPError(`Plugin ${plugin} not found`, 404) 
+      return new HTTPError('Plugin '+plugin+' not found', 404) 
     }
 
     //we're on POST /, /p/pluginName/action/actionName
