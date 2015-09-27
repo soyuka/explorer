@@ -1,6 +1,6 @@
-import job from './job.js'
-import router from './router.js'
-import registerHooks from './hooks.js'
+var job = require('./job.js')
+var router = require('./router.js')
+var registerHooks = require('./hooks.js')
 
 module.exports = {
   hooks: registerHooks,

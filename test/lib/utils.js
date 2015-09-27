@@ -1,16 +1,17 @@
-import {secureString, higherPath, noDotFiles} from '../../lib/utils.js'
+"use strict";
+var utils = require('../../lib/utils.js')
 
 describe('utils', function() {
   it('should secure string', function() {
-    expect(secureString('"\'\\&|;-')).to.equal('') 
+    expect(utils.secureString('"\'\\&|;-')).to.equal('') 
   })
 
   it('should get higher path', function() {
-    expect(higherPath('/some/path', '/some')).to.equal('/some/path')
-    expect(higherPath('/some/path', '/some/path/../../')).to.equal('/some/path')
+    expect(utils.higherPath('/some/path', '/some')).to.equal('/some/path')
+    expect(utils.higherPath('/some/path', '/some/path/../../')).to.equal('/some/path')
   })
 
   it('should filter dot files', function() {
-    expect(noDotFiles('.DS_Store')).to.be.false
+    expect(utils.noDotFiles('.DS_Store')).to.be.false
   })
 })

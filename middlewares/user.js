@@ -1,15 +1,16 @@
-import HTTPError from '../lib/HTTPError.js'
-import p from 'path'
-import util from 'util'
+"use strict";
+var HTTPError = require('../lib/HTTPError.js')
+var p = require('path')
+var util = require('util')
 
-let debug = require('debug')('explorer:middlewares:user')
+var debug = require('debug')('explorer:middlewares:user')
 
 function isValidForKey(path) {
   return path == '/' || path == '/download' || path == '/search'
 }
 
 function getUser(app) {
-  let config = app.get('config')
+  var config = app.get('config')
 
   /**
    * Middleware that handles the user cookie
@@ -18,10 +19,10 @@ function getUser(app) {
    */
   return function userMiddleware(req, res, next) {
 
-    let locals =  {}
-    let user = req.cookies.user
+    var locals =  {}
+    var user = req.cookies.user
 
-    let isKeyAllowed = config.allowKeyAccess.some(e => e == req.path)
+    var isKeyAllowed = config.allowKeyAccess.some(e => e == req.path)
 
     if((!user || !user.username) && req.query.key && isKeyAllowed) {
       user = req.user = req.users.getByKey(req.query.key) 
@@ -64,4 +65,4 @@ function getUser(app) {
 
 }
 
-export default getUser
+module.exports = getUser

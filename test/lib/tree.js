@@ -1,6 +1,7 @@
+"use strict";
 var p = require('path')
 
-import {tree} from '../../lib/tree.js'
+var tree = require('../../lib/tree.js')
 
 describe('tree', function() {
 

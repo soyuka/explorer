@@ -1,11 +1,12 @@
-let Promise = require('bluebird')
+"use strict";
+var Promise = require('bluebird')
 
 module.exports = function(name, handler) {
   describe(name, function() {
     
-    let hash = '12faed'
-    let time = Date.now()
-    let size = 12519589
+    var hash = '12faed'
+    var time = Date.now()
+    var size = 12519589
 
     it('should set cache', function() {
       return Promise.all([

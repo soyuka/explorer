@@ -1,18 +1,18 @@
 function registerHooks(config) {
   return {
     action: function(tree) {
-      let str = `
-        <optgroup label="Zip">
-          <option value="archive.download" selected="selected">Download</option>`
+      var str = ''+
+        '<optgroup label="Zip">'+
+          '<option value="archive.download" selected="selected">Download</option>'
 
       if(config.archive.disabled != true)
-        str += `<option value="archive.compress">Archive</option>`
+        str += '<option value="archive.compress">Archive</option>'
 
-      str += `</optgroup>`
+      str += '</optgroup>'
 
       return str
     } 
   }
 }
 
-export default registerHooks
+module.exports = registerHooks

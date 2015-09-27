@@ -1,3 +1,4 @@
+"use strict";
 global.expect = require('chai').expect
 global.bootstrap = require('./bootstrap.js')
 

@@ -44,7 +44,6 @@ git checkout -b deploy
 npm dedupe
 
 jq -r '.dependencies|keys[]|.|= "node_modules/" + .' package.json|xargs git add -f
-gulp publish:babelize
 git add .
 git add client/css -f
 git commit -q -m 'Pack dependencies'
@@ -55,4 +54,3 @@ git reset -q HEAD~1
 
 git checkout master
 git branch -D deploy
-gulp publish:clean
