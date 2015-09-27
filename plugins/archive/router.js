@@ -11,7 +11,7 @@ var Upload = function(router, utils) {
   
   function getData(req) {
     var name = req.body.name || 'archive'+new Date().getTime()
-    var temp = p.join(req.options.archive.path || './', ${name} + '.zip')
+    var temp = p.join(req.options.archive.path || './', name + '.zip')
 
     return {
       name: name,

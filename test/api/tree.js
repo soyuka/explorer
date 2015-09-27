@@ -10,8 +10,8 @@ function testSort(params, modifiers, cb) {
   var previous = modifiers.previous
 
   for(let i in params) {
-    var s = `${i}=${params[i]}`
-    url += start === true ? `?${s}` : `&${s}`
+    var s = i +'='+ params[i]
+    url += start === true ? '?' + s : '&' + s
     
     if(start === true)
       start = false
