@@ -3,6 +3,8 @@ branches:
   only:
     - master
     - development
+
+# bcrypt with node 4.x
 env:
   - CXX=g++-4.8
 
@@ -14,16 +16,12 @@ addons:
       - g++-4.8
 
 node_js:
-   - "iojs"
-   - "iojs-v2.5.0"
-   - "0.12"
-   - "4.1"
+   - "4"
+
 matrix:
   fast_finish: true
-  allow_failures:
-    - node_js: "iojs"
-    - node_js: "4.1"
 services:
   - redis-server
 
+# container-base
 sudo: false
