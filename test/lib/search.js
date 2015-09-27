@@ -1,4 +1,5 @@
-import {searchMethod} from '../../lib/search.js'
+"use strict";
+var searchMethod = require('../../lib/search.js')
 
 describe('search', function() {
   it('should throw', function() {

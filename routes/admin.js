@@ -1,14 +1,15 @@
-import Promise from 'bluebird'
-import p from 'path'
-import yaml from 'yamljs'
-import {noDotFiles, extend, removeDirectoryContent, handleSystemError} from '../lib/utils.js'
-import {User} from '../lib/users.js'
-import {tree} from '../lib/tree.js'
-import {trashSize, prepareTree} from '../middlewares'
-import HTTPError from '../lib/HTTPError.js'
+"use strict";
+var Promise = require('bluebird')
+var p = require('path')
+var yaml = require('yamljs')
+var utils = require('../lib/utils.js')
+var User = require('../lib/data/user.js')
+var tree = require('../lib/tree.js').tree
+var HTTPError = require('../lib/HTTPError.js')
+var middlewares = require('../middlewares')
 
-let fs = Promise.promisifyAll(require('fs'))
-let debug = require('debug')('explorer:routes:admin')
+var fs = Promise.promisifyAll(require('fs'))
+var debug = require('debug')('explorer:routes:admin')
 
 /** 
  * validUser middleware
@@ -53,24 +54,28 @@ function isAdmin(config) {
  * @apiParam (User) {string} archive
  * @apiParam (User) {string} upload
  */
-let Admin = function(app) {
-  let admin = require('express').Router()
-  let config = app.get('config')
+var Admin = function(app) {
+  var admin = require('express').Router()
+  var config = app.get('config')
 
   admin.use(isAdmin(config))
 
-  admin.get('/', trashSize(config), prepareTree(app), function(req, res) {
-    return res.renderBody('admin', {
-      users: req.users.users
-    })
-  })
+  admin.get('/', 
+    middlewares.trashSize(config), 
+    middlewares.prepareTree(app), 
+    function(req, res) {
+      return res.renderBody('admin', {
+        users: req.users.users
+      })
+    }
+  )
 
   admin.get('/create', function(req, res) {
     return res.renderBody('admin/user/create.haml')
   })
 
   admin.get('/update/:username', function(req, res, next) {
-    let u = req.users.get(req.params.username)
+    var u = req.users.get(req.params.username)
 
     if(!u) {
       return next(new HTTPError('User not found', 404))
@@ -88,11 +93,11 @@ let Admin = function(app) {
 
     debug('Empty trash %s', config.remove.path)
 
-    removeDirectoryContent(config.remove.path)
+    utils.removeDirectoryContent(config.remove.path)
     .then(function() {
       return res.handle('back')
     })
-    .catch(handleSystemError(next))
+    .catch(utils.handleSystemError(next))
   })
 
   /**
@@ -108,10 +113,10 @@ let Admin = function(app) {
 
     req.users.delete(req.params.username)
     .then(function() {
-      req.flash('info', `User ${req.params.username} deleted`)
+      req.flash('info', 'User '+req.params.username+' deleted')
       return res.handle('/a') 
     })
-    .catch(handleSystemError(next))
+    .catch(utils.handleSystemError(next))
   })
 
   /**
@@ -133,11 +138,11 @@ let Admin = function(app) {
     .then(function(user) {
       return req.users.put(user)
       .then(function() {
-        req.flash('info', `User ${user.username} created`)
+        req.flash('info', 'User '+user.username+' created')
         return res.handle('/a', {user: user}, 201)
       })
     })
-    .catch(handleSystemError(next))
+    .catch(utils.handleSystemError(next))
   })
 
   /**
@@ -147,7 +152,7 @@ let Admin = function(app) {
    * @apiUse UserSchema
    */
   admin.put('/users', function(req, res, next) {
-    let u = req.users.get(req.body.username)
+    var u = req.users.get(req.body.username)
 
     if(!(u instanceof User)) {
       return next(new HTTPError('User not found', 404))
@@ -157,14 +162,14 @@ let Admin = function(app) {
     .then(function(user) {
       return req.users.put(user)
       .then(function() {
-        req.flash('info', `User ${user.username} updated`)
+        req.flash('info', 'User '+user.username+' updated')
         return res.handle('/a')
       })
     })
-    .catch(handleSystemError(next))
+    .catch(utils.handleSystemError(next))
   })
 
   app.use('/a', admin)
 }
 
-export {Admin}
+module.exports = Admin

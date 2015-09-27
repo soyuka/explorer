@@ -1,6 +1,7 @@
-import Stat from '../../lib/job/stat.js'
+"use strict";
+var Stat = require('../../lib/job/stat.js')
 
-let stat;
+var stat;
 
 describe('stat', function() {
 

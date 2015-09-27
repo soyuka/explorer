@@ -1,11 +1,12 @@
-import p from 'path'
-import fs from 'fs'
-import rimraf from 'rimraf'
-import async from 'async'
-import interactor from '../../lib/job/interactor.js'
+"use strict";
+var p = require('path')
+var fs = require('fs')
+var rimraf = require('rimraf')
+var async = require('async')
+var interactor = require('../../lib/job/interactor.js')
 
-let archive_path = p.join(__dirname, '../fixtures/tmp')
-let list
+var archive_path = p.join(__dirname, '../fixtures/tmp')
+var list
 
 function getList() {
   list = fs.readdirSync(archive_path)

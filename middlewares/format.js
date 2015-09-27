@@ -1,6 +1,7 @@
-import util from 'util'
-import rss from '../routes/rss.js'
-import HTTPError from '../lib/HTTPError.js'
+"use strict";
+var util = require('util')
+var rss = require('../routes/rss.js')
+var HTTPError = require('../lib/HTTPError.js')
 
 /**
  * Handles Accept header to render the wanted format
@@ -45,7 +46,12 @@ function getFormat(app) {
       })
     }
 
-    res.handle = function(redirect = 'back', data = {}, status = 200) {
+    res.handle = function(redirect, data, status) {
+
+      redirect = redirect ? redirect : 'back'
+      data = data ? data : {}
+      status = status ? status : 200
+
       res.format({
         'text/html': function() {
           if(data.info)
@@ -70,4 +76,4 @@ function getFormat(app) {
   }
 }
 
-export default getFormat
+module.exports = getFormat

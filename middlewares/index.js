@@ -1,20 +1,22 @@
-import user from './user.js'
-import trashSize from './trashSize.js'
-import {prepareTree, sanitizeCheckboxes} from './prepareTree.js'
-import registerHooks from './registerHooks.js'
-import format from './format.js'
-import optionsCookie from './optionsCookie.js'
-import error from './error.js'
-import notify from './notify.js'
+"use strict";
+var user = require('./user.js')
+var trashSize = require('./trashSize.js')
+var prepareTree = require('./prepareTree.js')
+var sanitizeCheckboxes = require('./sanitizeCheckboxes.js')
+var registerHooks = require('./registerHooks.js')
+var format = require('./format.js')
+var optionsCookie = require('./optionsCookie.js')
+var error = require('./error.js')
+var notify = require('./notify.js')
 
-export {
-  user,
-  trashSize,
-  prepareTree,
-  format,
-  optionsCookie,
-  error,
-  notify,
-  sanitizeCheckboxes,
-  registerHooks
+module.exports = {
+  user: user,
+  trashSize: trashSize,
+  prepareTree: prepareTree,
+  format: format,
+  optionsCookie: optionsCookie,
+  error: error,
+  notify: notify,
+  sanitizeCheckboxes: sanitizeCheckboxes,
+  registerHooks: registerHooks
 }

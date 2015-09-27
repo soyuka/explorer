@@ -1,12 +1,13 @@
-import Download from 'download'
-import u from 'url'
-import p from 'path'
-import fs from 'fs'
-import Promise from 'bluebird'
-import prettyBytes from 'pretty-bytes'
+"use strict";
+var Download = require('download')
+var u = require('url')
+var p = require('path')
+var fs = require('fs')
+var Promise = require('bluebird')
+var prettyBytes = require('pretty-bytes')
 
-let download = new Download()
-let debug = require('debug')('explorer:job:upload')
+var download = new Download()
+var debug = require('debug')('explorer:job:upload')
 
 /**
  * Requests the url, downloads to dest and stat notifications
@@ -15,13 +16,13 @@ let debug = require('debug')('explorer:job:upload')
  * @return Promise
  */
 function requestAsync(url, destination) {
-  let size = 0
-  let filename
+  var size = 0
+  var filename
 
   return new Promise(function(resolve, reject) {
     debug('Requesting', url)
 
-    let d = require('download')
+    var d = require('download')
 
     new Download()
     .get(url)
@@ -43,7 +44,7 @@ function requestAsync(url, destination) {
         return resolve({error: 'Upload of ' + url + ' failed: ' + err.message}) 
       }
 
-      let file = files[0]
+      var file = files[0]
 
       if(!file.basename)
         file.basename = filename
@@ -55,7 +56,7 @@ function requestAsync(url, destination) {
       }
 
       if(size > 0) {
-        return resolve({path: destination, name: file.basename, message: `${url} was uploaded successfully to ${file.path} (${prettyBytes(size)})`})
+        return resolve({path: destination, name: file.basename, message: url + ' was uploaded successfully to '+file.path+' ('+prettyBytes(size)+')'})
       }
 
       debug('No size')
@@ -66,7 +67,7 @@ function requestAsync(url, destination) {
         } 
 
         size = fstat.size
-        return resolve({path: destination, name: file.basename, message: `${url} was uploaded successfully to ${file.path} (${prettyBytes(size)})`})
+        return resolve({path: destination, name: file.basename, message: url + ' was uploaded successfully to '+file.path+' (' + prettyBytes(size) + ')'})
 
       })
     })
@@ -77,7 +78,9 @@ function requestAsync(url, destination) {
  * UploadJob plugin
  * @param IPCEE ipc
  */
-function UploadJob(ipc = null, stat) {
+function UploadJob(ipc , stat) {
+  if(!ipc) { ipc = null }
+
   if(!(this instanceof UploadJob)) { return new UploadJob(ipc, stat) }
   this.ipc = ipc
   this.stat = stat
@@ -92,7 +95,7 @@ function UploadJob(ipc = null, stat) {
 UploadJob.prototype.create = function(urls, user, config) {
   var self = this
 
-  this.stat.add(user.username, {message: `Downloading ${urls.join(', ')} to ${config.upload.path}`})
+  this.stat.add(user.username, {message: 'Downloading '+urls.join(', ')+' to ' + config.upload.path})
 
   return Promise.map(urls, function(e) {
     return requestAsync(e, config.upload.path)
@@ -117,4 +120,4 @@ UploadJob.prototype.clear = function(user) {
   return this.stat.remove(user)
 }
 
-export default UploadJob
+module.exports = UploadJob

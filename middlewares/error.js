@@ -1,4 +1,5 @@
-import HTTPError from '../lib/HTTPError.js'
+"use strict";
+var HTTPError = require('../lib/HTTPError.js')
 
 /**
  * Error middleware
@@ -14,7 +15,7 @@ function getError(config) {
       err = new HTTPError('No errors - please report', 500, '/')
     }
 
-    let d = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')
+    var d = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')
 
     if(!config.quiet)
       if(config.dev)
@@ -41,4 +42,4 @@ function getError(config) {
   }
 }
 
-export default getError
+module.exports = getError

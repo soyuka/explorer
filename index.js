@@ -1,18 +1,18 @@
-import p from 'path'
-import http from 'http'
-import https from 'https'
-import Promise from 'bluebird'
-import interactor from './lib/job/interactor.js'
+"use strict";
+var p = require('path')
+var http = require('http')
+var https = require('https')
+var Promise = require('bluebird')
+var interactor = require('./lib/job/interactor.js')
+var firstExistingPath = require('./lib/utils.js').firstExistingPath
+var getConfiguration = require('./lib/config.js')
 
-import {firstExistingPath} from './lib/utils.js'
-import {getConfiguration} from './lib/config.js'
-
-let fs = Promise.promisifyAll(require('fs'))
+var fs = Promise.promisifyAll(require('fs'))
 
 var argv = require('minimist')(process.argv.slice(2))
 
 try {
-  let config_path = firstExistingPath([
+  var config_path = firstExistingPath([
     argv.c,
     p.join(process.env.HOME || '', './.config/explorer/config.yml'), 
     p.join(__dirname, './config.yml')
@@ -24,7 +24,7 @@ try {
   throw e
 }
 
-let https_options = {
+var https_options = {
   key: fs.readFileSync(config.https.key),
   cert: fs.readFileSync(config.https.cert)
 }
@@ -40,7 +40,7 @@ require('./server.js')(config)
   var plugins = app.get('plugins')
   var plugins_paths = []
 
-  for(var i in plugins) {
+  for(let i in plugins) {
     if('job' in plugins[i]) {
       plugins_paths.push(plugins[i].path) 
     }

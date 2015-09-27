@@ -10,4 +10,4 @@ function registerHooks(config, url, user) {
   }
 }
 
-export default registerHooks
+module.exports = registerHooks

@@ -1,10 +1,11 @@
-let url = function(u) {
+"use strict";
+var url = function(u) {
   return function(res) {
     expect(res.header.location).to.equal(u)
   }
 }
 
-let key
+var key
 
 describe('user', function() {
   

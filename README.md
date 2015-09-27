@@ -16,14 +16,16 @@ Explore and share. Highly-configurable directory listing made with nodejs.
 
 ## Requirements
 
-- nodejs (> 0.11 with harmony support) 
+- nodejs (v4 with harmony support) 
+
+0.12 and iojs are no longer supported as of v3.0.0
 
 ### Installing nodejs with [nvm](https://github.com/creationix/nvm)
 
 ```bash
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash
-nvm install 0.12 #nvm ls-remote to see available versions
-nvm alias default 0.12
+nvm install 4 #nvm ls-remote to see available versions
+nvm alias default 4
 nvm use default
 ```
 
@@ -186,8 +188,7 @@ Installed as a pm2 module explorer will already be daemonized.
 #### Development
 
 ```bash
-npm i babel-node -g
-DEBUG="explorer:*" babel-node index.js
+DEBUG="explorer:*" node --harmony index.js
 ```
 
 #### Daemonize with pm2
@@ -195,19 +196,6 @@ DEBUG="explorer:*" babel-node index.js
 ```bash
 npm i pm2 -g
 pm2 start --node-args="--harmony" --name explorer index.js
-```
-
-Or
-
-```bash
-pm2 --next-gen-js --name explorer start index.js
-```
-
-Or with babel-node:
-
-```bash
-npm i pm2 babel-node -g
-pm2 --interpreter babel-node --name explorer start index.js
 ```
 
 ## Plugins
@@ -256,10 +244,9 @@ plugins:
 ## Development
 
 Clone [see From git](#from-git)
-The easiest is to compile with babel for ES6 compatibility:
 
 ```bash
-DEBUG="explorer:*" babel-node index.js -c config.example.dev.yml
+DEBUG="explorer:*" node --harmony index.js -c config.example.dev.yml
 ```
 
 Sass is compiled with gulp: 
@@ -275,7 +262,7 @@ To get stack traces from errors use `dev: true` in your configuration file.
 Tests are using their own configuration file `test/fixtures/config.yml`:
 
 ```bash
-mocha --compilers js:babel/register
+mocha --harmony
 ```
 
 ### Api docs
