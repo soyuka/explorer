@@ -1,0 +1,41 @@
+Take parts from ezseed to plugin to get infos from release name
+
+## refactoring :
+
+- Review memory + stat and cache by providers where stat is just a tool to store memory items by user
+- remove es6
+- notifications
+
+## tests :
+- user opts (readonly, upload:false etc.)
+
+- keep trash informations to restore
+- copy/paste/move
+- unrar => improve multiple
+
+## Features
+
+- remove action hook
+- unrar action hook
+
+### Macro plugin :
+
+#### Requirements :
+
+- improve search filters through a schema, also allow -e for -exact or -d for -dir
+- Add a file provider (refactor users db btw) for clipboard, macros
+
+#### Add macro :
+
+- generates an api address and a cron 
+- stores last time update per user (file cache is better)
+- hook on last items (maybe filters on the tree ? type filter, + tvshow / movie filter => through search)
+- with last tree items :
+  - call api things, like /p/unrar?path=path then /p/subtitles?path=path
+  then /p/cut?path=x&type=movie && /p/paste?path=y&dest=x
+  then notify new movies in x from last time update
+
+remove macro, edit macro
+
+
+

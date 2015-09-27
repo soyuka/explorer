@@ -1,6 +1,7 @@
-import {Tree} from './tree.js'
-import {User} from './user.js'
-import {Admin} from './admin.js'
-import {Settings} from './settings.js'
-
-export {Tree, User, Admin, Settings}
+"use strict";
+module.exports = {
+  Tree: require('./tree.js'),
+  User: require('./user.js'),
+  Admin: require('./admin'),
+  Settings: require('./settings')
+}

@@ -1,15 +1,15 @@
-import fs from 'fs'
-import express from 'express'
-import p from 'path'
-import moment from 'moment'
-import multer from 'multer'
+var fs = require('fs')
+var express = require('express')
+var p = require('path')
+var moment = require('moment')
+var multer = require('multer')
 
-let debug = require('debug')('explorer:routes:upload')
+var debug = require('debug')('explorer:routes:upload')
 
-let Upload = function(app, utils, config) {
+var Upload = function(app, utils, config) {
   
   function canUpload(req, res, next) {
-    let opts = req.options.upload
+    var opts = req.options.upload
 
     if(opts.disabled)
       return next(new utils.HTTPError('Unauthorized', 401))
@@ -28,7 +28,7 @@ let Upload = function(app, utils, config) {
    * @apiParam {string} links Links to download
    */
   function remoteUpload(req, res, next) {
-    let links = req.body.links.split('\r\n')
+    var links = req.body.links.split('\r\n')
 
     links = links.filter(function(e) { return e.trim().length > 0 })
 
@@ -41,15 +41,15 @@ let Upload = function(app, utils, config) {
     return res.handle('back', {info: 'Upload launched'}, 201)
   }
 
-  let storage = multer.diskStorage({
+  var storage = multer.diskStorage({
     destination: function (req, file, cb) {
       return cb(null, req.options.upload.path)
     },
     filename: function (req, file, cb) {
 
-      let original = file.originalname
-      let ext = p.extname(original)
-      let name = p.basename(original, ext) 
+      var original = file.originalname
+      var ext = p.extname(original)
+      var name = p.basename(original, ext) 
 
       //rename if exists
       if(fs.existsSync(p.join(req.options.upload.path, original))) {
@@ -66,13 +66,13 @@ let Upload = function(app, utils, config) {
    * @apiName upload
    * @apiParam {string[]} files
    */
-  let upload = multer({storage: storage})
+  var upload = multer({storage: storage})
 
   app.get('/', utils.prepareTree, canUpload, getUpload)
   app.post('/', utils.prepareTree, canUpload, 
     upload.array('files', config.upload.maxCount),
     function(req, res, next) {
-      let info = ''
+      var info = ''
 
       if(req.files.length == 1) {
         info = `${req.files[0].originalname} uploaded to ${req.files[0].path}`
@@ -89,4 +89,4 @@ let Upload = function(app, utils, config) {
   return app
 }
 
-export default Upload
+module.exports = Upload

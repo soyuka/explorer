@@ -1,15 +1,16 @@
-import fs from 'fs'
-import p from 'path'
+"use strict";
+var fs = require('fs')
+var p = require('path')
 
-let newName
+var newName
 
 function testSort(params, modifiers, cb) {
-  let url = '/'
-  let start = true
-  let previous = modifiers.previous
+  var url = '/'
+  var start = true
+  var previous = modifiers.previous
 
   for(let i in params) {
-    let s = `${i}=${params[i]}`
+    var s = `${i}=${params[i]}`
     url += start === true ? `?${s}` : `&${s}`
     
     if(start === true)
@@ -23,7 +24,7 @@ function testSort(params, modifiers, cb) {
       expect(res.body.breadcrumb).to.have.length.of(1)
 
       for(let i in res.body.tree) {
-        let p = res.body.tree[i][modifiers.property]
+        var p = res.body.tree[i][modifiers.property]
         p = typeof modifiers.modify == 'function' ? modifiers.modify(p) : p
 
         expect(p).to.be.at[modifiers.direction == 'asc' ? 'most' : 'least'](previous)
@@ -112,7 +113,7 @@ describe('tree', function() {
     }, cb)
   })
   
-  let l = 0
+  var l = 0
 
   it('should get tree length', function(cb) {
     this.request.get('/?limit=1000&page=1')

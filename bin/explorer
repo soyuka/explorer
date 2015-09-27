@@ -5,8 +5,7 @@ var Spawner = require('promise-spawner')
 var eol = require('os').EOL
 var yamljs = require('yamljs')
 var utils = require('../lib/utils.js')
-var getConfiguration = require('../lib/config.js').getConfiguration
-
+var getConfiguration = require('../lib/config.js')
 var argv = require('minimist')(process.argv.slice(2))
 var command = argv._.shift()
 
@@ -43,7 +42,7 @@ function pluginCommand(args) {
   var command = args._.shift()
 
   if(args._.length == 0) {
-    for(var i in config.plugins) {
+    for(let i in config.plugins) {
       if(config.plugins[i].module !== undefined)
         args._.push(config.plugins[i].module)
     }

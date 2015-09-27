@@ -1,4 +1,6 @@
-import { Users, User } from '../../lib/users.js'
+"use strict";
+var Users = require('../../lib/data/users.js')
+var User  = require('../../lib/data/user.js')
 
 describe('users', function() {
 
@@ -36,13 +38,13 @@ describe('users', function() {
   })
   
   it('should exist', function() {
-    let u = users.get('admin')
+    var u = users.get('admin')
     expect(u).not.to.be.undefined
     expect(u).to.have.any.keys(Object.keys(user)) 
   })
 
   it('should exist by key', function() {
-    let u = users.getByKey('key')
+    var u = users.getByKey('key')
     expect(u).not.to.be.undefined
     expect(u).to.have.any.keys(Object.keys(user)) 
   })
@@ -60,6 +62,19 @@ describe('users', function() {
     .then(function(v) {
       expect(v).to.equal(true)
       cb()
+    })
+  })
+
+  //Validates that data has been written to disk
+  it('should authenticate with a new instance', function(cb) {
+    var users_b = new Users({database: __dirname + '/../fixtures/users'}) 
+
+    users_b.load().then(function() {
+      users.authenticate('admin', 'admin')
+      .then(function(v) {
+        expect(v).to.equal(true)
+        cb()
+      })
     })
   })
 
@@ -84,7 +99,7 @@ describe('users', function() {
   })
   
   it('should be up to date', function() {
-    let u = users.get('admin')
+    var u = users.get('admin')
 
     expect(u.home).to.equal('/home/test')
   })
@@ -95,15 +110,14 @@ describe('users', function() {
       return users.put(u)
     }) 
     .then(function() {
-      expect(users.users).to.have.length.of(2)
+      expect(users.data).to.have.length.of(2)
       cb()
     })
-
   })
 
   it('should remove an user', function(cb) {
     users.remove('test').then(function() {
-      expect(users.users).to.have.length.of(1)
+      expect(users.data).to.have.length.of(1)
       cb()
     })
   })
@@ -119,7 +133,7 @@ describe('users', function() {
   })
 
   it('should update a multiline buffer', function(cb) {
-    let u = users.get('admin')
+    var u = users.get('admin')
     u.update({ignore: '/home/test/p0rn\n/home/test/incomplete\n'})
     .then(function(u) {
       expect(u.ignore).to.deep.equal(['/home/test/p0rn', '/home/test/incomplete'])
@@ -130,7 +144,7 @@ describe('users', function() {
   })
 
   it('should get the multiline buffer back after loading database', function(cb) {
-    let t = new Users({database: __dirname + '/../fixtures/users'})
+    var t = new Users({database: __dirname + '/../fixtures/users'})
 
     t.load()
     .then(function() {
@@ -142,7 +156,7 @@ describe('users', function() {
 
   it('should not update admin key', function(cb) {
   
-    let u = users.get('admin')
+    var u = users.get('admin')
 
     u.update({key: 'nothing'})
     .then(function(u) {
@@ -153,7 +167,7 @@ describe('users', function() {
 
   it('should not update admin home because of ignored key', function(cb) {
   
-    let u = users.get('admin')
+    var u = users.get('admin')
 
     u.update({home: 'some'}, ['home'])
     .then(function(u) {
@@ -161,7 +175,6 @@ describe('users', function() {
       cb()
     })
   })
-
 
   after(function(cb) {
     user.username = 'admin'

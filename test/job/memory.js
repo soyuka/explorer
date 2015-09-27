@@ -1,6 +1,7 @@
-import Memory from '../../lib/job/memory.js'
+"use strict";
+var Memory = require('../../lib/job/memory.js')
 
-let mem;
+var mem;
 
 describe('memory', function() {
 

@@ -1,3 +1,4 @@
+"use strict";
 var user = {username: 'test', password: 'test', home: __dirname + '/../fixtures/tree', key: 1, admin: 1, readonly: 0}
 var mm = require('micromatch')
 
@@ -6,7 +7,7 @@ describe('admin', function() {
   before(bootstrap.autoAgent)
 
   before(function(cb) {
-    let self = this 
+    var self = this 
 
     bootstrap.createAgent(function(a) {
       self.agent = a 
@@ -116,8 +117,8 @@ describe('admin', function() {
   it('should get a tree without dir*', function(cb) {
     this.agent.get('/')
     .expect(function(res) {
-      let tree = res.body.tree
-      for(var i in tree) {
+      var tree = res.body.tree
+      for(let i in tree) {
         expect(mm.isMatch(tree[i].name, 'dir*')).to.be.false
       }
     })

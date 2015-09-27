@@ -1,12 +1,16 @@
-import archiver from 'archiver'
-import http from 'http'
-import fs from 'fs'
-import p from 'path'
-import prettyBytes from 'pretty-bytes'
+"use strict";
+var archiver = require('archiver')
+var http = require('http')
+var fs = require('fs')
+var p = require('path')
+var prettyBytes = require('pretty-bytes')
 
-let debug = require('debug')('explorer:job:archive')
+var debug = require('debug')('explorer:job:archive')
 
-function ArchiveJob(ipc = null, stat) {
+function ArchiveJob(ipc, stat) {
+  if(!ipc)
+    ipc = null
+
   if(!(this instanceof ArchiveJob)) { return new ArchiveJob(ipc, stat) }
   this.ipc = ipc
   this.stat = stat
@@ -19,8 +23,8 @@ function ArchiveJob(ipc = null, stat) {
  * }
  */
 ArchiveJob.prototype.create = function(data, user, config) {
-  let archive = archiver('zip') 
-  let self = this
+  var archive = archiver('zip') 
+  var self = this
 
   archive.on('error', function(err) {
     archive.abort()
@@ -34,7 +38,7 @@ ArchiveJob.prototype.create = function(data, user, config) {
 
   //on stream closed we can end the request
   archive.on('end', function() {
-    let b = archive.pointer()
+    var b = archive.pointer()
 
     debug('Archive wrote %d bytes', b)
 
@@ -74,4 +78,4 @@ ArchiveJob.prototype.clear = function(user) {
   return this.stat.remove(user)
 }
 
-export default ArchiveJob
+module.exports = ArchiveJob

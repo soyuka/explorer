@@ -1,9 +1,10 @@
-import util from 'util'
-import HTTPError from '../lib/HTTPError.js'
-import interactor from '../lib/job/interactor.js'
-import {handleSystemError} from '../lib/utils.js'
+"use strict";
+var util = require('util')
+var HTTPError = require('../lib/HTTPError.js')
+var interactor = require('../lib/job/interactor.js')
+var handleSystemError = require('../lib/utils.js').handleSystemError
 
-let debug = require('debug')('explorer:routes:user')
+var debug = require('debug')('explorer:routes:user')
 
 const cookieOptions = { httpOnly: false }
 
@@ -40,7 +41,7 @@ function login(req, res, next) {
     debug('Auth %s', ok)
   
     if(ok) {
-      let u = req.users.get(req.body.username)
+      var u = req.users.get(req.body.username)
 
       debug('%s logged in', u)
 
@@ -92,7 +93,7 @@ function deleteNotifications(req, res, next) {
   interactor.ipc.send('get', 'clear', req.user.username)
 }
 
-let User = function(app) {
+var User = function(app) {
   app.get('/logout', logout)
   app.get('/login', home)
   app.get('/notifications', notifications)
@@ -102,4 +103,4 @@ let User = function(app) {
   return app
 }
 
-export {User}
+module.exports = User

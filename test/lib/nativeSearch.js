@@ -1,9 +1,10 @@
-import p from 'path'
-import fs from 'fs'
+"use strict";
+var p = require('path')
+var fs = require('fs')
 
-let fixtures = p.join(__dirname, '../fixtures/tree')
+var fixtures = p.join(__dirname, '../fixtures/tree')
 
-import {nativeSearch} from '../../lib/nativeSearch.js'
+var nativeSearch = require('../../lib/nativeSearch.js')
 
 function hasItems(items, name) {
    var found = false
@@ -39,7 +40,7 @@ describe('nativeSearch', function() {
   })
 
   it('should search within path', function(cb) {
-    let dir = p.join(fixtures, 'dir')
+    var dir = p.join(fixtures, 'dir')
     nativeSearch()('*.dat', dir, fixtures) 
     .then(function(paths) {
       expect(paths.tree).to.be.an('array')
@@ -60,7 +61,7 @@ describe('nativeSearch', function() {
   it('should search with -dir filter', function(cb) {
    nativeSearch()('dir -dir', fixtures, fixtures)
    .then(function(results) {
-     for(var i in results.tree) {
+     for(let i in results.tree) {
        expect(results.tree[i].directory).to.be.true
      }
       cb()

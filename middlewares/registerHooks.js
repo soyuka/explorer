@@ -1,15 +1,16 @@
-import p from 'path'
+"use strict";
+var p = require('path')
 
-let debug = require('debug')('explorer:middlewares:registerHooks')
+var debug = require('debug')('explorer:middlewares:registerHooks')
 
 //Register plugins, should be called just before rendering (after prepareTree)
 function registerHooks(app) {
 
-  let plugins = app.get('plugins')
-  let config = app.get('config')
+  var plugins = app.get('plugins')
+  var config = app.get('config')
 
   return function(req, res, next) {
-    let hooks = {}
+    var hooks = {}
 
     /**
      * @see plugins documentation
@@ -29,4 +30,4 @@ function registerHooks(app) {
   }
 }
 
-export default registerHooks
+module.exports = registerHooks
