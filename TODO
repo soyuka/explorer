@@ -3,7 +3,6 @@ Take parts from ezseed to plugin to get infos from release name
 ## refactoring :
 
 - Review memory + stat and cache by providers where stat is just a tool to store memory items by user
-- remove es6
 - notifications
 
 ## tests :

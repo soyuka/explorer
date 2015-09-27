@@ -44,17 +44,17 @@ ArchiveJob.prototype.create = function(data, user, config) {
 
     if(!(data.stream instanceof http.ServerResponse)) {
       self.ipc.send('archive.create', user.username, data)
-      return self.stat.add(user.username, {message: `${prettyBytes(b)} written in ${data.temp}`, path: p.dirname(data.temp), name: data.name})
+      return self.stat.add(user.username, {message: prettyBytes(b) + ' written in '+data.temp, path: p.dirname(data.temp), name: data.name})
     }
   })
 
   if(data.stream instanceof http.ServerResponse) {
     //set the archive name
-    data.stream.attachment(`${data.name}.zip`)
+    data.stream.attachment(data.name + '.zip')
   } else if(typeof data.stream == 'string') {
 
     data.stream = fs.createWriteStream(data.stream) 
-    self.stat.add(user.username, {message: `Compressing data from ${data.root} to ${data.temp}`, name: data.name})
+    self.stat.add(user.username, {message: 'Compressing data from '+data.root+' to '+data.temp, name: data.name})
   }
 
   archive.pipe(data.stream)
