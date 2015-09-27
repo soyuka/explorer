@@ -33,7 +33,7 @@ function updateSettings(req, res, next) {
   .then(function(user) {
     return req.users.put(user)
     .then(function() {
-      req.flash('info', `Settings updated`)
+      req.flash('info', 'Settings updated')
       return res.handle('/settings', req.users.get(u.username))
     })
   })
