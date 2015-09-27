@@ -16,14 +16,16 @@ Explore and share. Highly-configurable directory listing made with nodejs.
 
 ## Requirements
 
-- nodejs (> 0.11 with harmony support) 
+- nodejs (v4 with harmony support) 
+
+0.12 and iojs are no longer supported as of v3.0.0
 
 ### Installing nodejs with [nvm](https://github.com/creationix/nvm)
 
 ```bash
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash
-nvm install 0.12 #nvm ls-remote to see available versions
-nvm alias default 0.12
+nvm install 4 #nvm ls-remote to see available versions
+nvm alias default 4
 nvm use default
 ```
 
