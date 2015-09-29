@@ -30,6 +30,7 @@ module.exports = function(config) {
   app.use(bodyParser.json({limit: config.upload.maxSize}))
 
   app.set('config', config)
+  app.set('cache', require('./lib/cache')(config))
   app.set('view engine', 'haml')
   app.set('view cache', true)
   app.set('views', [p.join(__dirname, 'views')])

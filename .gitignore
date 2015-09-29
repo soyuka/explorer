@@ -4,3 +4,4 @@ node_modules
 test/fixtures/users
 client/css
 .DS_Store
+dump.rdb
