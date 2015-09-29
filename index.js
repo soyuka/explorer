@@ -4,25 +4,9 @@ var http = require('http')
 var https = require('https')
 var Promise = require('bluebird')
 var interactor = require('./lib/job/interactor.js')
-var firstExistingPath = require('./lib/utils.js').firstExistingPath
-var getConfiguration = require('./lib/config.js')
-
 var fs = Promise.promisifyAll(require('fs'))
 
-var argv = require('minimist')(process.argv.slice(2))
-
-try {
-  var config_path = firstExistingPath([
-    argv.c,
-    p.join(process.env.HOME || '', './.config/explorer/config.yml'), 
-    p.join(__dirname, './config.yml')
-  ])
-
-  var config = getConfiguration(config_path)
-} catch(e) {
-  console.log('No config file!')
-  throw e
-}
+var config = require('./lib/config.js')()
 
 var https_options = {
   key: fs.readFileSync(config.https.key),

@@ -4,12 +4,11 @@ var fs = require('fs')
 var util = require('util') 
 var expect = require('chai').expect
 var Promise = require('bluebird')
-var getConfiguration = require('../lib/config.js')
 var app = require('../server.js')
 
 var config_path = p.join(__dirname, './fixtures/config.yml')
 
-var config = getConfiguration(config_path)
+var config = require('../lib/config.js')(config_path)
 config.database = p.join(__dirname, './fixtures/users')
 
 if(!fs.existsSync(config.database)) {

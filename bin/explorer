@@ -1,26 +1,16 @@
 #!/usr/bin/env node
+"use strict";
 var p = require('path')
 var fs = require('fs')
 var Spawner = require('promise-spawner')
 var eol = require('os').EOL
 var yamljs = require('yamljs')
 var utils = require('../lib/utils.js')
-var getConfiguration = require('../lib/config.js')
+
 var argv = require('minimist')(process.argv.slice(2))
 var command = argv._.shift()
 
-try {
-  var config_path = utils.firstExistingPath([
-    argv.c,
-    p.join(process.env.HOME || '', './.config/explorer/config.yml'), 
-    p.join(__dirname, './config.yml')
-  ])
-
-  var config = getConfiguration(config_path)
-} catch(e) {
-  console.log('No config file!')
-  throw e
-}
+var config = require('../lib/config.js')()
 
 var spawner = new Spawner()
 
