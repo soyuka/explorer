@@ -66,6 +66,7 @@ tree:
   maxDepth: 10 #Default 10
   concurrency: 100 #Default 100
   cache: true # set to false to disable size caching
+  cacheTTL: 86400 # dir size cache duration in second
 remove: 
   # 'mv' will move files to a trash directory
   # 'rm' will delete files
