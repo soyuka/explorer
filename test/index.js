@@ -28,13 +28,10 @@ describe('job', function() {
 })
 
 describe('cache', function() {
-  require('./cache/cache.js')('memory', require('../lib/cache/memory.js')(bootstrap.config))
+  require('./cache/cache.js')('memory', require('../lib/cache/memory.js'), [])
 
-  var redis = require('redis').createClient()
-  .on('connect', function() {
-    require('./cache/cache.js')('redis', require('../lib/cache/redis.js')(bootstrap.config))
-  })
-  //register event to avoid the Exception
-  .on('error', function(err) {
-  })
+  var client = require('../lib/redis.js')(bootstrap.config)
+
+  require('./cache/cache.js')('redis', require('../lib/cache/redis.js'), [client])
+
 })

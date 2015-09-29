@@ -65,6 +65,7 @@ tree:
   # When calculating directory size we stop at the max_depth
   maxDepth: 10 #Default 10
   concurrency: 100 #Default 100
+  cache: true # set to false to disable size caching
 remove: 
   # 'mv' will move files to a trash directory
   # 'rm' will delete files

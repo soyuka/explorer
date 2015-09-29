@@ -17,6 +17,7 @@ var debug = require('debug')('explorer:middlewares:prepareTree')
  */
 function prepareTree(app) {
   var config = app.get('config')
+  var cache = app.get('cache')
 
   return function(req, res, next) {
     //should be an app.param
@@ -111,8 +112,11 @@ function prepareTree(app) {
       } 
     }
 
-    if(config.cache) {
-      opts.cache = require('../lib/cache')(config)
+    if(opts.cache === true) {
+      opts.cache = {
+        time: new cache('tree:time'),
+        size: new cache('tree:size')
+      }
     }
 
     req.options = opts
