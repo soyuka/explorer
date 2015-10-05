@@ -60,7 +60,7 @@ search:
 pagination:
   # Maximum number of items per page
   limit: 10 # Default 100
-# Be carefull with this next section as it will have an impact on performances
+# Be careful with this next section as it will have an impact on performances
 tree:
   # When calculating directory size we stop at the max_depth
   maxDepth: 10 #Default 10
