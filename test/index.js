@@ -1,6 +1,4 @@
 "use strict";
-global.expect = require('chai').expect
-global.bootstrap = require('./bootstrap.js')
 
 describe('lib', function() {
   require('./lib/utils.js')
@@ -23,8 +21,7 @@ describe('api', function() {
 
 describe('job', function() {
   require('./job/interactor.js')
-  require('./job/memory.js')
-  require('./job/stat.js')
+  require('./job/notify.js')
 })
 
 describe('cache', function() {
@@ -33,5 +30,4 @@ describe('cache', function() {
   var client = require('../lib/redis.js')(bootstrap.config)
 
   require('./cache/cache.js')('redis', require('../lib/cache/redis.js'), [client])
-
 })

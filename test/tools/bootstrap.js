@@ -1,25 +1,28 @@
 "use strict";
+
 var p = require('path')
 var fs = require('fs')
 var util = require('util') 
 var expect = require('chai').expect
 var Promise = require('bluebird')
-var app = require('../server.js')
+var app = require('../../server.js')
 
-var config_path = p.join(__dirname, './fixtures/config.yml')
+var cwd = p.join(__dirname, '..')
 
-var config = require('../lib/config.js')(config_path)
-config.database = p.join(__dirname, './fixtures/users')
+var config_path = p.join(cwd, './fixtures/config.yml')
+
+var config = require('../../lib/config.js')(config_path)
+config.database = p.join(cwd, './fixtures/users')
 
 if(!fs.existsSync(config.database)) {
-  fs.writeFileSync(config.database, fs.readFileSync(p.join(__dirname, '/../doc/examples/data/users')))
+  fs.writeFileSync(config.database, fs.readFileSync(p.join(cwd, '/../doc/examples/data/users')))
 }
 
 var options = {
   headers: []
 }
 
-//headers used for testing
+//default test headers
 options.headers['X-Requested-With'] = 'XMLHttpRequest'
 options.headers['Accept'] = 'application/json'
 
