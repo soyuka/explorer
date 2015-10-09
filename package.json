@@ -51,8 +51,8 @@
     "express": "^4.13.3",
     "express-session": "^1.11.3",
     "hamljs": "^0.6.2",
-    "ioredis": "^1.9.0",
-    "ipcee": "^1.0.3",
+    "ioredis": "^1.9.1",
+    "ipcee": "^1.0.4",
     "is-glob": "^2.0.0",
     "memory-cache": "^0.1.4",
     "method-override": "^2.3.5",
@@ -72,6 +72,7 @@
   },
   "devDependencies": {
     "chai": "^3.2.0",
+    "chai-as-promised": "^5.1.0",
     "gulp": "^3.9.0",
     "gulp-add-src": "^0.2.0",
     "gulp-concat": "^2.6.0",
