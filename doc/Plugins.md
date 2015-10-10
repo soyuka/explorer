@@ -53,7 +53,7 @@ The hooks structure must be as following:
  */
 function registerHooks(config, url, user) {
   return {
-    directory: function(tree) {
+    directory: function(tree, path) {
       dosomethingwith(config.plugins.pluginName.myConfigValue)
       return '' //expects a <dd><a href="#"></a></dd> element
     },
