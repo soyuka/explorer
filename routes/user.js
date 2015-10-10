@@ -74,30 +74,35 @@ function notifications(req, res, next) {
  * @apiGroup User
  * @apiName deleteNotifications
  */
-function deleteNotifications(req, res, next) {
-  
-  if(!interactor.ipc) {
-    debug('No interactor')
-    return next(new HTTPError('No Interactor', 400))
+function getDeleteNotifications(app) {
+  var plugins_cache = app.get('plugins_cache')
+
+  return function deleteNotifications(req, res, next) {
+    
+    if(!interactor.ipc) {
+      debug('No interactor')
+      return next(new HTTPError('No Interactor', 400))
+    }
+
+    var notifications = {}
+
+    for(let i in plugins_cache) {
+      notifications[i] = plugins_cache[i].remove(req.user.username)
+    }
+
+    return Promise.props(notifications)
+    .then(function(notifications) {
+      req.flash('info', res.locals.notifications.num + ' notifications deleted')
+      return res.handle('/notifications')
+    })
   }
-
-  interactor.ipc.once('clear:get', function(data) {
-
-    debug('Remove notifications %o', data)
-
-    req.flash('info', res.locals.notifications.num + ' notifications deleted')
-
-    return res.handle('/notifications') 
-  })
-
-  interactor.ipc.send('get', 'clear', req.user.username)
 }
 
 var User = function(app) {
   app.get('/logout', logout)
   app.get('/login', home)
   app.get('/notifications', notifications)
-  app.delete('/notifications', deleteNotifications)
+  app.delete('/notifications', getDeleteNotifications(app))
   app.post('/login', login)
 
   return app

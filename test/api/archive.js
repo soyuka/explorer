@@ -16,26 +16,26 @@ function getList() {
 
 describe('archive', function() {
 
-  before(function(cb) {
+  before(bootstrap.autoAgent)
+  before(bootstrap.login)
+  before(function() {
     this.timeout(5000)
-    interactor.run([p.resolve(__dirname, '../../plugins/archive')])
-    .then(function(plugins) { return cb() })
-    .catch(cb)
+    return interactor.run([p.resolve(__dirname, '../../plugins/archive')], bootstrap.config)
   })
 
-  before(bootstrap.autoAgent)
-
-  before(bootstrap.login)
-
   it('should post file', function(cb) {
+    var getNotification = function(notifications) {
+      if(notifications.length < 2) { return }
+      expect(getList()).to.deep.equal(['test.zip'])
+      interactor.ipc.removeListener('notify:admin', getNotification)
+      return cb()
+    }
+
     this.timeout(5000)
     this.request.post('/')
     .send({'path': p.join(__dirname, '../fixtures/tree/dir/1Mo.dat'), name: 'test', action: 'archive.compress'})
     .end(function() {
-      interactor.ipc.once('archive.create', function() {
-        expect(getList()).to.deep.equal(['test.zip'])
-        return cb()
-      })
+      interactor.ipc.addListener('notify:admin', getNotification)
     })
   })
 

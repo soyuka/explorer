@@ -31,11 +31,12 @@ module.exports = function(config) {
 
   app.set('config', config)
   app.set('cache', require('./lib/cache')(config))
+
   app.set('view engine', 'haml')
   app.set('view cache', true)
   app.set('views', [p.join(__dirname, 'views')])
 
-  //this registers plugins (app.set('plugins'))
+  //this registers plugins (app.set('plugins') and app.set('plugins_cache'))
   plugins.registerPlugins(app)
 
   app.engine('.haml', function(str, options, fn) {
@@ -79,7 +80,7 @@ module.exports = function(config) {
 
   app.use(parallelMiddlewares([
     middlewares.format(app),
-    middlewares.notify,
+    middlewares.notify(app),
     middlewares.optionsCookie
   ]))
 

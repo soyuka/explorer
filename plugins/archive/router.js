@@ -3,7 +3,6 @@ var p = require('path')
 var moment = require('moment')
 var multer = require('multer')
 var job = require('./job.js')
-var Stat = require('../../lib/job/stat.js')
 
 var debug = require('debug')('explorer:routes:archive')
 
@@ -25,9 +24,8 @@ var Upload = function(router, utils) {
   router.post('/action/download', function(req, res, next) {
     var data = getData(req)
     data.stream = res
-    var stat = new Stat('archive')
 
-    var archive = new job(null, stat)
+    var archive = new job(null)
     return archive.create(data, req.user, req.options)
   })
 
