@@ -40,7 +40,7 @@ require('./server.js')(config)
     console.error(err); 
   })
 
-  return interactor.run(plugins_paths)
+  return interactor.run(plugins_paths, config)
 
 }) 
 .catch(function(err) {
