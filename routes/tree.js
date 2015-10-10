@@ -218,6 +218,8 @@ function treeAction(app) {
     //we're on POST /, /p/pluginName/action/actionName
     req.url = p.join(req.url, 'p', plugin, 'action', actionName)
 
+    debug('Calling %s', req.url)
+
     return app._router.handle(req, res, next)
   }
 }
