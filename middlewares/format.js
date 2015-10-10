@@ -56,6 +56,8 @@ function getFormat(app) {
         'text/html': function() {
           if(data.info)
             req.flash('info', data.info)
+          else if(data.error)
+            req.flash('error', data.error)
 
           return res.redirect(redirect)
         },

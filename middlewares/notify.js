@@ -2,6 +2,7 @@
 var interactor = require('../lib/job/interactor.js')
 var util = require('util')
 var moment = require('moment')
+var Promise = require('bluebird')
 
 var debug = require('debug')('explorer:middlewares:notify')
 

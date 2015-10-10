@@ -1,34 +1,38 @@
-import mem from './memory.js'
+"use strict";
+var Notify = require('../../lib/job/notify.js')
+var fs = require('fs')
+var p = require('path')
+var hamljs = require('hamljs')
+var clipboard = fs.readFileSync(p.join(__dirname, './clipboard.haml'))
 
 function registerHooks(config, url, user) {
-  return {
-    action: function(tree) {
-      let str = `
-        <optgroup label="Copy">
-          <option value="move.copy">Copy</option>
-          <option value="move.cut">Cut</option>
-        </optgroup>`
+  var cache = require('../../lib/cache')(config)
+  var memory = new Notify('clipboard', cache)
 
-      return str
-    },
-    directory: function(tree) {
-      
-      let paths = mem.get(user.username)
+  return memory.get(user.username)
+  .then(function(paths) {
+    return {
+      action: function(tree) {
+        var str = `
+          <optgroup label="Copy">
+            <option value="move.copy">Copy</option>
+            <option value="move.cut">Cut</option>
+          </optgroup>`
 
-      if(!paths || paths.length == 0)
-        return ''
+        return str
+      },
+      directory: function(tree, path) {
+        if(!paths || paths.length == 0)
+          return ''
 
-      let str = '<form method="POST" action="'+url+'"><select multiple>'
-
-      for(var i in paths) {
-        str += `<option value="${paths[i].method}-${paths[i].path}">${paths[i].path}</option>` 
+        return hamljs.render(clipboard, {locals: {
+          paths: paths,
+          url: url,
+          path: path
+        }})
       }
-
-      str += '</select><input type="submit" value="paste"></form>'
-    
-      return str
     }
-  }
+  })
 }
 
-export default registerHooks
+module.exports = registerHooks

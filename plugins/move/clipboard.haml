@@ -1,0 +1,9 @@
+.row
+  .small-6.large-8.columns
+    %form{method: 'POST', action: url + '?path=' + path}
+      %select{multiple: true, name: 'path'}
+        - each p in paths
+          %option{value: p.method + '-' + p.path}= p.path +' ('+p.method+')'
+  .small-6.large-4.columns
+    %button.postfix{type: 'submit', style: 'margin-bottom: 10px'} Paste here
+    %a.button.secondary.postfix{href: url + '/clean'} Clean clipboard

@@ -1,5 +1,6 @@
-import router from './router.js'
-import registerHooks from './hooks.js'
+"use strict";
+var router = require('./router.js')
+var registerHooks = require('./hooks.js')
 
 module.exports = {
   hooks: registerHooks,
