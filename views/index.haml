@@ -56,3 +56,10 @@
   var confirmDeletion = function(e) {
     return confirm('Are you sure?')
   }
+
+  var checkAll = function(event) {
+    var checkboxes = document.getElementById('tree').querySelectorAll('input[type="checkbox"]')
+    for(var i in checkboxes) {
+      checkboxes[i].checked = event.currentTarget.checked 
+    }
+  }

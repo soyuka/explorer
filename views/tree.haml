@@ -46,10 +46,11 @@
 
     -# Tree
     %form{method: 'POST', action: '/'}
-      %table
+      %table#tree
         %thead
           %tr
-            %th #
+            %th
+              %input{type: 'checkbox', onclick: 'checkAll(event)', style: 'margin: 0'}
             %th Name
             %th Last Modified
             %th Size
