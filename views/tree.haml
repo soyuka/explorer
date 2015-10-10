@@ -116,7 +116,7 @@
     %dl#directory-hooks
       - each p in hooks
         - if('directory' in p)
-          != p.directory(tree)
+          != p.directory(tree, path)
 
     -# Pagination
     .pagination-centered

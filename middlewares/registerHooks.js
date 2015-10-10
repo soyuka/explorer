@@ -1,5 +1,6 @@
 "use strict";
 var p = require('path')
+var Promise = require('bluebird')
 
 var debug = require('debug')('explorer:middlewares:registerHooks')
 
@@ -10,6 +11,11 @@ function registerHooks(app) {
   var config = app.get('config')
 
   return function(req, res, next) {
+    res.locals.hooks = {}
+
+    if(!req.user)
+      return next()
+
     var hooks = {}
 
     /**
@@ -22,11 +28,14 @@ function registerHooks(app) {
       }
     }
 
-    res.locals.hooks = hooks
+    Promise.props(hooks)
+    .then(function(hooks) {
+      res.locals.hooks = hooks
 
-    debug('Hooks', res.locals.hooks)
+      debug('Hooks', res.locals.hooks)
 
-    return next()
+      return next()
+    })
   }
 }
 
