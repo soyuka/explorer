@@ -6,6 +6,7 @@ describe('lib', function() {
   require('./lib/tree.js')
   require('./lib/search.js')
   require('./lib/nativeSearch.js')
+  require('./lib/filters.js')
 })
 
 describe('api', function() {
