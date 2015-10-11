@@ -55,6 +55,12 @@ describe('format', function() {
     .end(cb)
   })
 
+  it('should get 404', function(cb) {
+    this.request.get('/somenonexistantpath')
+    .expect(404)
+    .end(cb)
+  })
+
   after(bootstrap.logout)
   after(bootstrap.removeAgent)
 })
