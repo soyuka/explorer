@@ -114,8 +114,8 @@ function prepareTree(app) {
 
     if(opts.cache === true) {
       opts.cache = {
-        time: new cache('tree:time'),
-        size: new cache('tree:size')
+        time: cache('tree:time'),
+        size: cache('tree:size')
       }
     }
 

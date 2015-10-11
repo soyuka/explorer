@@ -1,11 +1,12 @@
 'use strict';
 
+var cache = require('../../lib/cache')(bootstrap.config)
 var interactor = require('../../lib/job/interactor.js')
 
 describe('interactor', function() {
   it('should run', function(cb) {
     this.timeout(5000)
-    interactor.run([__dirname + '/../fixtures/testjob'], bootstrap.config) 
+    interactor.run([__dirname + '/../fixtures/testjob'], bootstrap.config, cache) 
     .then(function(plugins) {
       expect(plugins).to.deep.equal(['testjob'])
       return cb()
@@ -75,7 +76,7 @@ describe('interactor', function() {
   })
 
   it('should run again', function(cb) {
-    interactor.run([__dirname + '/../fixtures/testjob'], bootstrap.config) 
+    interactor.run([__dirname + '/../fixtures/testjob'], bootstrap.config, cache) 
     interactor.ipc.once('job.start', function(plugins) {
       return cb() 
     })

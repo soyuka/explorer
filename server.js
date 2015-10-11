@@ -1,3 +1,4 @@
+'use strict';
 var express = require('express')
 var p = require('path')
 var util = require('util')
@@ -30,7 +31,15 @@ module.exports = function(config) {
   app.use(bodyParser.json({limit: config.upload.maxSize}))
 
   app.set('config', config)
-  app.set('cache', require('./lib/cache')(config))
+
+  let cache = require('./lib/cache')(config)
+
+  app.set('cache', function getCache(namespace) {
+    if(config.cache == 'redis')
+      return new cache(namespace, require('./lib/redis.js')(config))
+    else
+      return new cache(namespace)
+  })
 
   app.set('view engine', 'haml')
   app.set('view cache', true)
@@ -101,7 +110,7 @@ module.exports = function(config) {
     return res.status(404).render('404.haml')
   })
 
-  var users = new Users({database: p.resolve(__dirname, config.database)})
+  let users = new Users({database: p.resolve(__dirname, config.database)})
 
   //load users from file to memory
   return users.load()

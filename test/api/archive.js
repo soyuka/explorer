@@ -3,7 +3,7 @@ var p = require('path')
 var fs = require('fs')
 var rimraf = require('rimraf')
 var async = require('async')
-var interactor = require('../../lib/job/interactor.js')
+var interactor = bootstrap.interactor
 
 var archive_path = p.join(__dirname, '../fixtures/tmp')
 var list
@@ -18,10 +18,7 @@ describe('archive', function() {
 
   before(bootstrap.autoAgent)
   before(bootstrap.login)
-  before(function() {
-    this.timeout(5000)
-    return interactor.run([p.resolve(__dirname, '../../plugins/archive')], bootstrap.config)
-  })
+  before(bootstrap.runInteractor([p.resolve(__dirname, '../../plugins/archive')]))
 
   it('should post file', function(cb) {
     var getNotification = function(notifications) {
@@ -57,10 +54,6 @@ describe('archive', function() {
 
   after(bootstrap.logout)
   after(bootstrap.removeAgent)
-
-  after(function(cb) {
-    interactor.once('exit', cb)
-    interactor.kill()
-  })
+  after(bootstrap.killInteractor())
 
 })

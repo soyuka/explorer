@@ -1,5 +1,4 @@
 'use strict';
-
 var p = require('path')
 var fs = require('fs')
 var util = require('util') 
@@ -17,6 +16,8 @@ config.database = p.join(cwd, './fixtures/users')
 if(!fs.existsSync(config.database)) {
   fs.writeFileSync(config.database, fs.readFileSync(p.join(cwd, '/../doc/examples/data/users')))
 }
+
+var cache = require('../../lib/cache')(config)
 
 var options = {
   headers: []
@@ -70,5 +71,22 @@ module.exports = {
   removeAgent: function(cb) {
     this.request = null
     return cb()
+  },
+  interactor: require('../../lib/job/interactor.js'),
+  runInteractor: function(plugins) {
+    var self = this
+
+    return function() {
+       return self.interactor
+      .run(plugins, self.config, cache)
+    }
+  },
+  killInteractor: function() {
+    var self = this
+
+    return function(cb) {
+      self.interactor.once('exit', cb)
+      self.interactor.kill()
+    }
   }
 }
