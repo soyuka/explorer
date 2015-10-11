@@ -23,9 +23,10 @@ var Upload = function(app, utils, config) {
 
   /**
    * @api {post} /p/upload/remote Remote Upload
-   * @apiGroup Upload
+   * @apiGroup Plugins
    * @apiName remoteUpload
    * @apiParam {string} links Links to download
+   * @apiSuccess (201) {Object} Created
    */
   function remoteUpload(req, res, next) {
     var links = req.body.links.split('\r\n')
@@ -34,6 +35,10 @@ var Upload = function(app, utils, config) {
 
     if(links.length > req.options.upload.maxCount) {
       return next(new utils.HTTPError('Max number of files exceeded ('+req.options.upload.maxCount+')', 400))
+    }
+
+    if(!links.length) {
+      return next(new utils.HTTPError('No links to download', 400)) 
     }
 
     utils.interactor.ipc.send('call', 'upload.create', links, req.user, req.options)
@@ -62,9 +67,10 @@ var Upload = function(app, utils, config) {
 
   /**
    * @api {post} /p/upload Upload
-   * @apiGroup Upload
+   * @apiGroup Plugins
    * @apiName upload
    * @apiParam {string[]} files
+   * @apiSuccess (200) {Object} Done
    */
   var upload = multer({storage: storage})
 

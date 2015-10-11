@@ -7,3 +7,5 @@ test
 src
 dist
 *.tar.gz
+dump.rdb
+TODO

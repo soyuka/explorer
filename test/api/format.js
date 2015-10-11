@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 describe('format', function() {
 
@@ -52,6 +52,12 @@ describe('format', function() {
     this.request.get('/?rss=1')
     .expect(200)
     .expect('Content-Type', /rss/)
+    .end(cb)
+  })
+
+  it('should get 404', function(cb) {
+    this.request.get('/somenonexistantpath')
+    .expect(404)
     .end(cb)
   })
 

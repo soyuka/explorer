@@ -1,6 +1,4 @@
-"use strict";
-global.expect = require('chai').expect
-global.bootstrap = require('./bootstrap.js')
+'use strict';
 
 describe('lib', function() {
   require('./lib/utils.js')
@@ -8,6 +6,7 @@ describe('lib', function() {
   require('./lib/tree.js')
   require('./lib/search.js')
   require('./lib/nativeSearch.js')
+  require('./lib/filters.js')
 })
 
 describe('api', function() {
@@ -19,22 +18,18 @@ describe('api', function() {
   require('./api/admin.js')
   require('./api/upload.js')
   require('./api/archive.js')
+  require('./api/move.js')
 })
 
 describe('job', function() {
   require('./job/interactor.js')
-  require('./job/memory.js')
-  require('./job/stat.js')
+  require('./job/notify.js')
 })
 
 describe('cache', function() {
-  require('./cache/cache.js')('memory', require('../lib/cache/memory.js')(bootstrap.config))
+  require('./cache/cache.js')('memory', require('../lib/cache/memory.js'), [])
 
-  var redis = require('redis').createClient()
-  .on('connect', function() {
-    require('./cache/cache.js')('redis', require('../lib/cache/redis.js')(bootstrap.config))
-  })
-  //register event to avoid the Exception
-  .on('error', function(err) {
-  })
+  var client = require('../lib/redis.js')(bootstrap.config)
+
+  require('./cache/cache.js')('redis', require('../lib/cache/redis.js'), [client])
 })

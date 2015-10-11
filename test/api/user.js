@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var url = function(u) {
   return function(res) {
     expect(res.header.location).to.equal(u)

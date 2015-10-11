@@ -119,3 +119,40 @@ img.logo {
         max-width: 73.5rem;
     }
 }
+
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+#notifications {
+    position: fixed;
+    top: 54px;
+    right: 10px;
+    z-index: 2;
+
+    li {
+        list-style-type: none;
+        -webkit-animation-name: fadeIn;
+        animation-name: fadeIn;
+        -webkit-animation-duration: 0.8s;
+        animation-duration: 0.8s;
+        -webkit-animation-fill-mode: both;
+        animation-fill-mode: both;
+    }
+}

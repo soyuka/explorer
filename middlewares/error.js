@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var HTTPError = require('../lib/HTTPError.js')
 
 /**

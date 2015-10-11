@@ -1,28 +1,12 @@
-"use strict";
+'use strict';
 var p = require('path')
 var http = require('http')
 var https = require('https')
 var Promise = require('bluebird')
 var interactor = require('./lib/job/interactor.js')
-var firstExistingPath = require('./lib/utils.js').firstExistingPath
-var getConfiguration = require('./lib/config.js')
-
 var fs = Promise.promisifyAll(require('fs'))
 
-var argv = require('minimist')(process.argv.slice(2))
-
-try {
-  var config_path = firstExistingPath([
-    argv.c,
-    p.join(process.env.HOME || '', './.config/explorer/config.yml'), 
-    p.join(__dirname, './config.yml')
-  ])
-
-  var config = getConfiguration(config_path)
-} catch(e) {
-  console.log('No config file!')
-  throw e
-}
+var config = require('./lib/config.js')()
 
 var https_options = {
   key: fs.readFileSync(config.https.key),
@@ -31,10 +15,23 @@ var https_options = {
 
 require('./server.js')(config)
 .then(function(app) {
-  http.createServer(app).listen(config.port, e => !config.quiet ? console.log('HTTP listening on %s', config.port) : 1)
+
+  var server = http.createServer(app)
+  .listen(config.port, function() {
+    if(!config.quiet)
+      console.log('HTTP listening on %s', config.port)
+  })
+
+  var socket = require('./lib/socket.js')(server, app)
 
   if(config.https.enabled) {
-    https.createServer(https_options, app).listen(config.https.port, e => !config.quiet ? console.log('HTTPS listening on %s', config.https.port) : 1)
+    var httpsServer = https.createServer(https_options, app)
+    .listen(config.https.port, function() {
+      if(!config.quiet)
+      console.log('HTTPS listening on %s', config.https.port)
+    })
+
+    var httpssocket = require('./lib/socket.js')(server, app)
   }
   
   var plugins = app.get('plugins')
@@ -56,8 +53,25 @@ require('./server.js')(config)
     console.error(err); 
   })
 
-  return interactor.run(plugins_paths)
+  var cache = app.get('cache')
 
+  return interactor.run(plugins_paths, config, cache)
+  .then(function() {
+    interactor.ipc.on('notify:*', function(data) {
+      var event = this.event
+      setTimeout(function() {
+        let num = data.length
+        let d = data.pop()
+        d.num = num
+
+        socket.publish('/'+event.replace(':', '/'), d)
+
+        if(httpssocket) {
+          httpssocket.publish('/'+event.replace(':', '/'), d) 
+        }
+      }, 1000)
+    }) 
+  })
 }) 
 .catch(function(err) {
   console.error('Error while initializing explorer') 

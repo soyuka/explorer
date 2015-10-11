@@ -1,6 +1,7 @@
-"use strict";
+'use strict';
 var fs = require('fs')
 var p = require('path')
+var existsSync = require('../../lib/utils.js').existsSync
 
 var newName
 
@@ -147,7 +148,7 @@ describe('tree', function() {
     this.request.get('/remove?path=tobedeleted/somefile')
     .expect(function(res) {
       newName = res.body.path 
-      expect(fs.existsSync(res.body.path)).to.be.true
+      expect(existsSync(res.body.path)).to.be.true
     })
     .end(cb)
   })

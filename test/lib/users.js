@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var Users = require('../../lib/data/users.js')
 var User  = require('../../lib/data/user.js')
 

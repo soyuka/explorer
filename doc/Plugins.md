@@ -30,7 +30,7 @@ First expose an `index.js`:
 module.exports = {
   job: require('./job.js'),
   hooks: require('./hooks.js'),
-  router: require('./router.js'), //you might not need it if you're hooking an action on paths
+  router: require('./router.js'), 
   name: 'pluginName', //the name you'll call the job on
   allowKeyAccess: ['/allowThisRouteThroughKey']
 }
@@ -48,12 +48,14 @@ The hooks structure must be as following:
 /**
  * registerHooks
  * @param object config explorer configuration
- * @param string url the base url of your plugin (/p/pluginName)
  * @param mixed user the user object, null if no user
+ * @param Object {notify, cache}
+ * @see Notify
+ * @see Cache
  */
-function registerHooks(config, url, user) {
+function registerHooks(config, user, utils) {
   return {
-    directory: function(tree) {
+    directory: function(tree, path) {
       dosomethingwith(config.plugins.pluginName.myConfigValue)
       return '' //expects a <dd><a href="#"></a></dd> element
     },
@@ -99,7 +101,7 @@ function Router(router, utils) {
   //this registers a route to /p/pluginName/
   router.get('/', utils.prepareTree, myRoute)
 
-  //with an action hook (see below), defining the route /p/pluginName/action/foo
+  //with an action hook (see below), define the route /p/pluginName/action/foo
   router.post('/action/foo', doSomething)
 }
 
@@ -117,49 +119,28 @@ module.exports = Router
 /**
  * Job
  * @param IPCEE ipc our process communication instance
- * @param Stat stat the Stat used for notifications
  **/
-function Job(ipc, stat) {
-  if(!(this instanceof Job)) { return new Job(ipc, stat) }
+function Job(ipc) {
+  if(!(this instanceof Job)) { return new Job(ipc) }
   this.ipc = ipc || null
-  this.stat = stat
 }
 
 Job.prototype.create = function(user, path) {
   var self = this
   
-  //Notify user that we've started
-  self.stat.add(user.username, {message: 'GO!'})
+  //Notify user that we've started, job is your plugin name
+  self.ipc.send('job:notify', user.username, {message: 'GO!'})
 
   //do some async stuff
 
-  //Notify user it's good to go! A link will be set to /search?path=$path&search=$name
-  return self.stat.add(user.username, {message: 'Path action done!', path: path, name: name})
+  //Notify user it's good to go! A link will be set to /search?path=$path&search=$search
+  self.ipc.send('job:notify', user.username, {message: 'Path action done!', path: path, search: search})
 
   //Can oviously fail with an error
-  return self.stat.add(user.username, {error: 'Sad story...'})
+  self.ipc.send('error', 'Sad story...')
 
-   //IPC can help testing (https://github.com/soyuka/explorer/blob/d58a6cb6eda3aa7b15a81326eaae2e5fd9c619ce/test/api/archive.js#L34) or maybe for sockets 
-  self.ipc.send('archive.create', user.username, data)
-  
-  //Or to log system errors
-  self.ipc.send('error', err.stack)
-}
-
-/**
- * Called to get our job notifications
- * required!
- **/
-Job.prototype.info = function() {
-  return this.stat.get()
-}
-
-/**
- * Called to remove our notifications
- * required!
- **/
-Job.prototype.clear = function(user) {
-  return this.stat.remove(user)
+  //or notify user about an error
+  self.ipc.send('job:notify', user.username, {message: 'Something failed', error: true})
 }
 
 module.exports = Job
@@ -179,7 +160,7 @@ The action hooks don't behave like other hooks. We are hooking an `<option>` or 
 For example, `pluginName.doSomething` will call `POST /p/pluginName/action/doSomething/`:
 
 ```
-function registerHooks(config) {
+function registerHooks(config, user, utils) {
   return {
     action: function(tree) {
       return '<option value="pluginName.doSomething">'

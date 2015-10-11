@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 var p = require('path')
 var fs = require('fs')
 var rimraf = require('rimraf')
 var async = require('async')
-var interactor = require('../../lib/job/interactor.js')
+var interactor = bootstrap.interactor
 
 var upload_path = p.join(__dirname, '../fixtures/upload')
 var list
@@ -16,16 +16,9 @@ function getList() {
 
 describe('upload', function() {
 
-  before(function(cb) {
-    this.timeout(5000)
-    interactor.run([p.resolve(__dirname, '../../plugins/upload')])
-    .then(function(plugins) { return cb() })
-    .catch(cb)
-  })
-
   before(bootstrap.autoAgent)
-
   before(bootstrap.login)
+  before(bootstrap.runInteractor([p.resolve(__dirname, '../../plugins/upload')]))
 
   it('should get upload', function(cb) {
     this.request.get('/p/upload')
@@ -46,23 +39,25 @@ describe('upload', function() {
     this.request.post('/p/upload')
     .attach('files', p.join(__dirname, '../fixtures/tree/dir/1Mo.dat'))
     .end(function() {
-
       expect(getList()).to.have.length.of(2)
-
       return cb()
     })
   })
 
   it('should post remote-upload', function(cb) {
+    var getNotification = function(notifications) {
+      if(notifications.length < 2) { return }
+      expect(getList()).to.have.length.of(3)
+      interactor.ipc.removeListener('notify:admin', getNotification)
+      return cb()
+    }
+
     this.timeout(5000)
     this.request.post('/p/upload/remote')
     .send({links: 'https://www.google.fr/images/srpr/logo11w.png'})
     .expect(201)
     .end(function() {
-      interactor.ipc.once('upload.create', function() {
-        expect(getList()).to.have.length.of(3)
-        return cb()
-      })
+      interactor.ipc.addListener('notify:admin', getNotification)
     })
   })
 
@@ -72,6 +67,7 @@ describe('upload', function() {
       expect(res.body.notifications.num).to.eql(2)
       expect(res.body.notifications.upload).to.be.an('array')
       expect(res.body.notifications.upload).to.have.length.of(2)
+      expect(res.body.notifications.upload[0]).to.have.property('fromNow')
     })
     .end(cb)
   })
@@ -88,7 +84,6 @@ describe('upload', function() {
     })
     .end(cb)
   })
-
   after(function(cb) {
     return async.each(getList(), function(f, next) {
       return rimraf(p.join(upload_path, f), next)
@@ -97,10 +92,5 @@ describe('upload', function() {
 
   after(bootstrap.logout)
   after(bootstrap.removeAgent)
-
-  after(function(cb) {
-    interactor.once('exit', cb)
-    interactor.kill()
-  })
-
+  after(bootstrap.killInteractor())
 })

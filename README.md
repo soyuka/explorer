@@ -65,6 +65,8 @@ tree:
   # When calculating directory size we stop at the max_depth
   maxDepth: 10 #Default 10
   concurrency: 100 #Default 100
+  cache: true # set to false to disable size caching
+  cacheTTL: 86400 # dir size cache duration in second
 remove: 
   # 'mv' will move files to a trash directory
   # 'rm' will delete files
@@ -110,6 +112,17 @@ The `config.yml` will be searched in:
 To reload the configuration you'll need to restart the script `pm2 restart xplorer`!
 
 See also: [minimal](https://github.com/soyuka/explorer/blob/master/config.example.min.yml), [dev](https://github.com/soyuka/explorer/blob/master/config.example.dev.yml)
+
+## Search
+
+The default native search accepts globs and filters:
+
+```
+somefile -exact # should match exactly, alias -e
+somedir -e -dir # exact and a directory, -d or -directory
+* -video
+* -audio
+```
 
 ## HTTP(S)
 
