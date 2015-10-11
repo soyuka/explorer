@@ -113,6 +113,17 @@ To reload the configuration you'll need to restart the script `pm2 restart xplor
 
 See also: [minimal](https://github.com/soyuka/explorer/blob/master/config.example.min.yml), [dev](https://github.com/soyuka/explorer/blob/master/config.example.dev.yml)
 
+## Search
+
+The default native search accepts globs and filters:
+
+```
+somefile -exact # should match exactly, alias -e
+somedir -e -dir # exact and a directory, -d or -directory
+* -video
+* -audio
+```
+
 ## HTTP(S)
 
 ### Nginx
