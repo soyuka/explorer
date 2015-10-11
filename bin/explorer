@@ -42,17 +42,49 @@ function pluginCommand(args) {
     exit("No plugins to install")(1)
   }
 
-  var cwd = p.resolve(__dirname, '..')
-  var command = ['npm', command, '--prefix='+cwd].concat(args._).join(' ')
+  let cwd = p.resolve(__dirname, '..')
+  let npm = ['npm', command, '--prefix='+cwd].concat(args._).join(' ')
 
-  console.log('Executing %s', command)
+  console.log('Executing %s', npm)
 
   //@todo improve through stream + log
   spawner.out.pipe(process.stdout)
   spawner.err.pipe(process.stderr)
 
-  spawner.sp(command, {cwd: cwd})
-  .then(exit("Plugin installed, don't forget to add it to the config"))
+  spawner.sp(npm, {cwd: cwd})
+  .then(function(code) {
+    if(code > 0)
+      return exit('Npm bad termination')(code)
+
+    let plugins = {plugins: {}}
+    let name = args._[0]
+    plugins[name.replace('explorer-', '')] = {module: name}
+    let message = ''
+
+    console.log(eol)
+
+    switch(command) {
+      case 'install': 
+        message = "Plugin installed, don't forget to add it to the config!"
+        let i = 0
+        console.log(eol)
+        yamljs.stringify(plugins, 4).split(eol).map(function(e) {
+          let t = ' '
+          for (let j=0;j<i;j++) { t += ' ' }
+          console.log(t+e.trim()) 
+          i += 2
+        })
+        break;
+      case 'remove':
+        message = "Plugin removed, don't forget to remove it from the config!"
+        break;
+      default:
+        message = ''
+    }
+  
+    return exit(message)(code)
+  })
+    
   .catch(exit('Command %s failed with code %d', command))
 }
 
