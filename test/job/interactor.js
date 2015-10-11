@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var interactor = require('../../lib/job/interactor.js')
 

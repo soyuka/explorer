@@ -1,13 +1,13 @@
 ## tests :
 - user opts (readonly, upload:false etc.)
-- copy/paste/move
+
+## plugins
 - unrar => improve multiple
 
 ## Features
 
-- 404
 - remove action hook
-- unrar action hook
+
 - keep trash informations to restore
 
 ### Macro plugin :
@@ -17,6 +17,7 @@
 - improve search filters through a schema, also allow -e for -exact or -d for -dir
   Take parts from ezseed to plugin to get infos from release name
   file types filters
+
 - Add a file provider (refactor users db btw) for clipboard, macros
 
 #### Add macro :

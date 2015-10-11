@@ -23,9 +23,10 @@ var Upload = function(app, utils, config) {
 
   /**
    * @api {post} /p/upload/remote Remote Upload
-   * @apiGroup Upload
+   * @apiGroup Plugins
    * @apiName remoteUpload
    * @apiParam {string} links Links to download
+   * @apiSuccess (201) {Object} Created
    */
   function remoteUpload(req, res, next) {
     var links = req.body.links.split('\r\n')
@@ -66,9 +67,10 @@ var Upload = function(app, utils, config) {
 
   /**
    * @api {post} /p/upload Upload
-   * @apiGroup Upload
+   * @apiGroup Plugins
    * @apiName upload
    * @apiParam {string[]} files
+   * @apiSuccess (200) {Object} Done
    */
   var upload = multer({storage: storage})
 

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var Promise = require( 'bluebird')
 var fs = require('fs')
 var p = require('path')
@@ -93,6 +93,13 @@ var Move = function(router, utils, config) {
   var cache = require('../../lib/cache')(config)
   var memory = new Notify('clipboard', cache)
 
+  /**
+   * @api {post} /p/move/action/copy Copy
+   * @apiName copy
+   * @apiGroup Plugins
+   * @apiUse Action
+   * @apiSuccess (201) {Object} Created
+   */
   router.post('/action/copy', function(req, res, next) {
     let data = getData(req.options.paths, req.options.directories, 'copy')
 
@@ -104,6 +111,13 @@ var Move = function(router, utils, config) {
     })
   })
 
+  /**
+   * @api {post} /p/move/action/cut Cut
+   * @apiName cut
+   * @apiGroup Plugins
+   * @apiUse Action
+   * @apiSuccess (201) {Object} Created
+   */
   router.post('/action/cut', function(req, res, next) {
     let data = getData(req.options.paths, req.options.directories, 'cut')
 
@@ -115,6 +129,11 @@ var Move = function(router, utils, config) {
     })
   })
 
+  /**
+   * @api {get} /p/move/clean Clean Clipboard
+   * @apiName cleanClipboard
+   * @apiGroup Plugins
+   */
   router.get('/clean', function(req, res, next) {
     return memory.remove(req.user.username)
     .then(function() {
@@ -122,6 +141,12 @@ var Move = function(router, utils, config) {
     })
   })
 
+  /**
+   * @api {get} /p/move Get Clipboard
+   * @apiName getClipboard
+   * @apiGroup Plugins
+   * @apiSuccess (200) {Array} Notifications
+   */
   router.get('/', function(req, res, next) {
     memory.get(req.user.username)
     .then(function(data) {
@@ -130,6 +155,14 @@ var Move = function(router, utils, config) {
     })
   })
 
+  /**
+   * @api {post} /p/move Process Clipboard (paste)
+   * @apiName processClipboard
+   * @apiGroup Plugins
+   * @apiParam {string[]} paths Array of paths and directories prefixed by cut- or copy-
+   * @apiError (404) {Object} Nothing to paste or is not in the clipboard
+   * @apiError (400) {Object} Bad request, file already exists in most cases
+   */
   router.post('/', utils.prepareTree, function(req, res, next) {
     if(!req.body.path)
       return res.handle('back', {error: 'Nothing to paste'}, 404)

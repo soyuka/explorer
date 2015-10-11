@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 function Testjob(ipc) {
   if(!(this instanceof Testjob)) return new Testjob(ipc)
 

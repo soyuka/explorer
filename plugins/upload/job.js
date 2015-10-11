@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var Download = require('download')
 var u = require('url')
 var p = require('path')

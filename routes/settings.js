@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var Promise = require('bluebird')
 var User = require('../lib/data/user.js')
 var middlewares = require('../middlewares')

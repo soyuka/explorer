@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var Notify = require('../../lib/job/notify.js')
 
 var notify;

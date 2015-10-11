@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var tree = require('../lib/tree.js')
 var prettyBytes = require('pretty-bytes')
 var p = require('path')

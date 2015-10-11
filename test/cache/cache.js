@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var Promise = require('bluebird')
 var mem;
 var mem2;
