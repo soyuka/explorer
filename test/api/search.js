@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 describe('search', function() {
   
   before(bootstrap.autoAgent)

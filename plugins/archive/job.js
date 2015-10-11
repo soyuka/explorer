@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var archiver = require('archiver')
 var http = require('http')
 var fs = require('fs')
@@ -7,13 +7,12 @@ var prettyBytes = require('pretty-bytes')
 
 var debug = require('debug')('explorer:job:archive')
 
-function ArchiveJob(ipc, stat) {
+function ArchiveJob(ipc) {
   if(!ipc)
     ipc = null
 
-  if(!(this instanceof ArchiveJob)) { return new ArchiveJob(ipc, stat) }
+  if(!(this instanceof ArchiveJob)) { return new ArchiveJob(ipc) }
   this.ipc = ipc
-  this.stat = stat
 }
 
 /**
@@ -29,8 +28,7 @@ ArchiveJob.prototype.create = function(data, user, config) {
   archive.on('error', function(err) {
     archive.abort()
     if(!(data.stream instanceof http.ServerResponse)) {
-      self.ipc.send('error', err.stack)
-      return self.stat.add(user.username, {error: err.message})
+      return self.ipc.send('archive:notify', user.username, {message: err.message, error: true})
     } else {
       return data.stream.status(500).send(err);
     }
@@ -38,13 +36,16 @@ ArchiveJob.prototype.create = function(data, user, config) {
 
   //on stream closed we can end the request
   archive.on('end', function() {
-    var b = archive.pointer()
+    let b = archive.pointer()
 
     debug('Archive wrote %d bytes', b)
 
     if(!(data.stream instanceof http.ServerResponse)) {
-      self.ipc.send('archive.create', user.username, data)
-      return self.stat.add(user.username, {message: prettyBytes(b) + ' written in '+data.temp, path: p.dirname(data.temp), name: data.name})
+      return self.ipc.send('archive:notify', user.username, {
+        message: prettyBytes(b) + ' written in '+data.temp,
+        path: p.dirname(data.temp), 
+        search: data.name + '.zip'
+      })
     }
   })
 
@@ -54,7 +55,9 @@ ArchiveJob.prototype.create = function(data, user, config) {
   } else if(typeof data.stream == 'string') {
 
     data.stream = fs.createWriteStream(data.stream) 
-    self.stat.add(user.username, {message: 'Compressing data from '+data.root+' to '+data.temp, name: data.name})
+    self.ipc.send('archive:notify', user.username, {
+      message: 'Compressing data from '+data.root+' to '+data.temp
+    })
   }
 
   archive.pipe(data.stream)
@@ -68,14 +71,6 @@ ArchiveJob.prototype.create = function(data, user, config) {
   }
 
   archive.finalize()
-}
-
-ArchiveJob.prototype.info = function() {
-  return this.stat.get()
-}
-
-ArchiveJob.prototype.clear = function(user) {
-  return this.stat.remove(user)
 }
 
 module.exports = ArchiveJob

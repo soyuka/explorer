@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var methods = require('methods')
 var http = require('http')
 var https = require('https')

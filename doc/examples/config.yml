@@ -16,6 +16,8 @@ tree:
   # When calculating directory size we stop at the max_depth
   maxDepth: 10 #Default 10
   concurrency: 100 #Default 100
+  cache: true # set to false to disable size caching
+  cacheTTL: 86400 # dir size cache duration in second
 remove: 
   # 'mv' will move files to a trash directory
   # 'rm' will delete files
@@ -44,11 +46,11 @@ https:
   enabled: true # default option!
   key: './certs/key.pem' # change those are dummies
   cert: './certs/cert.pem'
-plugins: # those are enable by default, use below options to disable them
+plugins: # those are enable by default, use above options to disable them
   upload: {}
   archive: {}
+  move: {}
 cache: 'memory' # redis is available too
-redis: 
-  host: 'redis://127.0.0.1:6379'
+redis: {}
   # host: 'somesocket.sock'
 dev: false # more verbose error (stack)

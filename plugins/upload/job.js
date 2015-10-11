@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var Download = require('download')
 var u = require('url')
 var p = require('path')
@@ -10,7 +10,7 @@ var download = new Download()
 var debug = require('debug')('explorer:job:upload')
 
 /**
- * Requests the url, downloads to dest and stat notifications
+ * Requests the url, downloads to dest and notifications
  * @param string url
  * @param string destination
  * @return Promise
@@ -56,7 +56,7 @@ function requestAsync(url, destination) {
       }
 
       if(size > 0) {
-        return resolve({path: destination, name: file.basename, message: url + ' was uploaded successfully to '+file.path+' ('+prettyBytes(size)+')'})
+        return resolve({path: destination, search: file.basename, message: url + ' was uploaded successfully to '+file.path+' ('+prettyBytes(size)+')'})
       }
 
       debug('No size')
@@ -67,7 +67,7 @@ function requestAsync(url, destination) {
         } 
 
         size = fstat.size
-        return resolve({path: destination, name: file.basename, message: url + ' was uploaded successfully to '+file.path+' (' + prettyBytes(size) + ')'})
+        return resolve({path: destination, search: file.basename, message: url + ' was uploaded successfully to '+file.path+' (' + prettyBytes(size) + ')'})
 
       })
     })
@@ -78,12 +78,11 @@ function requestAsync(url, destination) {
  * UploadJob plugin
  * @param IPCEE ipc
  */
-function UploadJob(ipc , stat) {
+function UploadJob(ipc) {
   if(!ipc) { ipc = null }
 
-  if(!(this instanceof UploadJob)) { return new UploadJob(ipc, stat) }
+  if(!(this instanceof UploadJob)) { return new UploadJob(ipc) }
   this.ipc = ipc
-  this.stat = stat
 }
 
 /**
@@ -95,29 +94,19 @@ function UploadJob(ipc , stat) {
 UploadJob.prototype.create = function(urls, user, config) {
   var self = this
 
-  this.stat.add(user.username, {message: 'Downloading '+urls.join(', ')+' to ' + config.upload.path})
+  this.ipc.send('upload:notify', user.username, {message: 'Downloading '+urls.join(', ')+' to ' + config.upload.path})
 
   return Promise.map(urls, function(e) {
     return requestAsync(e, config.upload.path)
   }, {concurrency: config.concurrency || 10})
   .then(function(data) {
-    self.ipc.send('upload.create', user.username, data)
-    return self.stat.add(user.username, data)
+    self.ipc.send('upload:notify', user.username, data)
   })
   .catch(function(err) {
     console.error(err.message) 
     console.error(err.stack) 
-    self.ipc.send('error', user.username, err.stack)
-    return self.stat.add(user.username, {error: err.message})
+    self.ipc.send('upload:notify', user.username, {message: err.message, error: true})
   })
-}
-
-UploadJob.prototype.info = function() {
-  return this.stat.get()
-}
-
-UploadJob.prototype.clear = function(user) {
-  return this.stat.remove(user)
 }
 
 module.exports = UploadJob

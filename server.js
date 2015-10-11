@@ -1,3 +1,4 @@
+'use strict';
 var express = require('express')
 var p = require('path')
 var util = require('util')
@@ -30,11 +31,21 @@ module.exports = function(config) {
   app.use(bodyParser.json({limit: config.upload.maxSize}))
 
   app.set('config', config)
+
+  let cache = require('./lib/cache')(config)
+
+  app.set('cache', function getCache(namespace) {
+    if(config.cache == 'redis')
+      return new cache(namespace, require('./lib/redis.js')(config))
+    else
+      return new cache(namespace)
+  })
+
   app.set('view engine', 'haml')
   app.set('view cache', true)
   app.set('views', [p.join(__dirname, 'views')])
 
-  //this registers plugins (app.set('plugins'))
+  //this registers plugins (app.set('plugins') and app.set('plugins_cache'))
   plugins.registerPlugins(app)
 
   app.engine('.haml', function(str, options, fn) {
@@ -78,7 +89,7 @@ module.exports = function(config) {
 
   app.use(parallelMiddlewares([
     middlewares.format(app),
-    middlewares.notify,
+    middlewares.notify(app),
     middlewares.optionsCookie
   ]))
 
@@ -95,12 +106,22 @@ module.exports = function(config) {
 
   app.use(middlewares.error(config))
 
-  var users = new Users({database: p.resolve(__dirname, config.database)})
+  app.use(function(req, res, next) {
+    return res.status(404).render('404.haml')
+  })
+
+  let users = new Users({database: p.resolve(__dirname, config.database)})
 
   //load users from file to memory
   return users.load()
-  .then(e => !config.quiet ? console.log('Db loaded') : 1)
-  .then(e => Promise.resolve(app))
+  .then(function() {
+    if(!config.quiet)
+      console.log('Db loaded')
+
+    app.set('users', users) 
+
+    return Promise.resolve(app)
+  })
   .catch(function(err) {
     console.error('Error while reading database') 
     console.error(err.stack)

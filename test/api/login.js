@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 describe('login', function() {
   before(bootstrap.autoAgent)
   it('should login', bootstrap.login)

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var p = require('path')
 
 var tree = require('../../lib/tree.js')

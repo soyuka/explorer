@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 var p = require('path')
 var fs = require('fs')
 var rimraf = require('rimraf')
 var async = require('async')
-var interactor = require('../../lib/job/interactor.js')
+var interactor = bootstrap.interactor
 
 var archive_path = p.join(__dirname, '../fixtures/tmp')
 var list
@@ -16,26 +16,23 @@ function getList() {
 
 describe('archive', function() {
 
-  before(function(cb) {
-    this.timeout(5000)
-    interactor.run([p.resolve(__dirname, '../../plugins/archive')])
-    .then(function(plugins) { return cb() })
-    .catch(cb)
-  })
-
   before(bootstrap.autoAgent)
-
   before(bootstrap.login)
+  before(bootstrap.runInteractor([p.resolve(__dirname, '../../plugins/archive')]))
 
   it('should post file', function(cb) {
+    var getNotification = function(notifications) {
+      if(notifications.length < 2) { return }
+      expect(getList()).to.deep.equal(['test.zip'])
+      interactor.ipc.removeListener('notify:admin', getNotification)
+      return cb()
+    }
+
     this.timeout(5000)
     this.request.post('/')
     .send({'path': p.join(__dirname, '../fixtures/tree/dir/1Mo.dat'), name: 'test', action: 'archive.compress'})
     .end(function() {
-      interactor.ipc.once('archive.create', function() {
-        expect(getList()).to.deep.equal(['test.zip'])
-        return cb()
-      })
+      interactor.ipc.addListener('notify:admin', getNotification)
     })
   })
 
@@ -57,10 +54,6 @@ describe('archive', function() {
 
   after(bootstrap.logout)
   after(bootstrap.removeAgent)
-
-  after(function(cb) {
-    interactor.once('exit', cb)
-    interactor.kill()
-  })
+  after(bootstrap.killInteractor())
 
 })

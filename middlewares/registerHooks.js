@@ -1,5 +1,7 @@
-"use strict";
+'use strict';
 var p = require('path')
+var Promise = require('bluebird')
+var Notify = require('../lib/job/notify.js')
 
 var debug = require('debug')('explorer:middlewares:registerHooks')
 
@@ -8,8 +10,14 @@ function registerHooks(app) {
 
   var plugins = app.get('plugins')
   var config = app.get('config')
+  var cache = app.get('cache')
 
   return function(req, res, next) {
+    res.locals.hooks = {}
+
+    if(!req.user)
+      return next()
+
     var hooks = {}
 
     /**
@@ -18,15 +26,21 @@ function registerHooks(app) {
     for(let name in plugins) {
       if('hooks' in plugins[name]) {
         debug('Registering hooks for %s', name)
-        hooks[name] = plugins[name].hooks(config, p.join('/p', name), req.user) 
+        hooks[name] = plugins[name].hooks(config, req.user, {
+          cache: cache,
+          notify: Notify
+        })
       }
     }
 
-    res.locals.hooks = hooks
+    Promise.props(hooks)
+    .then(function(hooks) {
+      res.locals.hooks = hooks
 
-    debug('Hooks', res.locals.hooks)
+      debug('Hooks', res.locals.hooks)
 
-    return next()
+      return next()
+    })
   }
 }
 

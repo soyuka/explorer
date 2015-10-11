@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var util = require('util')
 var rss = require('../routes/rss.js')
 var HTTPError = require('../lib/HTTPError.js')
@@ -56,6 +56,8 @@ function getFormat(app) {
         'text/html': function() {
           if(data.info)
             req.flash('info', data.info)
+          else if(data.error)
+            req.flash('error', data.error)
 
           return res.redirect(redirect)
         },

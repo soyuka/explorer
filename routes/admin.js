@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var Promise = require('bluebird')
 var p = require('path')
 var yaml = require('yamljs')
@@ -65,7 +65,7 @@ var Admin = function(app) {
     middlewares.prepareTree(app), 
     function(req, res) {
       return res.renderBody('admin', {
-        users: req.users.users
+        users: req.users.data
       })
     }
   )

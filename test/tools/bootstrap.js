@@ -1,26 +1,29 @@
-"use strict";
+'use strict';
 var p = require('path')
 var fs = require('fs')
 var util = require('util') 
 var expect = require('chai').expect
 var Promise = require('bluebird')
-var getConfiguration = require('../lib/config.js')
-var app = require('../server.js')
+var app = require('../../server.js')
 
-var config_path = p.join(__dirname, './fixtures/config.yml')
+var cwd = p.join(__dirname, '..')
 
-var config = getConfiguration(config_path)
-config.database = p.join(__dirname, './fixtures/users')
+var config_path = p.join(cwd, './fixtures/config.yml')
+
+var config = require('../../lib/config.js')(config_path)
+config.database = p.join(cwd, './fixtures/users')
 
 if(!fs.existsSync(config.database)) {
-  fs.writeFileSync(config.database, fs.readFileSync(p.join(__dirname, '/../doc/examples/data/users')))
+  fs.writeFileSync(config.database, fs.readFileSync(p.join(cwd, '/../doc/examples/data/users')))
 }
+
+var cache = require('../../lib/cache')(config)
 
 var options = {
   headers: []
 }
 
-//headers used for testing
+//default test headers
 options.headers['X-Requested-With'] = 'XMLHttpRequest'
 options.headers['Accept'] = 'application/json'
 
@@ -68,5 +71,22 @@ module.exports = {
   removeAgent: function(cb) {
     this.request = null
     return cb()
+  },
+  interactor: require('../../lib/job/interactor.js'),
+  runInteractor: function(plugins) {
+    var self = this
+
+    return function() {
+       return self.interactor
+      .run(plugins, self.config, cache)
+    }
+  },
+  killInteractor: function() {
+    var self = this
+
+    return function(cb) {
+      self.interactor.once('exit', cb)
+      self.interactor.kill()
+    }
   }
 }

@@ -1,62 +1,58 @@
-"use strict";
+'use strict';
 var interactor = require('../lib/job/interactor.js')
 var util = require('util')
 var moment = require('moment')
+var Promise = require('bluebird')
 
 var debug = require('debug')('explorer:middlewares:notify')
 
-/**
- * Notify middlewares
- * Calls every ipc plugin for the `info` method
- * Sets res.locals.notifications to an array of plugins and the user notifications
- */
-function notify(req, res, next) {
-    
-  if(!interactor.ipc) {
-    debug('No interactor')
+function getNotify(app) {
+  var plugins_cache = app.get('plugins_cache')
+
+  /**
+   * Notify middlewares
+   * Calls every ipc plugin for the `info` method
+   * Sets res.locals.notifications to an array of plugins and the user notifications
+   */
+  return function notify(req, res, next) {
+      
     res.locals.notifications = {num: 0}
-    return next()
-  }
 
-  interactor.ipc.once('info:get', function(data) {
-
-    debug('Notifications %o', data)
-
-    var num = 0
-    var user_data = {}
-
-    if(!req.user) {
-      res.locals.notifications = {num: num}
+    if(!interactor.ipc || !req.user) {
+      debug('No interactor')
       return next()
     }
 
+    var num = 0
     var notifications = {}
-    var username = req.user.username
 
-    for(let plugin in data) {
-      if(typeof data[plugin] == 'object') {
-        if(username in data[plugin]) {
-          num += Object.keys(data[plugin][username]).length
-          user_data[plugin] = data[plugin][username]
-
-          for(let i in user_data[plugin]) {
-            user_data[plugin][i].fromNow = moment(user_data[plugin][i].time).fromNow()
-          }
-
-        } else {
-          user_data[plugin] = {} 
-        }
-      }
+    for(let i in plugins_cache) {
+      notifications[i] = plugins_cache[i].get(req.user.username)
     }
 
-    debug('User notifications %o', user_data)
+    return Promise.props(notifications)
+    .then(function(notifications) {
+      debug('Got user notifications %o', notifications)
 
-    res.locals.notifications = util._extend({num: num}, user_data)
+      for(let i in notifications) {
 
-    return next()
-  })
+        if(notifications[i]) {
+          num += notifications[i].length
+          
+          for(let j in notifications[i]) {
+            notifications[i][j].fromNow = moment(notifications[i][j].time).fromNow()
+          }
+        } else {
+          notifications[i] = [] 
+        }
 
-  interactor.ipc.send('get', 'info')
+      }
+
+      res.locals.notifications = util._extend({num: num}, notifications)
+
+      return next()
+    })
+  }
 }
 
-module.exports = notify
+module.exports = getNotify
