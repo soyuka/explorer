@@ -65,7 +65,7 @@ var Admin = function(app) {
     middlewares.prepareTree(app), 
     function(req, res) {
       return res.renderBody('admin', {
-        users: req.users.users
+        users: req.users.data
       })
     }
   )
