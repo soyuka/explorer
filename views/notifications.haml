@@ -13,7 +13,10 @@
             - if(notification.error)
               %span.alert-box.warning= notification.message
             - else if(notification.path)
-              %a{href: '/?path='+notification.path+'&search='+notification.search}= notification.message
+              - if(notification.search)
+                %a{href: 'search?path='+notification.path+'&search='+notification.search}= notification.message
+              - else
+                %a{href: '?path='+notification.path}= notification.message
             - else
               %span= notification.message
             %i= notification.fromNow

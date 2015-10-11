@@ -42,6 +42,8 @@ function getNotify(app) {
           for(let j in notifications[i]) {
             notifications[i][j].fromNow = moment(notifications[i][j].time).fromNow()
           }
+        } else {
+          notifications[i] = [] 
         }
 
       }

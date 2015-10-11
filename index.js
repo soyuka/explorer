@@ -15,10 +15,22 @@ var https_options = {
 
 require('./server.js')(config)
 .then(function(app) {
-  http.createServer(app).listen(config.port, e => !config.quiet ? console.log('HTTP listening on %s', config.port) : 1)
+  var server = http.createServer(app)
+              .listen(config.port, function() {
+                if(!config.quiet)
+                  console.log('HTTP listening on %s', config.port)
+              })
+
+  var socket = require('./lib/socket.js')(server, app)
 
   if(config.https.enabled) {
-    https.createServer(https_options, app).listen(config.https.port, e => !config.quiet ? console.log('HTTPS listening on %s', config.https.port) : 1)
+    var httpsServer = https.createServer(https_options, app)
+    .listen(config.https.port, function() {
+      if(!config.quiet)
+      console.log('HTTPS listening on %s', config.https.port)
+    })
+
+    var httpssocket = require('./lib/socket.js')(server, app)
   }
   
   var plugins = app.get('plugins')
@@ -41,7 +53,22 @@ require('./server.js')(config)
   })
 
   return interactor.run(plugins_paths, config)
+  .then(function() {
+    interactor.ipc.on('notify:*', function(data) {
+      var event = this.event
+      setTimeout(function() {
+        let num = data.length
+        let d = data.pop()
+        d.num = num
 
+        socket.publish('/'+event.replace(':', '/'), d)
+
+        if(httpssocket) {
+          httpssocket.publish('/'+event.replace(':', '/'), d) 
+        }
+      }, 1000)
+    }) 
+  })
 }) 
 .catch(function(err) {
   console.error('Error while initializing explorer') 
