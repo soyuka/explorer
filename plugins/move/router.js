@@ -90,8 +90,7 @@ function cutPromises(items, dest) {
 
 var Move = function(router, utils, config) {
 
-  var cache = require('../../lib/cache')(config)
-  var memory = new Notify('clipboard', cache)
+  var memory = new Notify('clipboard', utils.cache)
 
   /**
    * @api {post} /p/move/action/copy Copy

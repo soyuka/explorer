@@ -3,7 +3,7 @@ var p = require('path')
 var fs = require('fs')
 var rimraf = require('rimraf')
 var async = require('async')
-var interactor = require('../../lib/job/interactor.js')
+var interactor = bootstrap.interactor
 
 var fixtures = p.join(__dirname, '../fixtures/tree/move')
 var move_path = p.join(__dirname, '../fixtures/tree/move/dest')
@@ -38,10 +38,7 @@ describe('move', function() {
 
   before(bootstrap.autoAgent)
   before(bootstrap.login)
-  before(function() {
-    this.timeout(5000)
-    return interactor.run([p.resolve(__dirname, '../../plugins/move')], bootstrap.config)
-  })
+  before(bootstrap.runInteractor([p.resolve(__dirname, '../../plugins/move')]))
 
   before(deleteFiles)
   before(createFiles)
@@ -190,9 +187,6 @@ describe('move', function() {
   after(bootstrap.logout)
   after(bootstrap.removeAgent)
 
-  after(function(cb) {
-    interactor.once('exit', cb)
-    interactor.kill()
-  })
+  after(bootstrap.killInteractor())
 
 })

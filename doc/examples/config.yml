@@ -46,9 +46,10 @@ https:
   enabled: true # default option!
   key: './certs/key.pem' # change those are dummies
   cert: './certs/cert.pem'
-plugins: # those are enable by default, use below options to disable them
+plugins: # those are enable by default, use above options to disable them
   upload: {}
   archive: {}
+  move: {}
 cache: 'memory' # redis is available too
 redis: {}
   # host: 'somesocket.sock'

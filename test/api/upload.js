@@ -3,7 +3,7 @@ var p = require('path')
 var fs = require('fs')
 var rimraf = require('rimraf')
 var async = require('async')
-var interactor = require('../../lib/job/interactor.js')
+var interactor = bootstrap.interactor
 
 var upload_path = p.join(__dirname, '../fixtures/upload')
 var list
@@ -18,10 +18,7 @@ describe('upload', function() {
 
   before(bootstrap.autoAgent)
   before(bootstrap.login)
-  before(function() {
-    this.timeout(5000)
-    return interactor.run([p.resolve(__dirname, '../../plugins/upload')], bootstrap.config)
-  })
+  before(bootstrap.runInteractor([p.resolve(__dirname, '../../plugins/upload')]))
 
   it('should get upload', function(cb) {
     this.request.get('/p/upload')
@@ -95,10 +92,5 @@ describe('upload', function() {
 
   after(bootstrap.logout)
   after(bootstrap.removeAgent)
-
-  after(function(cb) {
-    interactor.once('exit', cb)
-    interactor.kill()
-  })
-
+  after(bootstrap.killInteractor())
 })

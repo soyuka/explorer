@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var p = require('path')
 var http = require('http')
 var https = require('https')
@@ -15,11 +15,12 @@ var https_options = {
 
 require('./server.js')(config)
 .then(function(app) {
+
   var server = http.createServer(app)
-              .listen(config.port, function() {
-                if(!config.quiet)
-                  console.log('HTTP listening on %s', config.port)
-              })
+  .listen(config.port, function() {
+    if(!config.quiet)
+      console.log('HTTP listening on %s', config.port)
+  })
 
   var socket = require('./lib/socket.js')(server, app)
 
@@ -52,7 +53,9 @@ require('./server.js')(config)
     console.error(err); 
   })
 
-  return interactor.run(plugins_paths, config)
+  var cache = app.get('cache')
+
+  return interactor.run(plugins_paths, config, cache)
   .then(function() {
     interactor.ipc.on('notify:*', function(data) {
       var event = this.event
