@@ -3,5 +3,6 @@ bower_components
 node_modules
 test/fixtures/users
 client/css
+client/js/main.min.js
 .DS_Store
 dump.rdb

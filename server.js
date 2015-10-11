@@ -105,8 +105,14 @@ module.exports = function(config) {
 
   //load users from file to memory
   return users.load()
-  .then(e => !config.quiet ? console.log('Db loaded') : 1)
-  .then(e => Promise.resolve(app))
+  .then(function() {
+    if(!config.quiet)
+      console.log('Db loaded')
+
+    app.set('users', users) 
+
+    return Promise.resolve(app)
+  })
   .catch(function(err) {
     console.error('Error while reading database') 
     console.error(err.stack)

@@ -3,6 +3,7 @@ var util = require('util')
 var HTTPError = require('../lib/HTTPError.js')
 var interactor = require('../lib/job/interactor.js')
 var handleSystemError = require('../lib/utils.js').handleSystemError
+var Promise = require('bluebird')
 
 var debug = require('debug')('explorer:routes:user')
 
