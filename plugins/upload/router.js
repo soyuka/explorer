@@ -36,6 +36,10 @@ var Upload = function(app, utils, config) {
       return next(new utils.HTTPError('Max number of files exceeded ('+req.options.upload.maxCount+')', 400))
     }
 
+    if(!links.length) {
+      return next(new utils.HTTPError('No links to download', 400)) 
+    }
+
     utils.interactor.ipc.send('call', 'upload.create', links, req.user, req.options)
 
     return res.handle('back', {info: 'Upload launched'}, 201)
