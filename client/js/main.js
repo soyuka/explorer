@@ -1,4 +1,5 @@
 (function() {
+  'use strict';
   //delete button confirm box
   var confirmDeletion = function(e) {
     return confirm('Are you sure?')
@@ -23,9 +24,13 @@
   })
 
   function updateNumber(n) {
-    var num = document.getElementById('num-notifications')
-    if(n != parseInt(num.innerText)) {
-      num.innerText = n 
+     var div = document.getElementById('num-notifications')
+
+    if(!div)
+      return
+
+    if(n != parseInt(div.innerText)) {
+      div.innerText = n 
     }
   }
 
