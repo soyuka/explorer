@@ -160,7 +160,7 @@ The action hooks don't behave like other hooks. We are hooking an `<option>` or 
 For example, `pluginName.doSomething` will call `POST /p/pluginName/action/doSomething/`:
 
 ```
-function registerHooks(config) {
+function registerHooks(config, user, utils) {
   return {
     action: function(tree) {
       return '<option value="pluginName.doSomething">'
