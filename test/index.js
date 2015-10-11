@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 describe('lib', function() {
   require('./lib/utils.js')

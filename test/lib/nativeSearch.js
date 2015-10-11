@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 var p = require('path')
 var fs = require('fs')
 
 var fixtures = p.join(__dirname, '../fixtures/tree')
 
-var nativeSearch = require('../../lib/nativeSearch.js')
+var nativeSearch = require('../../lib/search/native.js')
 
 function hasItems(items, name) {
    var found = false

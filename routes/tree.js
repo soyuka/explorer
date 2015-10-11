@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var rimraf = require('rimraf')
 var Promise = require('bluebird')
 var p = require('path')
@@ -6,7 +6,7 @@ var moment = require('moment')
 var utils = require('../lib/utils.js')
 var HTTPError = require('../lib/HTTPError.js')
 var tree = require('../lib/tree.js')
-var searchMethod = require('../lib/search.js')
+var searchMethod = require('../lib/search')
 var middlewares = require('../middlewares')
 var interactor = require('../lib/job/interactor.js')
 
@@ -191,12 +191,19 @@ function emptyTrash(req, res, next) {
 }
 
 /**
- * @api {post} / Action path (upload, archive, plugins)
- * @apiGroup Tree
- * @apiName compress
+ * @apiDefine Action 
+ * @apiExample {js} Example usage:
+ *     http -f POST / action=archive.download name=something.zip paths=[one,two]
  * @apiParam {string[]} paths Array of paths and directories
  * @apiParam {string} [name="archive-Date.getTime()"] Archive name
  * @apiParam {string} action Download, archive, remove (see plugins docs)
+ */
+
+/**
+ * @api {post} / Action path (upload, archive, plugins)
+ * @apiGroup Tree
+ * @apiUse Action
+ * @apiName compress
  */
 function treeAction(app) {
   var plugins = app.get('plugins')

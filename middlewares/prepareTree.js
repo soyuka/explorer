@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var p = require('path')
 var mm = require('micromatch')
 var fs = require('fs')

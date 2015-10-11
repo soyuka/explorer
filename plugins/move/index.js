@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var router = require('./router.js')
 var registerHooks = require('./hooks.js')
 

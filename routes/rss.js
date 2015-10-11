@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var RSS = require('rss')
 var os = require('os')
 

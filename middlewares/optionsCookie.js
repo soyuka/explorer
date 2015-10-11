@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * optionsCookie middlewares handles the cookies for sort, order 
  * sets req.query accordingly

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var fs = require('fs')
 var p = require('path')
@@ -24,7 +24,7 @@ var Upload = function(router, utils) {
   }
 
   /**
-   * @api {post} /p/archive/action/download
+   * @api {post} /p/archive/action/download Download
    * @apiGroup Plugins
    * @apiName download
    * @apiUse Action
@@ -44,9 +44,9 @@ var Upload = function(router, utils) {
   })
 
   /**
-   * @api {post} /p/archive/action/download
+   * @api {post} /p/archive/action/download Compress (zip)
    * @apiGroup Plugins
-   * @apiName download
+   * @apiName compress
    * @apiUse Action
    * @apiSuccess (201) {Object} Created
    */

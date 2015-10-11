@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var util = require('util')
 var HTTPError = require('../lib/HTTPError.js')
 var interactor = require('../lib/job/interactor.js')

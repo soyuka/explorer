@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var archiver = require('archiver')
 var http = require('http')
 var fs = require('fs')

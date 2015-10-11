@@ -1,5 +1,5 @@
-"use strict";
-var searchMethod = require('../../lib/search.js')
+'use strict';
+var searchMethod = require('../../lib/search')
 
 describe('search', function() {
   it('should throw', function() {

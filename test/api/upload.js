@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var p = require('path')
 var fs = require('fs')
 var rimraf = require('rimraf')

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var user = require('./user.js')
 var trashSize = require('./trashSize.js')
 var prepareTree = require('./prepareTree.js')

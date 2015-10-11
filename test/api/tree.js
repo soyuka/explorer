@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var fs = require('fs')
 var p = require('path')
 var existsSync = require('../../lib/utils.js').existsSync
