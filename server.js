@@ -97,6 +97,10 @@ module.exports = function(config) {
 
   app.use(middlewares.error(config))
 
+  app.use(function(req, res, next) {
+    return res.status(404).render('404.haml')
+  })
+
   var users = new Users({database: p.resolve(__dirname, config.database)})
 
   //load users from file to memory
