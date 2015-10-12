@@ -1,11 +1,6 @@
-# Plugins
+# Explorer plugins development guide
 
-This is a work in progress! Api might change!
-
-TODO:
-- document `req.options` features accessible through prepareTree
-- same for sanitizeCheckboxes 
-- document `utils` (see `registerHooks` and `router`)
+*Beta*
 
 ## What is a Plugin?
 
@@ -18,12 +13,12 @@ A plugin has three major components:
 
 **Hooks** are used to print elements in the view so that the user can use our Job, our Router or both.
 
-The **Router** allows us to add api routes to Explorer. This way you could build whole sub-applications using explorer components. A complex example that use Views on top of the router can be seen [in the Upload plugin](https://github.com/soyuka/explorer/tree/master/plugins/upload).
+The **Router** allows us to add api routes to Explorer. This way you could build whole sub-applications using explorer components.
 
 **Job** is a separated element for *long-polling* jobs. You don't want the user to wait for 2 minutes in front of the loading wheel before getting a response from a 40gb upload.
 Those are `forked` (running in the background) and they communicate with Explorer through [IPCEE](https://github.com/soyuka/IPCEE).
 
-## Basic structure
+## Main structure
 
 First expose an `index.js`: 
 
@@ -32,27 +27,104 @@ module.exports = {
   job: require('./job.js'),
   hooks: require('./hooks.js'),
   router: require('./router.js'), 
-  name: 'pluginName', //the name you'll call the job on
-  allowKeyAccess: ['/allowThisRouteThroughKey']
+  name: 'pluginName', //the name you'll call the job on, default to the configuration name
+  //The following is useful to make a plugin link shareable:
+  allowKeyAccess: ['/allow'] //allows /p/pluginName/allow to the list of key-accessible path. 
 }
 ```
 
-None of those is requested, you could need *hooks and router*, or *job and hooks*, or why not only static hooks. 
+None of those is requested, you could need *hooks and router*, or *job and hooks*, or why not, only static hooks. 
 
 /!\ Don't export what you don't need so that they don't get called for nothing
 
-### Hooks structure
+## Router
+
+When exporting a router, you'll get an [Express Router](http://expressjs.com/4x/api.html). It is mounted on `/p/pluginName`.
+
+That said the following adds a `GET` route on `/p/pluginName` which will respond by `ok`:
+
+```
+function Router(router, utils) {
+  router.get('/', function(req, res, next) {
+    return res.send('ok') 
+  })
+}
+```
+
+### Example
+
+Read comments. 
+
+```javascript
+/**
+ * Router
+ * @param router express.Router
+ * @param object utils explorer utils 
+ **/
+function Router(router, utils) {
+
+  function myRoute(req, res, next) {
+
+    if(ok) {
+      //explorer is adding a notification with info
+      return res.handle('back', {info: 'Ok!'}, 200)
+    }
+    
+    //omg something failed
+    return next(new utils.HTTPError("I hate mondays", 418))
+  }
+
+
+  //GET /p/pluginName/ 
+  //Use the prepareTree middleware if you work with the tree (security, query sanitize etc.)
+  router.get('/', utils.prepareTree, myRoute)
+
+  //DELETE /p/pluginName/something
+  router.delete('/something', myRemovalRoute)
+}
+
+module.exports = Router
+```
+
+A router can call a Job method through the interactor:
+
+```javascript
+  router.post('/action/longjob', function(req, res) {
+    //interactor allows us to call the create method of our job (see below)
+    utils.interactor.send('call', 'pluginName.longjob', req.user, req.query.path)
+    return res.handle('back', {info: 'Launched'}, 201)
+  })
+```
+
+Here, `utils` is an object with: 
+- `.interactor` the [job interactor](https://github.com/soyuka/explorer/blob/master/lib/job/interactor.js)
+- `.prepareTree` the [prepareTree middleware](https://github.com/soyuka/explorer/blob/master/middlewares/prepareTree.js) already instantiated
+- `.HTTPError` used to end the request with a code/error (`return next(new HTTPError("Something is wrong", 500))`)
+- `.tree` is the [main tree algorithm](https://github.com/soyuka/explorer/blob/master/lib/tree.js)
+- `.cache` the [cache instance](https://github.com/soyuka/explorer/blob/master/lib/cache/cache.js)
+- `.notify` is the [notifcation cache by user](https://github.com/soyuka/explorer/blob/master/lib/job/notify.js)
+
+## Hooks
+
+### Available hooks
+
+- `directory` expects `<dd><a href="#"></a></dd>` shows below the tree
+- `action` expects `<option value="plugin.method">Action</option>` shows in the select box. It behaves differently than normal hooks (see below)
+- `element` expects a `<a href="#"></a>` shows next to the trash icon 
+- `menu` expects a `<li><a href="#"></a></li>` shows on the left of the top menu bar 
+
+### Full example
 
 The hooks structure must be as following:
+- export a function
+- return an object or a promise which results in a hooks map
 
 ```javascript
 /**
  * registerHooks
  * @param object config explorer configuration
  * @param mixed user the user object, null if no user
- * @param Object {notify, cache}
- * @see Notify
- * @see Cache
+ * @param utils (see below)
  */
 function registerHooks(config, user, utils) {
   return {
@@ -73,92 +145,19 @@ function registerHooks(config, user, utils) {
 }
 ```
 
-### Router structure
-
-The following registers `/plugin/someplugin` route that can be call from hooks.
-This will then call the Job.create method.
-
-```javascript
-/**
- * Router
- * @param router express.Router
- * @param object utils explorer utils 
- **/
-function Router(router, utils) {
-  var HTTPError = utils.HTTPError
-
-  function myRoute(req, res, next) {
-    //interactor allows us to call the create method of our job
-    utils.interactor.ipc.send('call', 'pluginName.create', req.user, req.query.path)
-
-    //explorer is adding a notification with info
-    return res.handle('back', {info: 'Unrar launched'}, 201)
-    
-    //omg something failed
-    return next(new utils.HTTPError("I hate mondays", 418))
-  }
-
-  //Use the prepareTree middleware if you work with the tree (security, query sanitize etc.)
-  //this registers a route to /p/pluginName/
-  router.get('/', utils.prepareTree, myRoute)
-
-  //with an action hook (see below), define the route /p/pluginName/action/foo
-  router.post('/action/foo', doSomething)
-}
-
-module.exports = Router
-```
+Here it's the same as before. If you don't need a hook, just skip it.
 
 `utils` is an object with: 
-- `.prepareTree` the [prepareTree middleware](https://github.com/soyuka/explorer/blob/master/middlewares/prepareTree.js) already instantiated
-- `.interactor` the [job interactor](https://github.com/soyuka/explorer/blob/master/lib/job/interactor.js)
-- `.HTTPError` used to end the request with a code/error (`return next(new HTTPError("Something is wrong", 500))`)
+- `.cache` the [cache instance](https://github.com/soyuka/explorer/blob/master/lib/cache/cache.js)
+- `.notify` is the [notifcation cache by user](https://github.com/soyuka/explorer/blob/master/lib/job/notify.js)
 
-### Job
-
-```javascript
-/**
- * Job
- * @param IPCEE ipc our process communication instance
- **/
-function Job(ipc) {
-  if(!(this instanceof Job)) { return new Job(ipc) }
-  this.ipc = ipc || null
-}
-
-Job.prototype.create = function(user, path) {
-  var self = this
-  
-  //Notify user that we've started, job is your plugin name
-  self.ipc.send('job:notify', user.username, {message: 'GO!'})
-
-  //do some async stuff
-
-  //Notify user it's good to go! A link will be set to /search?path=$path&search=$search
-  self.ipc.send('job:notify', user.username, {message: 'Path action done!', path: path, search: search})
-
-  //Can oviously fail with an error
-  self.ipc.send('error', 'Sad story...')
-
-  //or notify user about an error
-  self.ipc.send('job:notify', user.username, {message: 'Something failed', error: true})
-}
-
-module.exports = Job
-```
-
-## Available hooks
-
-- `directory` expects `<dd><a href="#"></a></dd>` shows below the tree
-- `action` expects `<option value="plugin.method">Action</option>` shows in the select box
-- `element` expects a `<a href="#"></a>` shows next to the trash icon 
-- `menu` expects a `<li><a href="#"></a></li>` shows on the left of the top menu bar 
+registerHooks will be called on each request, internally it's a middleware that exports locals.
 
 ### Action hook
 
-The action hooks don't behave like other hooks. We are hooking an `<option>` or `<optgroup>`, that will respond to the global tree form. The hook value will call a router method.
+The action hooks does not behave like other hooks. We are hooking an `<option>` or `<optgroup>`, that will respond to the global tree form. The hook value will be therefore binded to a specific route.
 
-For example, `pluginName.doSomething` will call `POST /p/pluginName/action/doSomething/`:
+For example, an opiton value of `pluginName.doSomething` will call `POST /p/pluginName/action/doSomething`:
 
 ```
 function registerHooks(config, user, utils) {
@@ -187,7 +186,112 @@ function Router(router, utils) {
 module.exports = Router
 ```
 
-You can see a working example [here](https://github.com/soyuka/explorer/tree/master/plugins/archive)
+This routes goes through `prepareTree` and `sanitizeCheckboxes` middleware. You can then work with a safe `req.options`.
+Those are the properties that can be useful:
+
+```javascript
+req.options = {
+  root: '/Users/soyuka/explorer',
+  path: '/Users/soyuka/explorer',
+  parent: '/Users/soyuka/explorer',
+  directories:
+   [ '/Users/soyuka/explorer/bin',
+     '/Users/soyuka/explorer/scripts' ],
+  paths: [ '/Users/soyuka/explorer/index.js' ] 
+}
+```
+
+`prepareTree` checks the required path according to the user root path. Note that by using it, you'll be able to get a tree in no time:
+
+```javascript
+router.get('/mytree', utils.prepareTree, function(req, res, next) {
+ utils.tree(req.options.path, req.options)
+ .then(function(tree) {
+  return res.json(tree)
+ })
+ .catch(next)
+})
+```
+ 
+## Job
+
+### Basic structure
+
+```javascript
+/**
+ * Job
+ * @param IPCEE ipc our process communication instance
+ **/
+function Job(ipc) {
+  if(!(this instanceof Job)) { return new Job(ipc) }
+  this.ipc = ipc || null
+}
+
+Job.prototype.create = function(user, path) {
+  var self = this
+  
+  //Notify user that we've started, job is your plugin name
+  self.ipc.send('job:notify', user.username, {message: 'GO!'})
+
+  //do some async stuff
+
+  //Notify user it's good to go! A link will be set to /search?path=$path&search=$search
+  self.ipc.send('myplugin:notify', user.username, {message: 'Path action done!', path: path, search: search})
+
+  //Can oviously fail with an error
+  self.ipc.send('myplugin:notify', user.username, {message: 'Something failed', error: true})
+}
+
+module.exports = Job
+```
+
+### Usage
+
+To use the job, you'll go through `utils.interactor` and simply call a job method.
+
+Taking an async zip method: 
+
+```javascript
+Job.prototype.zip = function(user, paths) {
+  var self = this
+  //notify must always be use with an user
+  self.ipc.send('myplugin:notify', user.username, {message: 'Zip starting'})  
+  //do zipping and notify back, when path is present 
+  self.ipc.send('myplugin:notify', user.username, {
+    message: 'Zipped dude!',
+    path: 'where/is/zip', //when path is present, notify is linked to it
+    search: 'zipped.rar' //adds a search to the notification link
+  })
+}
+```
+
+This method can be called, like this: 
+
+```javascript
+router.post('/action/zip', function(req, res) {
+  //                     call myplugin.Job.zip(req.user, paths)
+  utils.interactor.send('call', 'myplugin.zip', req.user, {
+    paths: req.options.paths,
+    directories: req.options.directories,
+  })
+
+  return res.handle('back', {info: 'Zip started'})
+})
+```
+
+You can also get a synchronous value from the job:
+
+```javascript
+//job.js
+Job.prototype.progress = function() {
+  return this.progress
+}
+//router.js
+router.get('/progress', function(req, res) {
+  var progress = utils.interactor.send('get', 'myplugin.progress')
+  return res.json({progress: progress})
+})
+```
 
 ## Configuration
 
@@ -209,7 +313,15 @@ Put the plugin in `path-to-explorer/plugins/pluginName` and add it to the config
 plugins:
   pluginName: {}
 ```
-
 ## Examples
 
-- [Unrar](https://github.com/soyuka/explorer-unrar)
+### Core plugins
+- [Archive](https://github.com/soyuka/explorer/blob/master/plugins/archive)
+- [Upload](https://github.com/soyuka/explorer/blob/master/plugins/upload)
+- [Move](https://github.com/soyuka/explorer/blob/master/plugins/move)
+
+### NPM hosted
+
+- [Unrar](https://github.com/soyuka/explorer-unrar) Launch unrar in the current path.
+- [cksfv](https://github.com/soyuka/explorer-cksfv) Checks a `.sfv` file.
+- [m3u](https://github.com/soyuka/explorer-m3u) Generates an `m3u` playlist from audio files
