@@ -14,7 +14,7 @@ describe('interactor', function() {
   })
 
   it('should send a message (call)', function(cb) {
-    interactor.ipc.send('call', 'testjob.answer', 'foo')
+    interactor.send('call', 'testjob.answer', 'foo')
 
     interactor.ipc.once('answer', function(d) {
      expect(d).to.equal('foo')
@@ -25,7 +25,7 @@ describe('interactor', function() {
   it('should get a long answer (call)', function(cb) {
     this.skip()
     this.timeout(2500)
-    interactor.ipc.send('call', 'testjob.longAnswer', 'foo')
+    interactor.send('call', 'testjob.longAnswer', 'foo')
 
     interactor.ipc.once('longanswer', function(d) {
      expect(d).to.equal('foo')
@@ -34,7 +34,7 @@ describe('interactor', function() {
   })
 
   it('should get a value', function(cb) {
-    interactor.ipc.send('get', 'testjob.info')  
+    interactor.send('get', 'testjob.info')  
 
     interactor.ipc.once('testjob:info', function(d) {
       expect(d).to.equal('info') 
@@ -43,7 +43,7 @@ describe('interactor', function() {
   })
 
   it('should get a notification', function(cb) {
-    interactor.ipc.send('call', 'testjob.notify')  
+    interactor.send('call', 'testjob.notify')  
 
     interactor.ipc.once('notify:test', function(d) {
       expect(d).to.have.deep.property('[0].foo', 'bar')
@@ -53,7 +53,7 @@ describe('interactor', function() {
   })
 
   it('should get an error because notify without username', function(cb) {
-    interactor.ipc.send('call', 'testjob.notifyfail')  
+    interactor.send('call', 'testjob.notifyfail')  
 
     interactor.once('error', function(d) {
       expect(d).to.equal("Can't notify without a username")
