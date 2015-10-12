@@ -61,7 +61,7 @@ var Upload = function(router, utils) {
     }
 
     data.stream = data.temp
-    utils.interactor.ipc.send('call', 'archive.create', data, req.user, req.options)
+    utils.interactor.send('call', 'archive.create', data, req.user, req.options)
     return res.handle('back', {info: 'Archive created'}, 201)
   })
 
