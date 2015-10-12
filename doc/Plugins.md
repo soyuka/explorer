@@ -16,7 +16,7 @@ A plugin has three major components:
 The **Router** allows us to add api routes to Explorer. This way you could build whole sub-applications using explorer components.
 
 **Job** is a separated element for *long-polling* jobs. You don't want the user to wait for 2 minutes in front of the loading wheel before getting a response from a 40gb upload.
-Those are `forked` (running in the background) and they communicate with Explorer through [IPCEE](https://github.com/soyuka/IPCEE).
+Those are `forked` (running in the child processes) and they communicate with Explorer through [IPCEE](https://github.com/soyuka/IPCEE).
 
 ## Main structure
 
@@ -53,8 +53,6 @@ function Router(router, utils) {
 
 ### Example
 
-Read comments. 
-
 ```javascript
 /**
  * Router
@@ -86,7 +84,7 @@ function Router(router, utils) {
 module.exports = Router
 ```
 
-A router can call a Job method through the interactor:
+A router can call a Job method through the interactor [(see more below)](https://github.com/soyuka/explorer/blob/master/doc/Plugins.md#usage):
 
 ```javascript
   router.post('/action/longjob', function(req, res) {
@@ -94,6 +92,18 @@ A router can call a Job method through the interactor:
     utils.interactor.send('call', 'pluginName.longjob', req.user, req.query.path)
     return res.handle('back', {info: 'Launched'}, 201)
   })
+```
+
+`prepareTree` checks the required path according to the user root path. Note that by using it, you'll be able to get a path's tree in no time:
+
+```javascript
+router.get('/mytree', utils.prepareTree, function(req, res, next) {
+ utils.tree(req.options.path, req.options)
+ .then(function(tree) {
+  return res.json(tree)
+ })
+ .catch(next)
+})
 ```
 
 Here, `utils` is an object with: 
@@ -115,9 +125,7 @@ Here, `utils` is an object with:
 
 ### Full example
 
-The hooks structure must be as following:
-- export a function
-- return an object or a promise which results in a hooks map
+The hooks structure must return an object or a promise which results in a hooks map:
 
 ```javascript
 /**
@@ -145,13 +153,15 @@ function registerHooks(config, user, utils) {
 }
 ```
 
+*The core plugin `move` is using a promise - [see here](https://github.com/soyuka/explorer/blob/master/plugins/move/hooks.js)*
+
 Here it's the same as before. If you don't need a hook, just skip it.
 
 `utils` is an object with: 
 - `.cache` the [cache instance](https://github.com/soyuka/explorer/blob/master/lib/cache/cache.js)
 - `.notify` is the [notifcation cache by user](https://github.com/soyuka/explorer/blob/master/lib/job/notify.js)
 
-registerHooks will be called on each request, internally it's a middleware that exports locals.
+`registerHooks` will be called on each request, internally it's a middleware that exports locals (your hooks).
 
 ### Action hook
 
@@ -159,7 +169,7 @@ The action hooks does not behave like other hooks. We are hooking an `<option>` 
 
 For example, an opiton value of `pluginName.doSomething` will call `POST /p/pluginName/action/doSomething`:
 
-```
+```javascript
 function registerHooks(config, user, utils) {
   return {
     action: function(tree) {
@@ -173,7 +183,7 @@ module.exports = registerHooks
 
 The route is then defined like this:
 
-```
+```javascript
 function Router(router, utils) {
 
   router.post('/action/doSomething', function(req, res, next) {
@@ -201,18 +211,6 @@ req.options = {
 }
 ```
 
-`prepareTree` checks the required path according to the user root path. Note that by using it, you'll be able to get a tree in no time:
-
-```javascript
-router.get('/mytree', utils.prepareTree, function(req, res, next) {
- utils.tree(req.options.path, req.options)
- .then(function(tree) {
-  return res.json(tree)
- })
- .catch(next)
-})
-```
- 
 ## Job
 
 ### Basic structure
@@ -279,7 +277,7 @@ router.post('/action/zip', function(req, res) {
 })
 ```
 
-You can also get a synchronous value from the job:
+You can also get a get a resulting value from the job:
 
 ```javascript
 //job.js
@@ -288,8 +286,11 @@ Job.prototype.progress = function() {
 }
 //router.js
 router.get('/progress', function(req, res) {
-  var progress = utils.interactor.send('get', 'myplugin.progress')
-  return res.json({progress: progress})
+  utils.interactor.ipc.once('myplugin:progress', function(progress) {
+    return res.json({progress: progress})
+  })
+
+  utils.interactor.send('get', 'myplugin.progress', {foo: bar})
 })
 ```
 
