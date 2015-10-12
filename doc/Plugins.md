@@ -5,6 +5,7 @@ This is a work in progress! Api might change!
 TODO:
 - document `req.options` features accessible through prepareTree
 - same for sanitizeCheckboxes 
+- document `utils` (see `registerHooks` and `router`)
 
 ## What is a Plugin?
 
