@@ -32,7 +32,7 @@ nvm use default
 ## Install
 
 ```bash
-npm i pm2 -g
+npm install pm2 -g
 pm2 install xplorer
 ```
 
@@ -192,6 +192,20 @@ cd explorer
 cp doc/examples/config.example.yml config.yml #copy default configuration
 cp -r doc/examples/data data #copy default database
 npm install #install packages
+```
+
+### Beta/master installation
+
+After using the default method (i.e. `pm2 install xplorer`):
+
+```bash
+cd ~/.pm2/node_modules
+npm install gulp bower -g
+npm install git://github.com/soyuka/explorer
+cd xplorer
+bower install
+gulp
+pm2 restart xplorer
 ```
 
 ### Run
