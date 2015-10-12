@@ -264,6 +264,14 @@ plugins:
     module: 'explorer-cksfv'
 ```
 
+- [explorer-m3u](https://github.com/soyuka/explorer-m3u)
+
+```
+plugins:
+  unrar:
+    module: 'explorer-m3u' 
+```
+
 ### Development
 
 [See plugins documentation](https://github.com/soyuka/explorer/blob/master/doc/Plugins.md)
@@ -322,6 +330,5 @@ The `search.maxDepth` indicates wether to search in the directory or not if it's
 
 I did this because I could not find a light file explorer. It had to be simple, easy to install and fast. 
 I tried [pydio](https://pyd.io) but it's heavy and long to install. I also tried [h5ai](http://larsjung.de/h5ai/) but it does not have user support and has a lot of client-side javascript. I also have the feeling that it's slow.
-Explorer was built with [only 15 client javascript lines](https://github.com/soyuka/explorer/blob/master/views/index.haml#L60). It's fun to see how hard it seems, nowadays, to avoid using javascript for apps that don't require it. 
 
 KISS.
