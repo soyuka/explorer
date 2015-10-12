@@ -61,6 +61,8 @@ function prepareTree(app) {
       }
     })
 
+    req.query.path = res.locals.path
+
     var opts = utils.extend({},
       res.locals,
       config.tree, 
