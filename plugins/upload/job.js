@@ -1,12 +1,14 @@
 'use strict';
-var Download = require('download')
+var got = require('got')
+var utils = require('../../lib/utils.js')
 var u = require('url')
 var p = require('path')
 var fs = require('fs')
 var Promise = require('bluebird')
 var prettyBytes = require('pretty-bytes')
+var filenamify = require('filenamify')
+var contentDisposition = require('content-disposition')
 
-var download = new Download()
 var debug = require('debug')('explorer:job:upload')
 
 /**
@@ -22,53 +24,62 @@ function requestAsync(url, destination) {
   return new Promise(function(resolve, reject) {
     debug('Requesting', url)
 
-    var d = require('download')
+    let stream = got.stream(url)
+    let name = filenamify(p.basename(url))
+    let ext = p.extname(name)
 
-    new Download()
-    .get(url)
-    .dest(destination)
-    .rename(function(file) {
-      filename = file.basename + file.extname
+    if(utils.existsSync(p.join(destination, name))) {
+      name = p.basename(name, ext) + '-' + Date.now() + ext
+    }
 
-      //rename if exists
-      if(fs.existsSync(p.join(destination, filename))) {
-        file.basename += '-' + Date.now() 
-        filename = file.basename + file.extname
-      }
-    })
-    .run(function(err, files) {
+    let path = p.join(destination, name)
 
-      //this is an upload error and is not considered as a system error
-      if(err || !files) {
-        console.error(err.message)
-        return resolve({error: 'Upload of ' + url + ' failed: ' + err.message}) 
-      }
-
-      var file = files[0]
-
-      if(!file.basename)
-        file.basename = filename
+    stream.on('response', function(res) {
+     stream.headers = res.headers 
     
-      size = file.stat.size
+     let cd = stream.headers['content-disposition']
+     if(cd) {
+        let n = contentDisposition.parse(cd)
+        if(n.parameters.filename) {
+          name = n.parameters.filename
+          path = p.join(destination, name)
+        }
+     }
 
-      if(file.isBuffer() && size <= 0) {
-        size = file.contents.length
+     debug('Response headers %o', stream.headers)
+     debug('File %s => %s', name, path)
+    })
+    .on('error', function(error, body, res) {
+     console.log(error); 
+    })
+    .pipe(fs.createWriteStream(path))
+    .on('finish', function() {
+      let size = 0
+      if(stream.headers['content-size']) {
+        size = stream.headers['content-size']
       }
 
       if(size > 0) {
-        return resolve({path: destination, search: file.basename, message: url + ' was uploaded successfully to '+file.path+' ('+prettyBytes(size)+')'})
+        return resolve({
+          path: destination,
+          search: name,
+          message: url + ' was uploaded successfully to '+path+' ('+prettyBytes(size)+')'
+        })
       }
 
       debug('No size')
 
-      fs.stat(file.path, function(err, fstat) {
+      fs.stat(path, function(err, fstat) {
         if(err) {
           return reject(err) 
         } 
 
         size = fstat.size
-        return resolve({path: destination, search: file.basename, message: url + ' was uploaded successfully to '+file.path+' (' + prettyBytes(size) + ')'})
-
+        return resolve({
+          path: destination,
+          search: name,
+          message: url + ' was uploaded successfully to '+path+' (' + prettyBytes(size) + ')'
+        })
       })
     })
   })
