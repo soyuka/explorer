@@ -21,7 +21,7 @@ function hasItems(items, name) {
 
 describe('nativeSearch', function() {
   it('should search', function(cb) {
-    nativeSearch()('dir', fixtures, fixtures) 
+    nativeSearch()('dir', fixtures, {root: fixtures}) 
     .then(function(paths) {
       expect(paths.tree).to.be.an('array')
        hasItems(paths.tree, 'dirfile')
@@ -30,7 +30,7 @@ describe('nativeSearch', function() {
   })
 
   it('should search for exact match', function(cb) {
-    nativeSearch()('dirfile -exact', fixtures, fixtures) 
+    nativeSearch()('dirfile -exact', fixtures, {root: fixtures}) 
     .then(function(paths) {
        expect(paths.tree).to.be.an('array')
        expect(paths.tree).to.have.length.of(1)
@@ -41,7 +41,7 @@ describe('nativeSearch', function() {
 
   it('should search within path', function(cb) {
     var dir = p.join(fixtures, 'dir')
-    nativeSearch()('*.dat', dir, fixtures) 
+    nativeSearch()('*.dat', dir, {root: fixtures}) 
     .then(function(paths) {
       expect(paths.tree).to.be.an('array')
       expect(paths.tree).to.have.length.of(1)
@@ -51,7 +51,7 @@ describe('nativeSearch', function() {
   })
 
   it('should native search smart caps', function(cb) {
-   nativeSearch()('lowercamelcase', fixtures, fixtures)
+   nativeSearch()('lowercamelcase', fixtures, {root: fixtures})
    .then(function(results) {
      hasItems(results.tree, 'lowerCamelCase')
     cb()
@@ -59,7 +59,7 @@ describe('nativeSearch', function() {
   })
 
   it('should search with -dir filter', function(cb) {
-   nativeSearch()('dir -dir', fixtures, fixtures)
+   nativeSearch()('dir -dir', fixtures, {root: fixtures})
    .then(function(results) {
      for(let i in results.tree) {
        expect(results.tree[i].directory).to.be.true
@@ -69,7 +69,7 @@ describe('nativeSearch', function() {
   })
 
   it('should search with -dir filter (with values after filter)', function(cb) {
-   nativeSearch()('-dir *.dat', fixtures, fixtures)
+   nativeSearch()('-dir *.dat', fixtures, {root: fixtures})
    .then(function(results) {
      expect(results.tree).to.have.length.of(0)
      cb()
