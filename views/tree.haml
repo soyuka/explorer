@@ -27,6 +27,7 @@
               %select{name: 'sort', id: 'sort'}
                 %option{value: 'name', selected: sort == 'name'} Name
                 %option{value: 'time', selected: sort == 'time'} Time
+                %option{value: 'atime', selected: sort == 'atime'} Access time
                 %option{value: 'size', selected: sort == 'size'} Size
         .columns.large-2
           %input{type: 'radio', id: 'order_asc', name: 'order', value: 'asc', checked: order == 'asc'} 
@@ -52,7 +53,8 @@
             %th
               %input{type: 'checkbox', onclick: 'checkAll(event)', style: 'margin: 0'}
             %th Name
-            %th Last Modified
+            %th Last Modification
+            %th Last Acess
             %th Size
             - if(canRemove)
               %th 
@@ -77,6 +79,7 @@
                       %i.icon-folder.right{title: 'Jump to directory'}
 
             %td= item.lastModified
+            %td= item.lastAccessed
             %td= item.humanSize
             - if(canRemove)
               %td

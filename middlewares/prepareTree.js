@@ -88,7 +88,7 @@ function prepareTree(app) {
       res.locals.canRemove = config.remove && config.remove.method ? true : false
     }
 
-    if(res.locals.sort)
+    if(res.locals.sort && res.locals.sort in sort)
       opts.sortMethod = sort[res.locals.sort](opts)
 
     if(req.query.limit) {
