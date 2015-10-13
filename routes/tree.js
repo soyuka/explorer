@@ -144,7 +144,7 @@ function search(req, res, next) {
 
   var method = searchMethod(config.search.method, config.search)
   
-  return method(req.options.search, req.options.path, req.options.root)
+  return method(req.options.search, req.options.path, req.options)
   .then(function(data) {
     if(config.search.method == 'native') {
       return data 
