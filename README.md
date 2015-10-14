@@ -120,8 +120,11 @@ The default native search accepts globs and filters:
 ```
 somefile -exact # should match exactly, alias -e
 somedir -e -dir # exact and a directory, -d or -directory
-* -video
-* -audio
+* -video # every video files
+-audio # every audio files
+* -video --no-recursive # search in the current path only
+--directory --atime=1h # directory accessed in the last hour
+*.js --mtime=>2015-10-13 --mtime=<2015-10-14 # get all javascript files modified between dates
 ```
 
 ## HTTP(S)
