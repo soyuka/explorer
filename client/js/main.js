@@ -1,18 +1,5 @@
 (function() {
   'use strict';
-  //delete button confirm box
-  var confirmDeletion = function(e) {
-    return confirm('Are you sure?')
-  }
-  
-  //checkbox to check every checkbox
-  var checkAll = function(event) {
-    var checkboxes = document.getElementById('tree').querySelectorAll('input[type="checkbox"]')
-    for(var i in checkboxes) {
-      checkboxes[i].checked = event.currentTarget.checked 
-    }
-  }
-
   var client = new Faye.Client(window.location.origin + '/socket', {timeout: 120})
   var notificationsContainer = document.getElementById('notifications')
   client.addExtension({
