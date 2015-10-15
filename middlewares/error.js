@@ -25,7 +25,8 @@ function getError(config) {
 
     return res.format({
       'text/html': function() {
-        req.flash('error', err.message)
+        if(req.flash)
+          req.flash('error', err.message)
          
         if(err.redirect)
           return res.redirect(err.redirect)
