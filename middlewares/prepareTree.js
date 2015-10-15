@@ -97,27 +97,16 @@ function prepareTree(app) {
 
     if(req.user.ignore) {
       
-      for(let i in req.user.ignore) {
-        if(mm.isMatch(opts.path, req.user.ignore[i])) {
-          return next(new HTTPError('Forbidden', 403)) 
-        }
-      }
+      let index = req.user.ignore.indexOf('*')
+
+      if(~index)
+        req.user.ignore.splice(index, 1)
+
+      if(mm.contains(opts.path, req.user.ignore))
+        return next(new HTTPError('Forbidden', 403)) 
 
       opts.skip = function(v) {
-        for(let i in req.user.ignore)  {
-          let e = req.user.ignore[i]
-
-          if(v == e)
-            return false
-
-          let glob = mm.isMatch(v, e)
-
-          if(glob) {
-            return false 
-          }
-        }
-
-        return true
+        return !mm.any(v, req.user.ignore)
       } 
     }
 

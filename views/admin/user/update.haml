@@ -37,7 +37,7 @@
           %label{for: 'ignore'}
             List of paths to be ignored
             %small one by line
-          %textarea{name: 'ignore', id: 'ignore', rows: 5}= user.ignore.join('\n')
+          %textarea{name: 'ignore', id: 'ignore', rows: 5}= user.ignore ? user.ignore.join('\n') : ''
 
       .row
         .columns.large-3.large-offset-9
