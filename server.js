@@ -27,7 +27,11 @@ module.exports = function(config) {
   if(!config.quiet)
     app.use(morgan(config.dev ? 'dev' : 'tiny'))
 
-  app.use(bodyParser.urlencoded({extended: false, limit: config.upload.maxSize}))
+  app.use(bodyParser.urlencoded({
+    extended: false, 
+    limit: config.upload.maxSize,
+    parameterLimit: 1e5
+  }))
   app.use(bodyParser.json({limit: config.upload.maxSize}))
 
   app.set('config', config)
