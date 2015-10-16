@@ -25,7 +25,7 @@ function requestAsync(url, destination) {
     debug('Requesting', url)
 
     let stream = got.stream(url)
-    let name = filenamify(p.basename(url))
+    let name = filenamify(decodeURI(p.basename(url)))
     let ext = p.extname(name)
 
     if(utils.existsSync(p.join(destination, name))) {
