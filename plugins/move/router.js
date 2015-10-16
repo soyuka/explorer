@@ -6,7 +6,7 @@ var extend = require('util')._extend
 var debug = require('debug')('explorer:move')
 var Notify = require('../../lib/job/notify.js')
 var mv = Promise.promisify(require('mv'))
-var cpr = Promise.promisify(require('cpr'))
+var ncp = Promise.promisify(require('ncp'))
 
 function getData(paths, directories, method) {
   var data = []
@@ -27,20 +27,15 @@ function getData(paths, directories, method) {
  * @param string dest 
  * @return Array Promises cpr
  */
-function copyPromises(items, dest) {
+function copyPromises(items, dest, opts) {
   let copy = items.filter(e => e.method == 'copy')
   .map(function(e) {
-    e.dest = dest 
-    e.future = p.join(dest, p.basename(e.path))
-
-    if(e.directory) {
-      e.dest = e.future
-    }
+    e.dest = p.join(dest, p.basename(e.path))
 
     let exists = false
 
     try {
-      exists = !fs.accessSync(e.future) 
+      exists = !fs.accessSync(e.dest) 
     } catch(e) {
     }
 
@@ -50,10 +45,10 @@ function copyPromises(items, dest) {
 
     debug('Copy %s to %s', e.path, e.dest)
 
-    return cpr(e.path, e.dest, {
-      deleteFirst: false,
-      overwrite: false,
-      confirm: false
+    return ncp(e.path, e.dest, {
+      clobber: false,
+      stopOnErr: true,
+      limit: opts.limit
     })
   })
 
@@ -65,7 +60,7 @@ function copyPromises(items, dest) {
  * @param string dest 
  * @return Array Promises mv
  */
-function cutPromises(items, dest) {
+function cutPromises(items, dest, opts) {
   let cut = items.filter(e => e.method == 'cut')
   .map(function(e) {
     e.dest = p.join(dest, p.basename(e.path))
@@ -82,7 +77,11 @@ function cutPromises(items, dest) {
 
     debug('Move %s to %s', e.path, e.dest)
 
-    return mv(e.path, e.dest, {mkdirp: true})
+    return mv(e.path, e.dest, {
+      mkdirp: true,
+      clobber: false, 
+      limit: opts.limit
+    })
   })
 
   return cut
@@ -169,7 +168,8 @@ var Move = function(router, utils, config) {
     if(!Array.isArray(req.body.path))
       req.body.path = [req.body.path]
 
-    let dest = req.options.path
+    var limit = config.move.limit || 20
+    var dest = req.options.path
 
     //get items method/path
     let items = req.body.path.map(function(e) {
@@ -208,8 +208,8 @@ var Move = function(router, utils, config) {
       }
 
       return Promise.all([].concat(
-        copyPromises(clipboard, dest),
-        cutPromises(clipboard, dest)
+        copyPromises(clipboard, dest, {limit: limit}),
+        cutPromises(clipboard, dest, {limit: limit})
       ))
       .then(function() {
         //remove memory items and add them back
