@@ -18,7 +18,8 @@
     "test": "mocha --harmony",
     "coverage": "istanbul cover _mocha -- --harmony",
     "postinstall": "bash scripts/postinstall.sh",
-    "docs": "apidoc -i routes -o doc/api"
+    "docs": "apidoc -i routes -o doc/api",
+    "start": "node --harmony index.js"
   },
   "engines": {
     "node": ">0.11.1"
