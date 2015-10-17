@@ -177,6 +177,19 @@ npm rebuild
 
 ## More installation methods 
 
+### Docker
+
+```bash 
+git clone git@github.com:soyuka/explorer
+cd explorer
+docker build -t explorer .
+# you have to mount the configuration to /opt/explorer (see EXPLORER_CONFIG env)
+docker run -p 8080:4859 -d -v $(pwd)/doc/examples:/opt/explorer --name explorer explorer
+```
+
+Use a mounted volume with data by changing your `home` in the Explorer admin panel.
+Here we forward `8080` to `4859`, where `4859` is the default http port.
+
 ### Tarball package
 
 Download latest release, unpack, configure, launch :
@@ -187,7 +200,7 @@ cp -r doc/examples/data data #copy default database
 npm rebuild
 ```
 
-#### From git
+### Git
 
 ```
 git clone git@github.com:soyuka/explorer
@@ -211,17 +224,17 @@ gulp
 pm2 restart xplorer
 ```
 
-### Run
+## Run
 
 Installed as a pm2 module explorer will already be daemonized. 
 
-#### Development
+### Development
 
 ```bash
 DEBUG="explorer:*" node --harmony index.js
 ```
 
-#### Daemonize with pm2
+### Daemonize with pm2
 
 ```bash
 npm i pm2 -g
