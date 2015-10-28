@@ -22,7 +22,7 @@
     "start": "node --harmony index.js"
   },
   "engines": {
-    "node": ">0.11.1"
+    "node": ">4.0"
   },
   "apps": [
     {
