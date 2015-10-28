@@ -18,7 +18,7 @@ function ArchiveJob(ipc) {
 /**
  * Creates an archive
  * data : {
- *   name, temp, directories, paths, root, stream (string|http.ServerResponse), options (req.options)
+ *   name, temp, directories, paths, stream (string|http.ServerResponse), options (req.options)
  * }
  */
 ArchiveJob.prototype.create = function(data, user, config) {
@@ -62,13 +62,15 @@ ArchiveJob.prototype.create = function(data, user, config) {
 
   archive.pipe(data.stream)
 
+  for(let i in data.directories) {
+    console.log(data.directories[i], p.basename(data.directories[i]))
+    archive.directory(data.directories[i], p.basename(data.directories[i]))
+  }
+
   for(let i in data.paths) {
     archive.append(fs.createReadStream(data.paths[i]), {name: p.basename(data.paths[i])}) 
   }
 
-  for(let i in data.directories) {
-    archive.directory(data.directories[i], data.directories[i].replace(data.root, ''))
-  }
 
   archive.finalize()
 }

@@ -18,8 +18,7 @@ var Upload = function(router, utils) {
       name: name,
       paths: req.options.paths,
       temp: temp,
-      directories: req.options.directories,
-      root: req.options.root
+      directories: req.options.directories
     }
   }
 
