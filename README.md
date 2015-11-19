@@ -180,7 +180,7 @@ npm rebuild
 ### Docker
 
 ```bash 
-git clone git@github.com:soyuka/explorer
+git clone https://github.com/soyuka/explorer.git
 cd explorer
 docker build -t explorer .
 # you have to mount the configuration to /opt/explorer (see EXPLORER_CONFIG env)
@@ -203,7 +203,7 @@ npm rebuild
 ### Git
 
 ```
-git clone git@github.com:soyuka/explorer
+git clone https://github.com/soyuka/explorer.git
 cd explorer
 cp doc/examples/config.example.yml config.yml #copy default configuration
 cp -r doc/examples/data data #copy default database
