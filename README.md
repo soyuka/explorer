@@ -192,6 +192,9 @@ cd explorer
 cp doc/examples/config.example.yml config.yml #copy default configuration
 cp -r doc/examples/data data #copy default database
 npm install #install packages
+npm install -g bower gulp
+bower install
+gulp
 ```
 
 ### Run
