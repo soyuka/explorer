@@ -180,7 +180,7 @@ npm rebuild
 ### Docker
 
 ```bash 
-git clone git@github.com:soyuka/explorer
+git clone https://github.com/soyuka/explorer.git
 cd explorer
 docker build -t explorer .
 # you have to mount the configuration to /opt/explorer (see EXPLORER_CONFIG env)
@@ -195,19 +195,27 @@ Here we forward `8080` to `4859`, where `4859` is the default http port.
 Download latest release, unpack, configure, launch :
 
 ```bash
-cp doc/examples/config.example.yml config.yml #copy default configuration
+cp doc/examples/config.yml config.yml #copy default configuration
 cp -r doc/examples/data data #copy default database
+cp -r doc/examples/certs certs #copy default certificates for https
 npm rebuild
 ```
 
 ### Git
 
-```
-git clone git@github.com:soyuka/explorer
+```bash
+git clone https://github.com/soyuka/explorer.git
 cd explorer
-cp doc/examples/config.example.yml config.yml #copy default configuration
+cp doc/examples/config.yml config.yml #copy default configuration
 cp -r doc/examples/data data #copy default database
+cp -r doc/examples/certs certs #copy default certificates for https
 npm install #install packages
+```
+Then run ``gulp`` to compile minified resources
+```bash
+npm install gulp bower -g
+bower install
+gulp
 ```
 
 ### Beta/master installation
