@@ -195,18 +195,20 @@ Here we forward `8080` to `4859`, where `4859` is the default http port.
 Download latest release, unpack, configure, launch :
 
 ```bash
-cp doc/examples/config.example.min.yml config.yml #copy default configuration
+cp doc/examples/config.yml config.yml #copy default configuration
 cp -r doc/examples/data data #copy default database
+cp -r doc/examples/certs certs #copy default certificates for https
 npm rebuild
 ```
 
 ### Git
 
-```
+```bash
 git clone https://github.com/soyuka/explorer.git
 cd explorer
-cp doc/examples/config.example.min.yml config.yml #copy default configuration
+cp doc/examples/config.yml config.yml #copy default configuration
 cp -r doc/examples/data data #copy default database
+cp -r doc/examples/certs certs #copy default certificates for https
 npm install #install packages
 ```
 
