@@ -211,6 +211,12 @@ cp -r doc/examples/data data #copy default database
 cp -r doc/examples/certs certs #copy default certificates for https
 npm install #install packages
 ```
+Then run ``gulp`` to compile minified resources
+```bash
+npm install gulp bower -g
+bower install
+gulp
+```
 
 ### Beta/master installation
 
