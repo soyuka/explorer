@@ -25,7 +25,7 @@ describe('format', function() {
     .end(cb)
   })
 
-  it('should get rss tree', function(cb) {
+  it('should get rss tree (search)', function(cb) {
     this.request.get('/search?search=*')
     .set('Accept', 'application/rss+xml')
     .expect(200)
@@ -62,5 +62,4 @@ describe('format', function() {
   })
 
   after(bootstrap.logout)
-  after(bootstrap.removeAgent)
 })

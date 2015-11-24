@@ -18,13 +18,10 @@ describe('archive', function() {
 
   before(bootstrap.autoAgent)
   before(bootstrap.login)
-  before(bootstrap.runInteractor([p.resolve(__dirname, '../../plugins/archive')]))
 
   it('should post file', function(cb) {
     var getNotification = function(notifications) {
-      if(notifications.length < 2) { return }
       expect(getList()).to.deep.equal(['test.zip'])
-      interactor.ipc.removeListener('notify:admin', getNotification)
       return cb()
     }
 
@@ -32,7 +29,7 @@ describe('archive', function() {
     this.request.post('/')
     .send({'path': p.join(__dirname, '../fixtures/tree/dir/1Mo.dat'), name: 'test', action: 'archive.compress'})
     .end(function() {
-      interactor.ipc.addListener('notify:admin', getNotification)
+      bootstrap.worker.once('archive:notify', getNotification)
     })
   })
 
@@ -46,6 +43,11 @@ describe('archive', function() {
     .end(cb)
   })
 
+  it('should delete notifications', function(cb) {
+    this.request.delete('/notifications')
+    .end(cb)
+  })
+
   after(function(cb) {
     return async.each(getList(), function(f, next) {
       return rimraf(p.join(archive_path, f), next)
@@ -53,7 +55,4 @@ describe('archive', function() {
   })
 
   after(bootstrap.logout)
-  after(bootstrap.removeAgent)
-  after(bootstrap.killInteractor())
-
 })

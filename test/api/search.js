@@ -50,5 +50,4 @@ describe('search', function() {
   })
 
   after(bootstrap.logout)
-  after(bootstrap.removeAgent)
 })

@@ -7,11 +7,17 @@ var fs = require('fs')
  * take every paths and set resolved directories, paths acccordingly
  */
 function sanitizeCheckboxes(req, res, next) {
-  var paths = []
+  var files = []
   var directories = []
 
   if(typeof req.body.path == 'string')
     req.body.path = [req.body.path]
+
+  if(req.body.path === undefined && req.options.path)
+    req.body.path = [req.options.path]
+
+  if(!req.body.path)
+    return next()
 
   //validating paths
   for(let i in req.body.path) {
@@ -27,13 +33,13 @@ function sanitizeCheckboxes(req, res, next) {
       if(stat.isDirectory()) {
         directories.push(path)
       } else {
-        paths.push(path)
+        files.push(path)
       }
     }
   }
 
   req.options.directories = directories
-  req.options.paths = paths
+  req.options.files = files
 
   return next()
 }

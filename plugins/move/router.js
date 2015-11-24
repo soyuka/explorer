@@ -5,91 +5,15 @@ var p = require('path')
 var extend = require('util')._extend
 var debug = require('debug')('explorer:move')
 var Notify = require('../../lib/job/notify.js')
-var mv = Promise.promisify(require('mv'))
-var ncp = Promise.promisify(require('ncp'))
+var resolveSources = require('../../lib/resolveSources.js')
+var Clipboard = require('./clipboard.js')
 
-function getData(paths, directories, method) {
-  var data = []
+var Move = function(router, job, utils, config) {
 
-  for(var i in paths) {
-    data.push({method: method, path: paths[i], directory: false}) 
-  }
-
-  for(var i in directories) {
-    data.push({method: method, path: directories[i], directory: true}) 
-  }
-
-  return data
-}
-
-/**
- * @param array items 
- * @param string dest 
- * @return Array Promises cpr
- */
-function copyPromises(items, dest, opts) {
-  let copy = items.filter(e => e.method == 'copy')
-  .map(function(e) {
-    e.dest = p.join(dest, p.basename(e.path))
-
-    let exists = false
-
-    try {
-      exists = !fs.accessSync(e.dest) 
-    } catch(e) {
-    }
-
-    if(exists) {
-      return Promise.reject(new Error(e.dest + ' exists'))
-    }
-
-    debug('Copy %s to %s', e.path, e.dest)
-
-    return ncp(e.path, e.dest, {
-      clobber: false,
-      stopOnErr: true,
-      limit: opts.limit
-    })
-  })
-
-  return copy
-}
-
-/**
- * @param array items 
- * @param string dest 
- * @return Array Promises mv
- */
-function cutPromises(items, dest, opts) {
-  let cut = items.filter(e => e.method == 'cut')
-  .map(function(e) {
-    e.dest = p.join(dest, p.basename(e.path))
-
-    let exists = false
-
-    try {
-      exists = !fs.accessSync(e.dest) 
-    } catch(e) {}
-
-    if(exists) {
-      return Promise.reject(new Error(e.dest + ' exists'))
-    }
-
-    debug('Move %s to %s', e.path, e.dest)
-
-    return mv(e.path, e.dest, {
-      mkdirp: true,
-      clobber: false, 
-      limit: opts.limit
-    })
-  })
-
-  return cut
-}
-
-var Move = function(router, utils, config) {
-
-  var memory = new Notify('clipboard', utils.cache)
+  let memory = new Notify('clipboard', utils.cache)
+  let clipboard = new Clipboard(memory)
+  let HTTPError = utils.HTTPError
+  let removeRoute = require('./removeRoute.js')(HTTPError, resolveSources, job)
 
   /**
    * @api {post} /p/move/action/copy Copy
@@ -99,7 +23,7 @@ var Move = function(router, utils, config) {
    * @apiSuccess (201) {Object} Created
    */
   router.post('/action/copy', function(req, res, next) {
-    let data = getData(req.options.paths, req.options.directories, 'copy')
+    let data = clipboard.parseActionData(req.options, 'copy')
 
     debug('Copy paths %o', data)
 
@@ -117,7 +41,7 @@ var Move = function(router, utils, config) {
    * @apiSuccess (201) {Object} Created
    */
   router.post('/action/cut', function(req, res, next) {
-    let data = getData(req.options.paths, req.options.directories, 'cut')
+    let data = clipboard.parseActionData(req.options, 'cut')
 
     debug('Cut paths %o', data)
 
@@ -126,6 +50,15 @@ var Move = function(router, utils, config) {
       return res.handle('back', {info: 'Cut'}, 201)
     })
   })
+
+  /**
+   * @api {post} /p/move/action/remove Remove
+   * @apiName remove
+   * @apiGroup Plugins
+   * @apiUse Action
+   * @apiSuccess (201) {Object} Created
+   */
+  router.post('/action/remove', removeRoute)
 
   /**
    * @api {get} /p/move/clean Clean Clipboard
@@ -165,62 +98,43 @@ var Move = function(router, utils, config) {
     if(!req.body.path)
       return res.handle('back', {error: 'Nothing to paste'}, 404)
 
-    if(!Array.isArray(req.body.path))
-      req.body.path = [req.body.path]
-
-    var limit = config.move.limit || 20
     var dest = req.options.path
 
-    //get items method/path
-    let items = req.body.path.map(function(e) {
-      let isCopy = /^copy\-/.test(e)
-      let isCut = /^cut\-/.test(e)
-      let word = isCopy ? 'copy' : 'cut'
-
-      if(!isCut && !isCopy)
-        return null
-
-      return {
-        method: word, 
-        path: e.replace(word+'-', '')
-      } 
-    }).filter(e => e != null)
-
-    debug('Paste items %o', items)
-
-    return memory.get(req.user.username)
-    .then(function(oldclipboard) {
-      //get items that matches from clipboard
-      let clipboard = oldclipboard.filter(function(e) {
-        let exist = items.find(f => e.path == f.path && e.method == f.method)
-        return exist
-      })
-
-      let newclipboard = oldclipboard.filter(function(e) {
-        let exist = items.find(f => e.path == f.path && e.method == f.method)
-        return !exist
-      })
-
-      debug('Processing items %o', clipboard)
-
-      if(clipboard.length == 0) {
+    clipboard.parseFormData(req.body.path, req.user.username)
+    .then(function(data) {
+      if(data.length == 0) {
         return res.handle('back', {error: 'Nothing found in the clipboard'}, 404)
       }
 
-      return Promise.all([].concat(
-        copyPromises(clipboard, dest, {limit: limit}),
-        cutPromises(clipboard, dest, {limit: limit})
-      ))
-      .then(function() {
-        //remove memory items and add them back
-        return memory.remove(req.user.username)
+      let copyClipboard = clipboard.toSources(data, 'copy')
+
+      resolveSources(copyClipboard, req.options)
+      .then(sources => {
+        if(sources.length) {
+          debug('Copy sources', sources)
+          job.call('copy', req.user, sources, dest)
+        }
       })
-      .then(function() {
-        return memory.add(req.user.username, newclipboard) 
+
+      job.once('move:copied', (username, sources) => {
+        clipboard.update(copyClipboard, 'copy', username)
       })
-    })
-    .then(function() {
-      return res.handle('back', {info: 'Done!'}, 200)
+
+      let moveClipboard = clipboard.toSources(data, 'cut')
+
+      resolveSources(moveClipboard, req.options)
+      .then(sources => {
+        if(sources.length) {
+          debug('Move sources', sources)
+          job.call('move', req.user, sources, dest)
+        }
+      })
+
+      job.once('move:moved', (username, sources) => {
+        clipboard.update(moveClipboard, 'cut', username)
+      })
+
+      return res.handle('back', {}, 201)
     })
     .catch(function(err) {
       if(config.dev)

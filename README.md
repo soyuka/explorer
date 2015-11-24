@@ -48,15 +48,6 @@ You may want to create your own HTTPS certs or disable it ([see below](#certs)).
 
 ```yaml
 ---
-search: 
-  # Available: pt, ack, find, mdfind, custom, native
-  method: 'native' 
-  # Custom search command (${search} will be replaced by the string) 
-  command: "pt --nocolor --nogroup -l -i '${search}' ." # not used by native
-  maxDepth: 10 # Default 10
-  concurrency: 100 # Default 100 (only used with native search)
-  # String match score (only used with native search)
-  maxScore: 0.65
 pagination:
   # Maximum number of items per page
   limit: 10 # Default 100

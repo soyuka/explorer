@@ -1,6 +1,4 @@
 ---
-search: 
-  method: 'native' 
 tree:
   cache: true
 remove: 

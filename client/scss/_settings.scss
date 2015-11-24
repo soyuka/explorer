@@ -437,8 +437,8 @@ $include-xl-html-grid-classes: true;
 // $include-html-button-classes: $include-html-classes;
 
 // We use these to build padding for buttons.
-// $button-tny: rem-calc(10);
-// $button-sml: rem-calc(14);
+$button-tny: rem-calc(8);
+$button-sml: rem-calc(10);
 // $button-med: rem-calc(16);
 // $button-lrg: rem-calc(18);
 

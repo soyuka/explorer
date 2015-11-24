@@ -38,10 +38,6 @@ function prepareTree(app) {
 
     if(!req.query.path)
       req.query.path = './'
-    
-    if(req.query.search && config.search.method !== 'native') {
-      req.query.search = utils.secureString(req.query.search)
-    }
 
     res.locals = utils.extend(res.locals, {
       search: req.query.search,

@@ -7,13 +7,11 @@ var interactor = bootstrap.interactor
 
 var fixtures = p.join(__dirname, '../fixtures/tree/move')
 var move_path = p.join(__dirname, '../fixtures/tree/move/dest')
-var list
 var items
 
 function getList() {
-  list = fs.readdirSync(move_path)
+  return fs.readdirSync(move_path)
     .filter(function(a) { return !/^\./.test(a)})
-  return list
 }
 
 function url(u) {
@@ -38,7 +36,6 @@ describe('move', function() {
 
   before(bootstrap.autoAgent)
   before(bootstrap.login)
-  before(bootstrap.runInteractor([p.resolve(__dirname, '../../plugins/move')]))
 
   before(deleteFiles)
   before(createFiles)
@@ -74,14 +71,18 @@ describe('move', function() {
 
       this.request.post(url('/?path='+move_path))
       .send({
-        path: items 
+        path: items
       })
-      .expect(function() {
-        let list = getList()
-        expect(list).to.deep.equal(['dir', 'file.dat'])
-        expect(fs.accessSync(p.join(move_path, 'dir/file.dat'))).to.be.undefined
+      .expect(201)
+      .end(function() {
+        bootstrap.worker.once('move:copied', function() {
+          let list = getList()
+          expect(list).to.deep.equal(['dir', 'file.dat'])
+          expect(fs.accessSync(p.join(move_path, 'dir/file.dat'))).to.be.undefined
+          cb() 
+        })
       })
-      .end(cb)
+
     })
 
     it('clipboard should be empty', function(cb) {
@@ -93,7 +94,7 @@ describe('move', function() {
       .end(cb)
     })
 
-    it('should fail pasting because it exists', function(cb) {
+    it('should rename because it exists', function(cb) {
       var self = this
 
       this.request.post('/')
@@ -104,14 +105,27 @@ describe('move', function() {
         .send({
           path: 'copy-'+p.join(fixtures, 'file.dat')
         })
-        .expect(400)
-        .end(cb)
+        .expect(201)
+        .end(function() {
+          bootstrap.worker.once('move:copied', function() {
+            let list = getList()
+            expect(list).to.have.length.of(3)
+            cb() 
+          })
+        })
       })
     })
 
     it('should empty clipboard', function(cb) {
-      this.request.get(url('/clean'))  
-      .end(cb)
+      var self = this
+
+      this.request.post('/')
+      .send({path: p.join(fixtures, 'file.dat'), action: 'move.copy'})
+      .expect(201)
+      .end(function() {
+        self.request.get(url('/clean'))  
+        .end(cb)
+      })
     })
 
     it('clipboard should be empty', function(cb) {
@@ -119,6 +133,30 @@ describe('move', function() {
       .expect(function(res) {
         expect(res.body).to.be.an.array
         expect(res.body).to.have.length.of(0)
+      })
+      .end(cb)
+    })
+
+    it('should get notifications', function(cb) {
+      this.request.get('/notifications')
+      .expect(function(res) {
+        expect(res.body.notifications.num).to.eql(2)
+        expect(res.body.notifications.move).to.be.an('array')
+        expect(res.body.notifications.move).to.have.length.of(2)
+        expect(res.body.notifications.move[0]).to.have.property('fromNow')
+      })
+      .end(cb)
+    })
+
+    it('should delete notifications', function(cb) {
+      this.request.delete('/notifications')
+      .end(cb)
+    })
+
+    it('should get no notifications', function(cb) {
+      this.request.get('/notifications')
+      .expect(function(res) {
+        expect(res.body.notifications.num).to.eql(0)
       })
       .end(cb)
     })
@@ -163,12 +201,15 @@ describe('move', function() {
       .send({
         path: items 
       })
-      .expect(function() {
-        let list = getList()
-        expect(list).to.deep.equal(['dir', 'file.dat'])
-        expect(fs.accessSync(p.join(move_path, 'dir/file.dat'))).to.be.undefined
+      .expect(201)
+      .end(function() {
+        bootstrap.worker.once('move:moved', function() {
+          let list = getList()
+          expect(list).to.deep.equal(['dir', 'file.dat'])
+          expect(fs.accessSync(p.join(move_path, 'dir/file.dat'))).to.be.undefined
+          cb() 
+        })
       })
-      .end(cb)
     })
 
     it('clipboard should be empty', function(cb) {
@@ -180,13 +221,33 @@ describe('move', function() {
       .end(cb)
     })
 
+    it('should get notifications', function(cb) {
+      this.request.get('/notifications')
+      .expect(function(res) {
+        expect(res.body.notifications.num).to.eql(1)
+        expect(res.body.notifications.move).to.be.an('array')
+        expect(res.body.notifications.move).to.have.length.of(1)
+        expect(res.body.notifications.move[0]).to.have.property('fromNow')
+      })
+      .end(cb)
+    })
+
+    it('should delete notifications', function(cb) {
+      this.request.delete('/notifications')
+      .end(cb)
+    })
+
+    it('should get no notifications', function(cb) {
+      this.request.get('/notifications')
+      .expect(function(res) {
+        expect(res.body.notifications.num).to.eql(0)
+      })
+      .end(cb)
+    })
+
     after(deleteFiles)
     after(createFiles)
   })
   
   after(bootstrap.logout)
-  after(bootstrap.removeAgent)
-
-  after(bootstrap.killInteractor())
-
 })

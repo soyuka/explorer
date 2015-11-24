@@ -7,12 +7,8 @@ var prettyBytes = require('pretty-bytes')
 
 var debug = require('debug')('explorer:job:archive')
 
-function ArchiveJob(ipc) {
-  if(!ipc)
-    ipc = null
-
-  if(!(this instanceof ArchiveJob)) { return new ArchiveJob(ipc) }
-  this.ipc = ipc
+function ArchiveJob() {
+  if(!(this instanceof ArchiveJob)) { return new ArchiveJob() }
 }
 
 /**
@@ -55,24 +51,23 @@ ArchiveJob.prototype.create = function(data, user, config) {
   } else if(typeof data.stream == 'string') {
 
     data.stream = fs.createWriteStream(data.stream) 
-    self.ipc.send('archive:notify', user.username, {
-      message: 'Compressing data from '+data.root+' to '+data.temp
-    })
   }
 
   archive.pipe(data.stream)
 
   for(let i in data.directories) {
-    console.log(data.directories[i], p.basename(data.directories[i]))
     archive.directory(data.directories[i], p.basename(data.directories[i]))
   }
 
-  for(let i in data.paths) {
-    archive.append(fs.createReadStream(data.paths[i]), {name: p.basename(data.paths[i])}) 
+  for(let i in data.files) {
+    archive.append(fs.createReadStream(data.files[i]), {name: p.basename(data.files[i])}) 
   }
 
-
   archive.finalize()
+}
+
+ArchiveJob.prototype.setChannel = function(channel) {
+  this.ipc = channel
 }
 
 module.exports = ArchiveJob

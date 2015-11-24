@@ -144,28 +144,39 @@ describe('tree', function() {
   })
 
   it('should delete a file (trash)', function(cb) {
+    function getNotification() {
+      expect(existsSync(__dirname + '/../fixtures/tree/trash/somefile')).to.be.true
+      cb()
+    }
+
+    bootstrap.worker.task('move')
+    .once('move:moved', getNotification)
+
     fs.writeFileSync(__dirname + '/../fixtures/tree/tobedeleted/somefile', 'somecontent');
     this.request.get('/remove?path=tobedeleted/somefile')
-    .expect(function(res) {
-      newName = res.body.path 
-      expect(existsSync(res.body.path)).to.be.true
-    })
-    .end(cb)
+    .expect(201)
+    .end(function() {})
   })
 
   it('should not delete a file (trash)', function(cb) {
-    this.request.get('/remove?path=trash/'+p.basename(newName))
+    this.request.get('/remove?path=trash/somefile')
     .expect(406)
     .end(cb)
   })
 
 
   it('should empty trash', function(cb) {
-    this.request.post('/trash')
-    .expect(function(res) {
+    function getNotification() {
       expect(fs.readdirSync(__dirname + '/../fixtures/trash')).to.have.length.of(1)
-    })
-    .end(cb)
+      cb()
+    }
+
+    bootstrap.worker.task('move')
+    .once('move:removed', getNotification) 
+
+    this.request.post('/trash')
+    .expect(201)
+    .end(function() {})
   })
 
   it('should serve a picture', function(cb) {
@@ -198,6 +209,10 @@ describe('tree', function() {
     .end(cb)
   })
 
+  it('should delete notifications', function(cb) {
+    this.request.delete('/notifications')
+    .end(cb)
+  })
+
   after(bootstrap.logout)
-  after(bootstrap.removeAgent)
 })

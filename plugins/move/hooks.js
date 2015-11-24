@@ -15,11 +15,12 @@ function registerHooks(config, user, utils) {
           <optgroup label="Copy">
             <option value="move.copy">Copy</option>
             <option value="move.cut">Cut</option>
+            <option value="move.remove">Remove</option>
           </optgroup>`
 
         return str
       },
-      directory: function(tree, path) {
+      above: function(tree, path) {
         if(!paths || paths.length == 0)
           return ''
 

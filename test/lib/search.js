@@ -1,47 +1,78 @@
 'use strict';
-var searchMethod = require('../../lib/search')
+var p = require('path')
+var fs = require('fs')
+
+var fixtures = p.join(__dirname, '../fixtures/tree')
+
+var search = require('../../lib/search/search.js')
+
+function hasItems(items, name) {
+   var found = false
+   //in case there are more than 1 results with upcoming tests
+   for(let i in items) {
+     if(items[i].name == name) {
+        found = true 
+        break;
+     }
+   }
+
+  expect(found).to.be.true
+}
 
 describe('search', function() {
-  it('should throw', function() {
-    try {
-      searchMethod('nonexistant')       
-    } catch(e) {
-      expect(e).to.be.an.instanceof(TypeError) 
-    }
-  })
-
-  it('should get the pt search method', function() {
-    expect(searchMethod('pt')).to.be.a('function')
-  })
-
-  it('should get the ack search method', function() {
-    expect(searchMethod('ack')).to.be.a('function')
-  })
-
-  it('should get the find search method', function() {
-    expect(searchMethod('find')).to.be.a('function')
-  })
-
-  it('should get the mdfind search method', function() {
-    expect(searchMethod('mdfind')).to.be.a('function')
-  })
-
-  it('should get the find search method (2)', function() {
-    expect(searchMethod('custom')).to.be.a('function')
-    expect(searchMethod('custom').toString()).to.equal(searchMethod('find').toString())
-  })
-
-  it('should get the custom method', function() {
-    var custom = searchMethod('custom', { 
-      search: {
-        command: 'grep -l ${search} .'
-      }
+  it('should search', function(cb) {
+    search('dir', fixtures, {root: fixtures}) 
+    .then(function(paths) {
+      expect(paths.tree).to.be.an('array')
+       hasItems(paths.tree, 'dirfile')
+      cb()
     })
-
-    expect(custom.toString()).to.not.equal(searchMethod('find').toString())
   })
 
-  it('should get the native search method', function() {
-    expect(searchMethod('native')).to.be.a('function')
+  it('should search for exact match', function(cb) {
+    search('dirfile -exact', fixtures, {root: fixtures}) 
+    .then(function(paths) {
+       expect(paths.tree).to.be.an('array')
+       expect(paths.tree).to.have.length.of(1)
+       hasItems(paths.tree, 'dirfile')
+      cb()
+    })
+  })
+
+  it('should search within path', function(cb) {
+    var dir = p.join(fixtures, 'dir')
+    search('*.dat', dir, {root: fixtures}) 
+    .then(function(paths) {
+      expect(paths.tree).to.be.an('array')
+      expect(paths.tree).to.have.length.of(1)
+      expect(paths.tree[0].ext).to.equal('.dat')
+      cb()
+    })
+  })
+
+  it('should native search smart caps', function(cb) {
+   search('lowercamelcase', fixtures, {root: fixtures})
+   .then(function(results) {
+     hasItems(results.tree, 'lowerCamelCase')
+    cb()
+   })
+  })
+
+  it('should search with -dir filter', function(cb) {
+   search('dir -dir', fixtures, {root: fixtures})
+   .then(function(results) {
+     for(let i in results.tree) {
+       expect(results.tree[i].directory).to.be.true
+     }
+      cb()
+   })
+  })
+
+  it('should search with -dir filter (with values after filter)', function(cb) {
+   search('-dir *.dat', fixtures, {root: fixtures})
+   .then(function(results) {
+     expect(results.tree).to.have.length.of(0)
+     cb()
+   })
   })
 })

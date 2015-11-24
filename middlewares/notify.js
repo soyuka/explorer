@@ -1,5 +1,4 @@
 'use strict';
-var interactor = require('../lib/job/interactor.js')
 var util = require('util')
 var moment = require('moment')
 var Promise = require('bluebird')
@@ -18,10 +17,8 @@ function getNotify(app) {
       
     res.locals.notifications = {num: 0}
 
-    if(!interactor.ipc || !req.user) {
-      debug('No interactor')
+    if(!req.user)
       return next()
-    }
 
     var num = 0
     var notifications = {}
