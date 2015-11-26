@@ -115,7 +115,7 @@ See also: [minimal](https://github.com/soyuka/explorer/blob/master/config.exampl
 
 ## Search
 
-The default native search accepts globs and filters:
+Search accepts globs and filters:
 
 ```
 somefile -exact # should match exactly, alias -e
@@ -143,6 +143,27 @@ server {
     proxy_pass http://explorer/ 
   }
 }
+```
+
+### Apache
+
+```apache
+<VirtualHost *:80>
+    ServerAdmin example@example.com
+    ServerName explorer.com
+
+    ProxyRequests off
+ 
+    <Proxy *>
+        Order deny,allow
+        Allow from all
+    </Proxy>
+ 
+    <Location />
+        ProxyPass http://localhost:4859/
+        ProxyPassReverse http://localhost:4859/
+    </Location>
+</VirtualHost>
 ```
 
 ### Certs
