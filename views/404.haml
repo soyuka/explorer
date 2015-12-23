@@ -3,12 +3,11 @@
   %meta{charset: 'utf-8'}
   %meta{name: 'viewport', content: 'width=device-width, initial-scale=1.0'}
   %title Explorer
-  %link{rel: 'stylesheet', href: app_root + 'css/app.min.css'}
-  %link{rel: 'icon', type: 'image/png', href: app_root + 'favicon-32x32.png', sizes: '32x32'}
-  %link{rel: 'icon', type: 'image/png', href: app_root + 'favicon-16x16.png', sizes: '16x16'}
+  -# %link{rel: 'stylesheet', href: app_root + 'css/app.min.css'}
+  -# %link{rel: 'icon', type: 'image/png', href: app_root + 'favicon-32x32.png', sizes: '32x32'}
+  -# %link{rel: 'icon', type: 'image/png', href: app_root + 'favicon-16x16.png', sizes: '16x16'}
 
 %body{style: 'margin-top:50px'}
-  .container
-    .row
-      .large-12.columns.large-centered.text-center
-        %img{src: '/404.png'}
+  .row
+    .large-12.columns.text-center
+      %img{src: '/404.png'}

@@ -1,0 +1,30 @@
+<div [ngClass]="{'is-off-canvas-open': open.left || open.right, 'is-open-left': open.left, 'is-open-right': open.right}" class='off-canvas-wrapper-inner'>
+  <div [hidden]='!open.left' [ngClass]="{'is-open': open.left}" class='off-canvas position-left'>
+    <explorer-menu *ngIf='!token.expired()' [open]='open'></explorer-menu>
+  </div>
+  <explorer-notifications [hidden]='!open.right' [ngClass]="{'is-open': open.right}" class='off-canvas position-right'></explorer-notifications>
+  <div (click)='close($event)' class='off-canvas-content'>
+    <explorer-messages></explorer-messages>
+    <nav class='title-bar hide-for-medium'>
+      <div class='title-bar-left'>
+        <button (click)='open.left = !open.left' class='menu-icon'></button>
+        <span class='title-bar-title'>Explorer</span>
+      </div>
+    </nav>
+    <nav class='top-bar show-for-medium'>
+      <section class='top-bar-left'>
+        <ul class='menu'>
+          <li class='menu-text'>
+            <a [routerLink]="['Tree', {path: '/'}]">
+              Explorer
+            </a>
+          </li>
+        </ul>
+      </section>
+      <section *ngIf='!token.expired()' class='top-bar-right'>
+        <explorer-menu [open]='open'></explorer-menu>
+      </section>
+    </nav>
+    <router-outlet></router-outlet>
+  </div>
+</div>

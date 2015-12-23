@@ -1,0 +1,131 @@
+.expanded.row
+  %form.large-12.columns{'*ngIf': 'tree', '[ngFormModel]': 'treeForm'}
+    -# Search
+    .row.expanded.align-right
+      .columns.large-5.small-12
+        .input-group
+          %input.input-group-field{type: 'search', ngControl: 'search'}
+          .input-group-button
+            %input.button{type: 'submit', value: 'Search'}
+            %input{type: 'hidden', name: 'path', ngControl: 'path', '[ngModel]': 'options.path'}
+
+    -# Sort
+    -# %form{method: 'GET', action: ''}
+    .row
+      .columns.small-12.medium-6
+        .row
+          .columns.small-2.medium-2.large-1
+            %label.middle{for: 'sort'} Sort
+          .columns.small-4.medium-4.large-3
+            %select{name: 'sort', id: 'sort', ngControl: 'sort', '[ngModel]': 'options.sort'}
+              %option{'*ngFor': '#o of sortOptions', '[value]': 'o'} {{o}}
+          .columns.row
+            .columns.medium-expand.large-3
+              %input{type: 'radio', id: 'order_asc', name: 'order', value: 'asc', '(click)': 'setOrderValue("asc")', '[checked]': 'options.order == "asc"', ngControl: 'order'} 
+              %label.text-left.middle{for: 'order_asc'} Asc
+            .columns.medium-expand.large-3
+              %input{type: 'radio', id: 'order_desc', name: 'order', value: 'desc', '(click)': 'setOrderValue("desc")', '[checked]': 'options.order == "desc"', ngControl: 'order'} 
+              %label.text-left.middle{for: 'order_desc'} Desc
+      .columns.small-12.medium-6
+        .row
+          .columns.row
+            .columns.small-2.medium-2.large-1
+              %label.middle{for: 'limit'} Limit
+            .columns.small-4.medium-4.large-3
+              %input{type: 'number', id: 'limit', name: 'limit', ngControl: 'limit', '[ngModel]': 'options.limit'}
+
+    %ul.breadcrumbs
+      %li{'*ngFor': '#bc of breadcrumb'}
+        %a{'(click)': 'navigate({path: bc.path})'} {{bc.name}}
+
+    .row
+      .columns.large-12
+        -# Load templateUrl with hooks :)
+
+        -# - each p in hooks
+        -#   - if('above' in p)
+        -#     != p.above(tree, path)
+
+    -# Tree
+    %form#tree-form{method: 'POST', action: '/api/tree'}
+      %table#tree
+        %thead
+          %tr
+            %th
+              -# todo margin 0
+              %input{type: 'checkbox', onclick: 'checkAll(event)'}
+            %th Name
+            %th.hide-for-small-only Last Modification
+            %th.hide-for-small-only Last Access
+            %th.hide-for-small-only Size
+            %th 
+        %tbody
+          %tr{'*ngFor': '#element of tree | async | get:"tree"'}
+            %td
+              %input{type: 'checkbox', '[attr.value]': 'element.path', name: 'path', '(change)': 'checkElement($event)'}
+            %td
+              %a{'*ngIf': 'element.directory', '(click)': 'navigate({path: element.path})'}
+                %i.icon-folder
+                {{element.name}}
+              %span{'*ngIf': '!element.directory'}
+                %a{href: '/download?path={{element.path}}&key={{user.key}}', target: '_blank'}
+                  %i{class: 'icon-file-{{element.type}}'}
+                  {{element.name}}
+                %a{'*ngIf': 'options.search', '(click)': "navigate(element.dirname)"}
+                  %i.icon-folder.float-right{title: 'Jump to directory'}
+
+            %td.hide-for-small-only {{element.lastModified}}
+            %td.hide-for-small-only {{element.lastAccessed}}
+            %td.hide-for-small-only {{element.humanSize}}
+
+            %td
+              %a{'*ngIf': 'options.canRemove'}
+                %i.icon-trash
+            -#     - if(remove.method == 'mv')
+            -#       %a{href: '/remove?path=' + item.path}
+            -#     - else
+            -#       %a{onclick: 'return confirmDeletion(event)', href: '/remove?path=' + item.path}
+            -#     - each p in hooks
+            -#       - if('element' in p)
+            -#         != p.element(item)
+            -#         %i.icon-trash
+
+
+      -# Action form
+      .row.expanded
+        .columns.small-12.large-7
+          %action-hooks{'[tree]': 'tree', '[paths]': 'paths'}
+        .columns.small-12.large-5.text-right
+          %p
+            {{options.num}}
+            %span{'*ngIf': 'options.num > 1'}
+              results
+            %span{'*ngIf': 'options.num == 1'}
+              result
+            ({{options.size}})
+
+      -# .row
+      -#   .columns.large-12
+      -#     .button-bar
+      -#       .button-group
+      -#       - each p in hooks
+      -#         - if('below' in p)
+      -#           != p.below(tree, path)
+
+    -# Pagination
+    %input{type: 'hidden', ngControl: 'page'}
+    %ul.pagination.text-center
+      %li.pagination-previous.disabled{'*ngIf': 'options.page == 1'}
+        Previous
+      %li.pagination-previous
+        %a{'(click)': 'navigate({page: options.page - 1})'}
+          Previous
+      %li{'*ngFor': '#i of pages', '[class.current]': 'options.page == i'}
+        %span{'*ngIf': 'options.page == i'}
+          {{i}}
+        %a{'*ngIf': 'options.page != i', '(click)': 'navigate({page: i})'}
+          {{i}}
+      %li.pagination-next{'*ngIf': 'options.page < options.pages'}
+        %a{'(click)': 'navigate({page: options.page + 1})'} Next
+      %li.pagination-next.disabled{'*ngIf': 'options.page == options.pages'}
+        Next

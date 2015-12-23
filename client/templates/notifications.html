@@ -1,0 +1,18 @@
+<ul class='vertical menu'>
+  <li>
+    <form action='/notifications' class='right' method='POST'>
+      <input class='expanded button warning' type='submit' value='Remove notifications'>
+      <input name='_method' type='hidden' value='DELETE'>
+    </form>
+  </li>
+  <li *ngFor='#notification of notifications'>
+    <div [ngClass]='{alert: notification.error, primary: !notification.error, success: notification.success}' class='callout'>
+      <span>
+        {{notification.message}}
+      </span>
+      <div class='text-right'>
+        <i>{{notification.fromNow}} ({{notification.type}})</i>
+      </div>
+    </div>
+  </li>
+</ul>

@@ -28,7 +28,7 @@ function prepareTree(app) {
 
     if(req.query.sort) {
       if(!sort.hasOwnProperty(req.query.sort)) {
-        req.query.sort = null 
+        req.query.sort = 'name' 
       }
     }
 
@@ -39,37 +39,26 @@ function prepareTree(app) {
     if(!req.query.path)
       req.query.path = './'
 
-    res.locals = utils.extend(res.locals, {
+    res.locals = {
       search: req.query.search,
-      sort: req.query.sort || '',
-      order: req.query.order || '',
+      sort: req.query.sort || 'name',
+      order: req.query.order,
       page: req.query.page,
       root: p.resolve(req.user.home),
       path: utils.higherPath(req.user.home, req.query.path),
       parent: utils.higherPath(req.user.home, p.resolve(req.query.path, '..')),
-      buildUrl: utils.buildUrl,
-      extend: utils.extend,
-      urlOptions: {
-        limit: req.query.limit,
-        order: req.query.order,
-        sort: req.query.sort,
-        page: req.query.page
-      }
-    })
+      limit: req.query.limit || config.pagination.limit
+    }
 
     req.query.path = res.locals.path
 
-    var opts = utils.extend({},
-      res.locals,
-      config.tree, 
-      config.pagination
-    )
+    var opts = utils.extend({}, res.locals, config.tree)
 
     //@TODO refactor this:
     //- remove as a plugin
     //- archive and upload should parse their own config
     ;['remove', 'archive', 'upload'].forEach(function(e) {
-      res.locals[e] = opts[e] = config[e]
+      opts[e] = config[e]
 
       var k = e == 'remove' ? 'trash' : e
 
@@ -113,6 +102,7 @@ function prepareTree(app) {
       }
     }
 
+    opts.locals = res.locals
     req.options = opts
 
     //forcing accept header to rss

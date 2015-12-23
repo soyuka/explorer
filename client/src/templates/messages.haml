@@ -1,0 +1,9 @@
+%ul#messages{"*ngIf": "messages.hasMessages()"}
+  %li.callout.alert{"*ngFor": "#error of messages.errors"}
+    {{error.error}}
+    %a{aria_hidden: true, '(click)': 'messages.removeError(error)'}
+      &times;
+  %li.callout.success{"*ngFor": "#info of messages.infos"}
+    {{info.info}}
+    %a{aria_hidden: true, '(click)': 'messages.removeInfo(info)'}
+      &times;

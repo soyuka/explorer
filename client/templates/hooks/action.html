@@ -1,0 +1,11 @@
+<div class='row'>
+  <div class='columns large-expand'>
+    <select [(ngModel)]='action' id='action-hook' name='action'></select>
+  </div>
+  <div class='columns large-expand'>
+    <input [(ngModel)]='filename' class='input-group-field' name='name' type='text'>
+  </div>
+  <div class='columns shrink'>
+    <input (click)='send()' class='button' type='submit'>
+  </div>
+</div>

@@ -1,0 +1,41 @@
+.row.container
+  .large-12.columns
+    %h2 New user
+    %form{method: 'POST', action: '/a/users'}
+      .row
+        .columns.medium-expand.small-12
+          %label{for: 'username'} Username 
+          %input{type: 'text', name: 'username', id: 'username'}
+        .columns.medium-expand.small-12
+          %label{for: 'password'} Password
+          %input{type: 'password', name: 'password', id: 'password'}
+      .row
+        .columns.medium-expand.small-12
+          %label{for: 'home'} Home
+          %input{type: 'text', name: 'home', id: 'home', placeholder: 'Be careful...'}
+        .columns.medium-expand.small-12
+          %label In read only user won't be able to save archives nor to trash things
+          %input{type: 'checkbox', id: 'admin', name: 'admin', value: 1}
+          %label{for: 'admin'} Admin
+          %input{type: 'checkbox', id: 'readonly', name: 'readonly', value: 1}
+          %label{for: 'readonly'} Readonly
+          %input{type: 'hidden', name: 'key', value: 1}
+      .row
+        .columns.medium-expand.small-12
+          %label{for: 'trash'}
+            Trash
+            %small only move mode
+          %input{type: 'text', name: 'trash', id: 'trash', value: ''}
+          %label{for: 'temp'} Archive
+          %input{type: 'text', name: 'archive', id: 'temp', value: ''}
+          %label{for: 'upload'} Upload
+          %input{type: 'text', name: 'upload', id: 'upload', value: ''}
+        .columns.medium-expand.small-12
+          %label{for: 'ignore'}
+            List of paths to be ignored
+            %small one by line
+          %textarea{name: 'ignore', id: 'ignore', value: '', rows: 5}
+      .row.align-right
+        .columns.shrink
+          %input.button.expanded{type: 'submit', value: 'Create'}
+

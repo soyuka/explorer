@@ -1,0 +1,142 @@
+!!! 5
+%head
+  %meta{charset: 'utf-8'}
+  %meta{name: 'viewport', content: 'width=device-width, initial-scale=1.0'}
+  %title Explorer
+  %link{rel: 'stylesheet', href: app_root + 'dist/app.min.css'}
+  %link{rel: 'icon', type: 'image/png', href: app_root + 'favicon-32x32.png', sizes: '32x32'}
+  %link{rel: 'icon', type: 'image/png', href: app_root + 'favicon-16x16.png', sizes: '16x16'}
+  - if(user)
+    %script{type: 'text/javascript', src: app_root + 'socket/client.js'}
+    %script{type: 'text/javascript'}!= 'var user = { username: "'+user.username+'", key: "'+user.key+'"}'
+    %script{type: 'text/javascript', src: app_root + 'dist/vendor.js'}
+    %script{type: 'text/javascript', src: app_root + 'dist/main.js'}
+    :javascript
+      //delete button confirm box
+      var confirmDeletion = function(e) {
+        return confirm('Are you sure?')
+      }
+      
+      //checkbox to check every checkbox
+      var checkAll = function(event) {
+        var checkboxes = document.getElementById('tree').querySelectorAll('input[type="checkbox"]')
+        for(var i in checkboxes) {
+          checkboxes[i].checked = event.currentTarget.checked 
+        }
+      }
+
+%body{"ng-app": 'explorer'}
+  .off-canvas-wrapper{ng_controller: 'OffCanvasCtrl as offCanvas'}
+    .off-canvas-wrapper-inner{ng_class: 'offCanvas.style.offCanvasWrapperInner'}
+      .off-canvas.position-left{ng_class: 'offCanvas.style.left.offCanvas'}
+        - if(user.username)
+          %ul.vertical.menu
+            %li.title.menu-text
+              Explorer
+            %li
+              %a{href: '/notifications'}
+                %span= 'Notifications ('+notifications.num+')'
+            %li
+              %a{href: '/settings'}= user.username
+            - if(user.admin)
+              %li
+                %a{href: '/a'}
+                  %i.icon-cog
+                  Settings
+            %li
+              %a{href: '/logout'}
+                %i.icon-logout
+                Logout
+            %li.title.menu-text
+              Plugins
+            - each p in hooks
+              - if('menu' in p)
+                != p.menu()
+
+      %e-notifications.off-canvas.position-right{ng_class: 'offCanvas.style.right.offCanvas'}
+        - if(user.username)
+          %ul.vertical.menu
+            %li
+              %form.right{action: '/notifications', method: 'POST'}
+                %input.expanded.button.warning{type: 'submit', value: 'Remove notifications'}
+                %input{type: 'hidden', name: '_method', value: 'DELETE'}
+            - each plugin, index in notifications
+              - if(plugin.length)
+                - if(index != 'num')
+                  %li.title.menu-text= index.charAt(0).toUpperCase() + index.slice(1) + ' (' + (plugin.length || 0) + ')'
+                - each notification in plugin
+                  - if(notification.error)
+                    %li.callout.alert
+                      %span= notification.message
+                      %div.text-right
+                        %i= notification.fromNow
+                  - else 
+                    %li.callout.primary
+                      - if(notification.path)
+                        - if(notification.search)
+                          %a{href: 'search?path='+notification.path+'&search='+notification.search}= notification.message
+                        - else
+                          %a{href: '?path='+notification.path}= notification.message
+                      - else
+                        %span= notification.message
+                      %div.text-right
+                        %i= notification.fromNow
+
+      .off-canvas-content{ng_click: 'offCanvas.hide($event)'}
+        - if(user.username)
+          %nav.title-bar.hide-for-medium
+            .title-bar-left
+              %button.menu-icon{ng_click: 'offCanvas.toggle($event, "left")'}
+              %span.title-bar-title Explorer
+          %nav.top-bar.show-for-medium
+            %section.top-bar-left
+              %ul.menu
+                %li.menu-text
+                  %a{href: '/'}
+                    Explorer 
+                - each p in hooks
+                  - if('menu' in p)
+                    != p.menu()
+
+            %section.top-bar-right
+              %ul.menu
+                %li.has-badge
+                  %a{href: '/notifications', ng_click: 'offCanvas.toggle($event, "right")'}
+                    %i.icon-bell{aria_describedby: 'num-notifications'}
+                  - if(notifications.num > 0)
+                    #num-notifications.badge.info= notifications.num
+                %li
+                  %a{href: '/settings'}= user.username
+                - if(user.admin)
+                  %li
+                    %a{href: '/a'}
+                      %i.icon-cog
+                %li
+                  %a{href: '/logout'}
+                    %i.icon-logout
+        - else
+          .row
+            .large-12.columns.text-center
+              %h1
+                %img.logo{src: 'logo.png'}
+                Explorer
+
+        .expanded.row.align-center
+          .column.large-6.small-12
+            - if(messages.info.length)
+              - each info in messages.info
+                .callout.primary
+                  %p= info
+            - else if(messages.error.length)
+              - each error in messages.error
+                .callout.alert
+                  %p= error
+
+        != body
+
+        %footer.expanded.row
+          .columns.large-12
+            %p.text-center
+              %small
+                %a{href: 'https://nullreferer.com/?https://github.com/soyuka/explorer'} Github
+

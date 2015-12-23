@@ -1,0 +1,7 @@
+.row
+  .columns.large-expand
+    %select#action-hook{'[(ngModel)]': 'action', 'name': 'action'}
+  .columns.large-expand
+    %input.input-group-field{type: 'text', name: 'name', '[(ngModel)]': 'filename'}
+  .columns.shrink
+    %input.button{type: 'submit', '(click)': 'send()'}

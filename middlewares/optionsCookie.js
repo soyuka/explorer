@@ -1,4 +1,5 @@
-'use strict';
+'use strict'
+//@todo delete
 /**
  * optionsCookie middlewares handles the cookies for sort, order 
  * sets req.query accordingly

@@ -14,15 +14,12 @@ var HTTPError = require('../lib/HTTPError.js')
 function getFormat(app) {
   return function format(req, res, next) {
     res.renderBody = function(name, locals) {
-      locals = util._extend(res.locals, locals ? locals : {})
-
       res.format({
         'text/html': function() {
           return app.render(name, locals, function(err, body) {
             if(err) {
               console.error(err)
-              req.flash('error', err)
-              //need a third arg to renderBody for callback with error 
+              return next(err)
             }
 
             return res.render('index.haml', util._extend(locals, {body: body}))
@@ -30,6 +27,7 @@ function getFormat(app) {
         },
         'application/rss+xml': function() {
           res.set('Content-Type', 'application/rss+xml')
+          //@todo
           if(locals.tree) {
             res.locals = locals
             return rss(req, res, next)
@@ -46,32 +44,8 @@ function getFormat(app) {
       })
     }
 
-    res.handle = function(redirect, data, status) {
-
-      redirect = redirect ? redirect : 'back'
-      data = data ? data : {}
-      status = status ? status : 200
-
-      res.format({
-        'text/html': function() {
-          if(data.info)
-            req.flash('info', data.info)
-          else if(data.error)
-            req.flash('error', data.error)
-
-          return res.redirect(redirect)
-        },
-        'application/rss+xml': function() {
-          res.set('Content-Type', 'application/rss+xml')
-          return res.send('OK')
-        },
-        'application/json': function() {
-          return res.status(status).json(util._extend(data, {redirect: redirect}))
-        },
-        'default': function() {
-          return res.status(406).send('Not acceptable')
-        }
-      })
+    res.handle = function(data) {
+      return res.json(data) 
     }
 
     return next()

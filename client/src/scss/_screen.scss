@@ -1,0 +1,63 @@
+table {
+  min-width: 100%;
+}
+
+.top-bar {
+  font-size: rem-calc(15);
+}
+
+nav {
+  margin-bottom: rem-calc(30);
+}
+
+.menu:not(.vertical) li {
+  &:hover {
+    background: smart-scale($black, -25%);
+  }
+
+  &.has-badge {
+     position: relative;
+      
+    .badge {
+      position: absolute;
+      right: rem-calc(7);
+      top: rem-calc(2);
+      padding: 0.50em 0.25em;
+    }
+  }
+}
+
+.menu.vertical li {
+  .callout {
+    margin: 0;
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+  }
+}
+
+.input-group-button > .button {
+  padding: 0.7rem 1rem;
+}
+
+img.logo {
+    vertical-align: baseline;
+    margin-right: rem-calc(10);
+}
+
+#messages { 
+  position: absolute;
+  right: 10px;
+  bottom: 0px;
+  list-style-type: none;
+}
+
+.button[disabled] {
+  color: $black;
+}
+
+@media screen and (min-width: 1024px) {
+  .row {
+      max-width: 93.5rem;
+  }
+}

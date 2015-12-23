@@ -61,7 +61,7 @@ var Upload = function(router, job, utils, config) {
 
     data.stream = data.temp
     job.call('create', data, req.user, req.options)
-    return res.handle('back', {info: 'Archive created'}, 201)
+    return res.handle({info: 'Archiving...'})
   })
 
   return router

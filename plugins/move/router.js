@@ -25,11 +25,14 @@ var Move = function(router, job, utils, config) {
   router.post('/action/copy', function(req, res, next) {
     let data = clipboard.parseActionData(req.options, 'copy')
 
+    if(!data || !data.length)
+      return next(new HTTPError('Nothing to copy', 400))
+
     debug('Copy paths %o', data)
 
     return memory.add(req.user.username, data)
     .then(function() {
-      return res.handle('back', {info: 'Copy'}, 201)
+      return res.handle({info: 'Copy'}, 201)
     })
   })
 

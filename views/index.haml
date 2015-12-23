@@ -3,60 +3,16 @@
   %meta{charset: 'utf-8'}
   %meta{name: 'viewport', content: 'width=device-width, initial-scale=1.0'}
   %title Explorer
-  %link{rel: 'stylesheet', href: app_root + 'css/app.min.css'}
+  %base{href: app_root}
+  %link{rel: 'stylesheet', href: app_root + 'dist/app.min.css'}
   %link{rel: 'icon', type: 'image/png', href: app_root + 'favicon-32x32.png', sizes: '32x32'}
   %link{rel: 'icon', type: 'image/png', href: app_root + 'favicon-16x16.png', sizes: '16x16'}
-
-%body
-  - if(user.username)
-    %nav.top-bar
-      %ul.title-area
-        %li.name
-          %h1
-            %a{href: '/'}
-              Explorer 
-      %section.top-bar-section
-        %ul.right
-          %li
-            %a{href: '/notifications'}
-              %i.icon-bell
-              - if(notifications.num > 0)
-                %sup
-                  %span#num-notifications.label.radius.info= notifications.num
-          %li
-            %a{href: '/settings'}= user.username
-          - if(user.admin)
-            %li
-              %a{href: '/a'}
-                %i.icon-cog
-          %li
-            %a{href: '/logout'}
-              %i.icon-logout
-        %ul.left
-          - each p in hooks
-            - if('menu' in p)
-              != p.menu()
-
-  .large-6.container.large-centered.columns
-    - if(messages.info.length)
-      - each info in messages.info
-        .alert-box.info.radius= info
-    - else if(messages.error.length)
-      - each error in messages.error
-        .alert-box.alert.radius= error
-  != body
-
-  %ul#notifications
-  %footer.row
-    .columns.large-12.small-12
-      %p.small.text-center
-        %a{href: 'https://github.com/soyuka/explorer'} Github
-
-- if(user)
   %script{type: 'text/javascript', src: app_root + 'socket/client.js'}
-  %script{type: 'text/javascript'}!= 'var user = { username: "'+user.username+'", key: "'+user.key+'"}'
-  %script{type: 'text/javascript', src: app_root + 'js/main.min.js'}
+  %script{type: 'text/javascript', src: app_root + 'dist/app.js'}
   :javascript
+    System.import('boot')
+    .then(null, console.error.bind(console))
+
     //delete button confirm box
     var confirmDeletion = function(e) {
       return confirm('Are you sure?')
@@ -70,3 +26,5 @@
       }
     }
 
+%body
+  %explorer-app.off-canvas-wrapper

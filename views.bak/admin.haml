@@ -1,0 +1,55 @@
+.row
+  .large-12.columns
+    %a.button.float-right{href: '/a/create'} New user
+    %h2 Users
+    %table.table
+      %thead
+        %tr
+          %th{colspan: 6} Username
+      %tbody
+        - each item in users
+          %tr
+            %td{rowspan: 4}= item.username
+            %th Home
+            %th Key
+            %th Admin
+            %th Readonly
+            %td.text-center{rowspan: 4}
+              %a{href: '/a/update/'+item.username} Edit
+              %a{href: '/a/delete/'+item.username} Delete
+          %tr
+            %td= item.home
+            %td= item.key
+            %td= item.admin ? '✓' : '✗'
+            %td= item.readonly ? '✓' : '✗'
+          %tr
+            %th Trash
+            %th Archive
+            %th Upload
+            %th Ignore
+          %tr
+            - if(!config.remove.disabled)
+              %td= item.trash || config.remove.path
+            - else
+              %td ∅
+            - if(!config.archive.disabled)
+              %td= item.archive || config.archive.path
+            - else
+              %td ∅
+            - if(!config.upload.disabled)
+              %td= item.upload || config.upload.path
+            - else
+              %td ∅
+            %td= item.ignore || '∅'
+
+    - if(remove)
+      %form{method: 'post', action: '/a/trash'}.row.align-right
+        .columns.shrink
+          %input.button.warning.expanded{type: 'submit', value: 'Empty trash (' + trashSize + ')', onclick: 'return confirmDeletion(event)'}
+
+    %h2
+      Configuration
+      %small= config.config_path + '/config.yml'
+
+    %textarea.disabled{rows: 20, readonly: true}= ymlConfig
+

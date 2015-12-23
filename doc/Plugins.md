@@ -44,10 +44,12 @@ When exporting a router, you'll get an [Express Router](http://expressjs.com/4x/
 That said the following adds a `GET` route on `/p/pluginName` which will respond by `ok`:
 
 ```
-function Router(router, utils) {
+function Router(router, job, utils, config) {
   router.get('/', function(req, res, next) {
     return res.send('ok') 
   })
+
+  return router
 }
 ```
 
@@ -57,7 +59,9 @@ function Router(router, utils) {
 /**
  * Router
  * @param router express.Router
+ * @param job the Task (job.js)
  * @param object utils explorer utils 
+ * @param object config explorer config 
  **/
 function Router(router, job, utils, config) {
 
@@ -79,16 +83,18 @@ function Router(router, job, utils, config) {
 
   //DELETE /p/pluginName/something
   router.delete('/something', myRemovalRoute)
+
+  return router
 }
 
 module.exports = Router
 ```
 
-A router can call a Job method through the interactor [(see more below)](https://github.com/soyuka/explorer/blob/master/doc/Plugins.md#usage):
+A router can call a Job method [(see more below)](https://github.com/soyuka/explorer/blob/master/doc/Plugins.md#usage):
 
 ```javascript
   router.post('/action/longjob', function(req, res) {
-    //interactor allows us to call the create method of our job (see below)
+    //call the create method of our job (see below)
     job.call('longjob', req.user, req.query.path)
     return res.handle('back', {info: 'Launched'}, 201)
   })
@@ -222,26 +228,23 @@ req.options = {
 ```javascript
 /**
  * Job
- * @param IPCEE ipc our process communication instance
  **/
-function Job(ipc) {
-  if(!(this instanceof Job)) { return new Job(ipc) }
-  this.ipc = ipc || null
+function Job() {
+  if(!(this instanceof Job)) { return new Job() }
+}
+
+Job.prototype.setChannel = function(c) {
+  this.channel = c
 }
 
 Job.prototype.create = function(user, path) {
-  var self = this
-  
-  //Notify user that we've started, job is your plugin name
-  self.ipc.send('job:notify', user.username, {message: 'GO!'})
-
   //do some async stuff
 
   //Notify user it's good to go! A link will be set to /search?path=$path&search=$search
-  self.ipc.send('myplugin:notify', user.username, {message: 'Path action done!', path: path, search: search})
+  this.channel.send('myplugin:notify', user.username, {message: 'Path action done!', path: path, search: search})
 
   //Can oviously fail with an error
-  self.ipc.send('myplugin:notify', user.username, {message: 'Something failed', error: true})
+  this.channel.send('myplugin:notify', user.username, {message: 'Something failed', error: true})
 }
 
 module.exports = Job
@@ -249,17 +252,16 @@ module.exports = Job
 
 ### Usage
 
-To use the job, you'll go through `utils.interactor` and simply call a job method.
+To use the job, you'll go through `job` in the router and simply call a job method.
 
 Taking an async zip method: 
 
 ```javascript
 Job.prototype.zip = function(user, paths) {
-  var self = this
   //notify must always be use with an user
-  self.ipc.send('myplugin:notify', user.username, {message: 'Zip starting'})  
+  this.channel.send('myplugin:notify', user.username, {message: 'Zip starting'})  
   //do zipping and notify back, when path is present 
-  self.ipc.send('myplugin:notify', user.username, {
+  this.channel.send('myplugin:notify', user.username, {
     message: 'Zipped dude!',
     path: 'where/is/zip', //when path is present, notify is linked to it
     search: 'zipped.rar' //adds a search to the notification link
@@ -267,17 +269,17 @@ Job.prototype.zip = function(user, paths) {
 }
 ```
 
-This method can be called, like this: 
+This method can be called from the Router, like this: 
 
 ```javascript
 router.post('/action/zip', function(req, res) {
   //                     call myplugin.Job.zip(req.user, paths)
-  utils.interactor.send('call', 'myplugin.zip', req.user, {
+  job.call('zip', req.user, {
     paths: req.options.paths,
     directories: req.options.directories,
   })
 
-  return res.handle('back', {info: 'Zip started'})
+  return res.handle('back', {info: 'Zip started'}, 201)
 })
 ```
 
@@ -288,13 +290,13 @@ You can also get a get a resulting value from the job:
 Job.prototype.progress = function() {
   return this.progress
 }
+
 //router.js
 router.get('/progress', function(req, res) {
-  utils.interactor.ipc.once('myplugin:progress', function(progress) {
+  job.get('progress', {foo: bar})
+  .then(function(progress) {
     return res.json({progress: progress})
   })
-
-  utils.interactor.send('get', 'myplugin.progress', {foo: bar})
 })
 ```
 

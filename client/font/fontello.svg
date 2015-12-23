@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg xmlns="http://www.w3.org/2000/svg">
-<metadata>Copyright (C) 2015 by original authors @ fontello.com</metadata>
+<metadata>Copyright (C) 2016 by original authors @ fontello.com</metadata>
 <defs>
 <font id="fontello" horiz-adv-x="1000" >
 <font-face font-family="fontello" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
@@ -23,6 +23,7 @@
 <glyph glyph-name="unlock" unicode="&#xe80e;" d="m589 421q23 0 38-15t16-38v-322q0-22-16-37t-38-16h-535q-23 0-38 16t-16 37v322q0 22 16 38t38 15h17v179q0 103 74 177t176 73 177-73 73-177q0-15-10-25t-25-11h-36q-14 0-25 11t-11 25q0 59-42 101t-101 42-101-42-41-101v-179h410z" horiz-adv-x="642.9" />
 <glyph glyph-name="lock" unicode="&#xe80f;" d="m179 421h285v108q0 59-42 101t-101 41-101-41-41-101v-108z m464-53v-322q0-22-16-37t-38-16h-535q-23 0-38 16t-16 37v322q0 22 16 38t38 15h17v108q0 102 74 176t176 74 177-74 73-176v-108h18q23 0 38-15t16-38z" horiz-adv-x="642.9" />
 <glyph glyph-name="upload" unicode="&#xe810;" d="m500 776l260-244-164 0 0-256-190 0 0 256-166 0z m468-578q18-10 27-32t3-40l-28-154q-4-20-22-33t-40-13l-816 0q-22 0-40 13t-22 33l-28 154q-10 48 32 72l158 108 98 0-170-130 178 0q8 0 12-8l40-110 300 0 40 110q8 8 12 8l178 0-170 130 98 0z" horiz-adv-x="1000" />
+<glyph glyph-name="user" unicode="&#xe811;" d="m321-7l54 250-54 71-71 36z m143 0l72 357-72-36-53-71z m90 563q-2 3-3 4-5 4-53 4-39 0-93-10-4-2-12-2t-12 2q-54 10-93 10-48 0-54-4-1-1-2-4 1-10 2-15 2-1 5-3t4-6q1-2 4-12t4-11 4-10 5-9 5-8 7-7 7-6 10-4 12-2 13-1q20 0 33 6t18 17 8 19 7 17 10 7h6q6 0 10-7t6-17 9-19 18-17 33-6q7 0 13 1t12 2 9 4 8 6 7 7 5 8 5 9 4 10 4 11 4 12q1 4 4 6t4 3q1 5 3 15z m232-490q0-68-41-106t-108-39h-488q-67 0-108 39t-41 106q0 34 3 66t10 70 21 69 36 58 52 41l-51 123h120q-12 36-12 71 0 7 1 18-109 22-109 54 0 32 118 55 9 35 28 75t40 63q18 21 42 21 17 0 47-17t47-18 47 18 47 17q24 0 42-21 20-23 39-63t29-75q117-23 117-55 0-32-108-54 4-45-11-89h119l-45-126q35-18 60-54t36-80 16-84 5-83z" horiz-adv-x="857.1" />
 </font>
 </defs>
 </svg>

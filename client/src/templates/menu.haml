@@ -1,0 +1,30 @@
+%ul.menu{"[ngClass]": '{vertical: open.left}'}
+  %li{'*ngIf': 'open.left'}
+    %a{"[routerLink]": "['Tree', {path: ''}]"}
+      %i.icon-home
+      Explorer
+  %li
+    %a{"[routerLink]": "['Settings']"}
+      %i.icon-user
+      {{user.username}}
+  %li.has-badge{"(click)": 'open.right = !open.right'}
+    -# open notif
+    %a{'*ngIf': '!open.left'}
+      %i.icon-bell{aria_describedby: 'num-notifications'}
+        #num-notifications.badge.info {{notifications.num}}
+    %a{'*ngIf': 'open.left'}
+      %span.badge.info {{notifications.num}}
+      notifications
+  %li{'*ngIf': 'user.admin'}
+    %a{"[routerLink]": "['Admin']"}
+      %i.icon-cog
+      %span{'*ngIf': 'open.left'}
+        Administration
+  %li
+    %a{"(click)": "logout()"}
+      %i.icon-logout
+      %span{'*ngIf': 'open.left'}
+        Logout
+-# - each p in hooks
+-#   - if('menu' in p)
+-#     != p.menu()

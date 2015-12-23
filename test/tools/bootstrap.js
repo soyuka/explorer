@@ -35,20 +35,23 @@ module.exports = {
   options: options,
   login: function(cb) {
     this.request.post('/login')
-    .expect(200)
     .send({username: 'admin', password: 'admin'})
     .expect(function(res) {
-      expect(res.headers['set-cookie']).not.to.be.undefined
+      options.headers['Authorization'] = res.body.token
+      expect(res.body.username).to.equal('admin')
+      expect(res.body.key).to.equal('key')
+      expect(res.body.home).not.to.be.undefined
     })
     .end(cb)
   },
   logout: function(cb) {
     this.request.get('/logout')
     .expect(200)
-    .expect(function(res) {
-      expect(res.headers['set-cookie']).not.to.be.undefined
-    })
-   .end(cb)
+    .end(e => {
+      this.request.get('/tree') 
+      .expect(401)
+      .end(cb)
+   })
   },
   createAgent: function(opts, cb) {
 

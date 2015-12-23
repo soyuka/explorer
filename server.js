@@ -3,10 +3,7 @@ var express = require('express')
 var p = require('path')
 var util = require('util')
 var hamljs = require('hamljs')
-var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
-var session = require('express-session')
-var flash = require('connect-flash')
 var methodOverride = require('method-override')
 var morgan = require('morgan')
 var Promise = require('bluebird')
@@ -21,6 +18,21 @@ var fs = Promise.promisifyAll(require('fs'))
 var debug = require('debug')('explorer:server')
 var app = express()
 
+    // .unless(function(req) {
+    //
+    //   let unless = ['/', '/login', '/a'].filter(e => e === req.path)
+    //
+    //   if(unless.length)
+    //     return true
+    //
+    //   unless = ['/font', '/templates', '/dist', '/node_modules']
+    //            .filter(e => ~req.path.indexOf(e))
+    //
+    //   if(unless.length)
+    //     return true
+    //
+    //   return ~['.ico', '.png'].indexOf(p.extname(req._parsedUrl.pathname))
+    // }),
 module.exports = function(config, worker) {
 
   if(!config.quiet)
@@ -33,8 +45,11 @@ module.exports = function(config, worker) {
   }))
   app.use(bodyParser.json({limit: config.upload.maxSize}))
 
+  const users = new Users({database: p.resolve(__dirname, config.database)})
+
   app.set('config', config)
   app.set('worker', worker)
+  app.set('users', users)
 
   let cache = require('./lib/cache')(config)
 
@@ -58,6 +73,18 @@ module.exports = function(config, worker) {
     return hamljs.renderFile(str, 'utf-8', options, fn)
   })
 
+  app.use(function(req, res, next) {
+    if(req.query.key && isKeyAllowed(req.path)) {
+      let user = users.getByKey(req.query.key)
+
+      if(user) {
+        req.headers.authorization = user.sign(config.session_secret)
+      }
+    }
+
+    next()
+  })
+
   app.use([
     methodOverride(function(req, res) {
         if (req.body && typeof req.body === 'object' && '_method' in req.body) {
@@ -66,63 +93,49 @@ module.exports = function(config, worker) {
           return method
         }
     }),
-    cookieParser(),
-    //sessions are only used for flash
-    session({secret: config.session_secret || 'MEOW', resave: false, saveUninitialized: false}),
-    flash(),
-    express.static('client')
+    middlewares.format(app)
   ])
 
   app.use(function(req, res, next) {
-    req.config = config
-    req.users = users
-
     res.locals.app_root = config.app_root ? config.app_root : '/'
-
-    res.locals.messages = {
-      info: req.flash('info'),
-      error: req.flash('error')
-    }
-
-    res.locals.upload = config.upload
-
     return next()
   })
 
-  app.use(middlewares.user(app))
+  const router = express.Router()
+  const jwt = middlewares.jwt(app)
 
-  app.use([
-    middlewares.format(app),
-    middlewares.notify(app),
-    middlewares.optionsCookie
-  ])
-
-  app.use(middlewares.registerHooks(app))
-
+  //register plugins hooks
+  // app.use(middlewares.registerHooks(app))
   //register plugins routes
   plugins.registerPluginsRoutes(app)
 
+  routes.Tree(app, router)
+  // routes.Settings(app)
+  // routes.Admin(app)
+  routes.Notifications(app, router)
+  routes.Hooks(app, router)
+  app.use('/api', jwt, router)
+
   //Load routes
-  routes.Tree(app)
   routes.User(app)
-  routes.Settings(app)
-  routes.Admin(app)
 
   app.use(middlewares.error(config))
+
+  app.use('/', express.static('client'))
+
+  app.get('/*', function(req, res, next) {
+    return res.render('index.haml')
+  })
 
   app.use(function(req, res, next) {
     return res.status(404).render('404.haml')
   })
-
-  let users = new Users({database: p.resolve(__dirname, config.database)})
 
   //load users from file to memory
   return users.load()
   .then(function() {
     if(!config.quiet)
       console.log('Db loaded')
-
-    app.set('users', users) 
 
     return Promise.resolve(app)
   })

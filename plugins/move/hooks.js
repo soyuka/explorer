@@ -10,13 +10,18 @@ function registerHooks(config, user, utils) {
   return memory.get(user.username)
   .then(function(paths) {
     return {
-      action: function(tree) {
+      action: function() {
         var str = `
           <optgroup label="Copy">
             <option value="move.copy">Copy</option>
             <option value="move.cut">Cut</option>
-            <option value="move.remove">Remove</option>
-          </optgroup>`
+        `
+
+        if(!config.remove.disabled)
+           str += '<option value="move.remove">Remove</option>'
+
+
+        str += '</optgroup>'
 
         return str
       },

@@ -39,7 +39,7 @@ require('./server.js')(config, new Worker())
   let worker = app.get('worker')
 
   worker.on('error', function(err) {
-    console.error('Interactor errored'); 
+    console.error('Worker task errored'); 
     console.error(err); 
   })
 

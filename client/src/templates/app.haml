@@ -1,0 +1,20 @@
+.off-canvas-wrapper-inner{"[ngClass]": "{'is-off-canvas-open': open.left || open.right, 'is-open-left': open.left, 'is-open-right': open.right}"}
+  %div.off-canvas.position-left{"[ngClass]": "{'is-open': open.left}", "[hidden]": '!open.left'}
+    %explorer-menu{'[open]': 'open', "*ngIf": '!token.expired()'}
+  %explorer-notifications.off-canvas.position-right{"[ngClass]": "{'is-open': open.right}", "[hidden]": '!open.right'}
+  .off-canvas-content{'(click)': 'close($event)'}
+    %explorer-messages
+    %nav.title-bar.hide-for-medium
+      .title-bar-left
+        -# open canvas
+        %button.menu-icon{"(click)": 'open.left = !open.left'}
+        %span.title-bar-title Explorer
+    %nav.top-bar.show-for-medium
+      %section.top-bar-left
+        %ul.menu
+          %li.menu-text
+            %a{"[routerLink]": "['Tree', {path: '/'}]"}
+              Explorer 
+      %section.top-bar-right{"*ngIf": '!token.expired()'}
+        %explorer-menu{'[open]': 'open'}
+    %router-outlet

@@ -1,0 +1,31 @@
+<div class='row align-center'>
+  <div class='columns small-12 large-6'>
+    <form #userForm='ngForm' (ngSubmit)='onSubmit()'>
+      <div class='row'>
+        <div class='small-12 columns'>
+          <label for='username'>Username</label>
+        </div>
+      </div>
+      <div class='row'>
+        <div class='small-12 columns'>
+          <input [(ngModel)]='user.username' id='username' name='username' type='text'>
+        </div>
+      </div>
+      <div class='row'>
+        <div class='small-12 columns'>
+          <label for='password'>Password</label>
+        </div>
+      </div>
+      <div class='row'>
+        <div class='small-12 columns'>
+          <input [(ngModel)]='user.password' id='password' name='password' type='password'>
+        </div>
+      </div>
+      <div class='row'>
+        <div class='small-12 columns'>
+          <input class='button expanded' type='submit' value='Login'>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -18,14 +18,14 @@ describe('job', function() {
 
 describe('api', function() {
   require('./api/login.js')
-  require('./api/format.js')
+  // require('./api/format.js')
   require('./api/user.js')
-  require('./api/tree.js')
-  require('./api/search.js')
-  require('./api/admin.js')
-  require('./api/upload.js')
-  require('./api/archive.js')
-  require('./api/move.js')
+  // require('./api/tree.js')
+  // require('./api/search.js')
+  // require('./api/admin.js')
+  // require('./api/upload.js')
+  // require('./api/archive.js')
+  // require('./api/move.js')
 })
 
 describe('cache', function() {

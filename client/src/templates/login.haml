@@ -1,0 +1,19 @@
+.row.align-center
+  .columns.small-12.large-6
+    %form{'(ngSubmit)': 'onSubmit()', '#userForm': 'ngForm'}
+      .row
+        .small-12.columns
+          %label{for: 'username'} Username
+      .row
+        .small-12.columns
+          %input{type: 'text', id: 'username', name: 'username', '[(ngModel)]': 'user.username'}
+      .row
+        .small-12.columns
+          %label{for: 'password'} Password
+      .row
+        .small-12.columns
+          %input{type: 'password', id: 'password', name: 'password', '[(ngModel)]': 'user.password'}
+      .row
+        .small-12.columns
+          %input.button.expanded{type: 'submit', value: 'Login'}
+

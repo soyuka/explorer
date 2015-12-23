@@ -1,0 +1,17 @@
+
+  %script{type: 'text/javascript', src: app_root + 'socket/client.js'}
+  %script{type: 'text/javascript'}!= 'var user = { username: "'+user.username+'", key: "'+user.key+'"}'
+  %script{type: 'text/javascript', src: app_root + 'js/main.min.js'}
+  :javascript
+    //delete button confirm box
+    var confirmDeletion = function(e) {
+      return confirm('Are you sure?')
+    }
+    
+    //checkbox to check every checkbox
+    var checkAll = function(event) {
+      var checkboxes = document.getElementById('tree').querySelectorAll('input[type="checkbox"]')
+      for(var i in checkboxes) {
+        checkboxes[i].checked = event.currentTarget.checked 
+      }
+    }

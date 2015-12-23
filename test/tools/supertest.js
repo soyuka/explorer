@@ -17,10 +17,12 @@ module.exports = function(app, options){
       var req = new Test(this.app, method.toUpperCase(), url);
       req.ca(this._ca);
 
-      req.on('response', this.saveCookies.bind(this));
-      req.on('redirect', this.saveCookies.bind(this));
-      req.on('redirect', this.attachCookies.bind(this, req));
-      this.attachCookies(req);
+      /*
+       * req.on('response', this.saveCookies.bind(this));
+       * req.on('redirect', this.saveCookies.bind(this));
+       * req.on('redirect', this.attachCookies.bind(this, req));
+       * this.attachCookies(req);
+       */
 
       if(method == 'DELETE') {
         req.set('Content-length', 0)
