@@ -1,17 +1,12 @@
 import {AuthHttp} from 'angular2-jwt/angular2-jwt'
 import {Injectable} from 'angular2/core'
-import {Headers, URLSearchParams, RequestOptions} from 'angular2/http' 
+import {Hook} from './hook' 
 
 @Injectable()
-export class ActionHook {
+export class ActionHook extends Hook {
+  public name: string = 'action'
   constructor(private _http: AuthHttp) {
-    this.headers = new Headers()
-    this.headers.append('Content-Type', 'application/json')
-  }
-
-  get() {
-    return this._http.get('/api/hooks/action')
-    .map(res => res.text())
+    super(_http)
   }
 
   post(data) {

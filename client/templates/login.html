@@ -1,29 +1,29 @@
-<div class='row align-center'>
-  <div class='columns small-12 large-6'>
-    <form #userForm='ngForm' (ngSubmit)='onSubmit()'>
-      <div class='row'>
-        <div class='small-12 columns'>
+<div class="row align-center">
+  <div class="columns small-12 large-6">
+    <form (ngSubmit)='onSubmit()' #userForm='ngForm'>
+      <div class="row">
+        <div class="small-12 columns">
           <label for='username'>Username</label>
         </div>
       </div>
-      <div class='row'>
-        <div class='small-12 columns'>
-          <input [(ngModel)]='user.username' id='username' name='username' type='text'>
+      <div class="row">
+        <div class="small-12 columns">
+          <input type='text' id='username' name='username' [(ngModel)]='user.username' />
         </div>
       </div>
-      <div class='row'>
-        <div class='small-12 columns'>
+      <div class="row">
+        <div class="small-12 columns">
           <label for='password'>Password</label>
         </div>
       </div>
-      <div class='row'>
-        <div class='small-12 columns'>
-          <input [(ngModel)]='user.password' id='password' name='password' type='password'>
+      <div class="row">
+        <div class="small-12 columns">
+          <input type='password' id='password' name='password' [(ngModel)]='user.password' />
         </div>
       </div>
-      <div class='row'>
-        <div class='small-12 columns'>
-          <input class='button expanded' type='submit' value='Login'>
+      <div class="row">
+        <div class="small-12 columns">
+          <input type='submit' value='Login' class="button expanded" />
         </div>
       </div>
     </form>

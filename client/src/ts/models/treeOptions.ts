@@ -5,15 +5,14 @@ export class TreeOptions {
   public sort: string = 'name'
   public order: string = 'asc'
   public limit: number = 10
+  public pages: number = 0
   private parent: string = ''
   private path: string = ''
   private root: string = ''
-  private size: string = 0
-  private pages: number = 0
   private num: number = 0
   private canRemove: boolean = false
 
-  constructor(opts) {
+  constructor(opts: any = null) {
     if(!opts)
       return
 

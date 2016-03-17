@@ -1,1 +1,65 @@
-%h1 Admin
+.row
+  .large-12.columns
+    %h1 Application Settings
+    %a.button.float-right.success{'[routerLink]': "['AdminUserCreate']"}
+      %i.icon-user-plus
+      New user
+.row
+  .large-12.columns
+    %h2 Users
+    %table#users-table
+      %tbody{*ngFor: '#user of users'}
+        %tr
+          %th.show-for-small-only {{user.username}}
+          %th.hide-for-small-only{rowspan: 4} {{user.username}}
+          %th.hide-for-small-only Home
+          %th.hide-for-small-only Key
+          %th.hide-for-small-only Admin
+          %th.hide-for-small-only Readonly
+          %td.hide-for-small-only.text-center{rowspan: 4}
+            .button-group
+              %a.button.secondary{'[routerLink]': "['AdminUserUpdate', {username: user.username}]"}
+                %i.icon-pencil
+                Edit
+              %a.button.alert{'(click)': 'remove(user)'}
+                %i.icon-trash
+                Delete
+          %td.show-for-small-only.text-center
+            .button-group
+              %a.button.secondary{'[routerLink]': "['AdminUserUpdate', {username: user.username}]"}
+                %i.icon-pencil
+              %a.button.alert{'(click)': 'remove(user)'}
+                %i.icon-trash
+        %tr
+          %td.hide-for-small-only {{user.home}}
+          %td.hide-for-small-only {{user.key}}
+          %td.hide-for-small-only {{user.admin ? '✓' : '✗'}}
+          %td.hide-for-small-only {{user.readonly ? '✓' : '✗'}}
+        %tr
+          %th.hide-for-small-only Trash
+          %th.hide-for-small-only Archive
+          %th.hide-for-small-only Upload
+          %th.hide-for-small-only Ignore
+        %tr
+          %td.hide-for-small-only {{user.trash || '∅'}}
+          %td.hide-for-small-only {{user.archive || '∅'}}
+          %td.hide-for-small-only {{user.upload || '∅'}}
+          %td.hide-for-small-only {{user.ignore || '∅'}}
+
+.row
+  .large-12.columns
+    %form{method: 'post', action: '/a/trash', 
+      '*ngIf': 'configuration.remove !== false',
+      '(submit)': 'emptyTrash()'}
+      %button.expanded.button.warning{type: 'submit',  title: 'Remove {{configuration.remove.path}}/*'}
+        Empty trash 
+        %span.hide-for-small-only at {{configuration.remove.path}} 
+        ({{trashSize}})
+.row
+  .large-12.columns
+    %h2
+      Configuration
+      %small {{configuration.config_path + '/config.yml'}}
+
+    %textarea.disabled{rows: 20, readonly: true} {{configuration | json}}
+

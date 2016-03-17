@@ -1,1 +1,91 @@
-<h1>Admin</h1>
+<div class="row">
+  <div class="large-12 columns">
+    <h1>Application Settings</h1>
+    <a [routerLink]="['AdminUserCreate']" class="button float-right success">
+      <i class="icon-user-plus">
+      </i>
+      New user
+    </a>
+  </div>
+</div>
+<div class="row">
+  <div class="large-12 columns">
+    <h2>Users</h2>
+    <table id="users-table">
+      <tbody *ngFor='#user of users'>
+        <tr>
+          <th class="show-for-small-only">{{user.username}}</th>
+          <th rowspan="4" class="hide-for-small-only">{{user.username}}</th>
+          <th class="hide-for-small-only">Home</th>
+          <th class="hide-for-small-only">Key</th>
+          <th class="hide-for-small-only">Admin</th>
+          <th class="hide-for-small-only">Readonly</th>
+          <td rowspan="4" class="hide-for-small-only text-center">
+            <div class="button-group">
+              <a [routerLink]="['AdminUserUpdate', {username: user.username}]" class="button secondary">
+                <i class="icon-pencil">
+                </i>
+                Edit
+              </a>
+              <a (click)='remove(user)' class="button alert">
+                <i class="icon-trash">
+                </i>
+                Delete
+              </a>
+            </div>
+          </td>
+          <td class="show-for-small-only text-center">
+            <div class="button-group">
+              <a [routerLink]="['AdminUserUpdate', {username: user.username}]" class="button secondary">
+                <i class="icon-pencil">
+                </i>
+              </a>
+              <a (click)='remove(user)' class="button alert">
+                <i class="icon-trash">
+                </i>
+              </a>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="hide-for-small-only">{{user.home}}</td>
+          <td class="hide-for-small-only">{{user.key}}</td>
+          <td class="hide-for-small-only">{{user.admin ? '✓' : '✗'}}</td>
+          <td class="hide-for-small-only">{{user.readonly ? '✓' : '✗'}}</td>
+        </tr>
+        <tr>
+          <th class="hide-for-small-only">Trash</th>
+          <th class="hide-for-small-only">Archive</th>
+          <th class="hide-for-small-only">Upload</th>
+          <th class="hide-for-small-only">Ignore</th>
+        </tr>
+        <tr>
+          <td class="hide-for-small-only">{{user.trash || '∅'}}</td>
+          <td class="hide-for-small-only">{{user.archive || '∅'}}</td>
+          <td class="hide-for-small-only">{{user.upload || '∅'}}</td>
+          <td class="hide-for-small-only">{{user.ignore || '∅'}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="row">
+  <div class="large-12 columns">
+    <form method='post' action='/a/trash' *ngIf='configuration.remove !== false' (submit)='emptyTrash()'>
+      <button type='submit' title='Remove {{configuration.remove.path}}/*' class="expanded button warning">
+        Empty trash 
+        <span class="hide-for-small-only">at {{configuration.remove.path}} </span>
+        ({{trashSize}})
+      </button>
+    </form>
+  </div>
+</div>
+<div class="row">
+  <div class="large-12 columns">
+    <h2>
+      Configuration
+      <small>{{configuration.config_path + '/config.yml'}}</small>
+    </h2>
+    <textarea rows="20" readonly class="disabled">{{configuration | json}}</textarea>
+  </div>
+</div>

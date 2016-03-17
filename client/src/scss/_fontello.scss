@@ -44,7 +44,7 @@
   margin-left: .2em;
  
   /* you can be more comfortable with increased icons size */
-  /* font-size: 120%; */
+  font-size: 107%;
  
   /* Font smoothing. That was taken from TWBS */
   -webkit-font-smoothing: antialiased;
@@ -54,21 +54,23 @@
   /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
 }
  
-.icon-folder:before { content: '\e800'; } /* '' */
-.icon-cog:before { content: '\e801'; } /* '' */
-.icon-file-image:before { content: '\e802'; } /* '' */
-.icon-file-archive:before { content: '\e803'; } /* '' */
-.icon-file-audio:before { content: '\e804'; } /* '' */
-.icon-file-video:before { content: '\e805'; } /* '' */
-.icon-download:before { content: '\e806'; } /* '' */
-.icon-file-application:before { content: '\e807'; } /* '' */
-.icon-file-text:before { content: '\e808'; } /* '' */
-.icon-home:before { content: '\e809'; } /* '' */
-.icon-trash:before { content: '\e80a'; } /* '' */
-.icon-bell:before { content: '\e80b'; } /* '' */
-.icon-parent:before { content: '\e80c'; } /* '' */
-.icon-logout:before { content: '\e80d'; } /* '' */
-.icon-unlock:before { content: '\e80e'; } /* '' */
-.icon-lock:before { content: '\e80f'; } /* '' */
-.icon-upload:before { content: '\e810'; } /* '' */
-.icon-user:before { content: '\e811'; } /* '' */
+.icon-folder:before { content: '\e800'; } /* 'î €' */
+.icon-cog:before { content: '\e801'; } /* 'î ' */
+.icon-file-image:before { content: '\e802'; } /* 'î ‚' */
+.icon-file-archive:before { content: '\e803'; } /* 'î ƒ' */
+.icon-file-audio:before { content: '\e804'; } /* 'î „' */
+.icon-file-video:before { content: '\e805'; } /* 'î …' */
+.icon-download:before { content: '\e806'; } /* 'î †' */
+.icon-file-application:before { content: '\e807'; } /* 'î ‡' */
+.icon-file-text:before { content: '\e808'; } /* 'î ˆ' */
+.icon-home:before { content: '\e809'; } /* 'î ‰' */
+.icon-trash:before { content: '\e80a'; } /* 'î Š' */
+.icon-bell:before { content: '\e80b'; } /* 'î ‹' */
+.icon-parent:before { content: '\e80c'; } /* 'î Œ' */
+.icon-logout:before { content: '\e80d'; } /* 'î ' */
+.icon-unlock:before { content: '\e80e'; } /* 'î Ž' */
+.icon-lock:before { content: '\e80f'; } /* 'î ' */
+.icon-upload:before { content: '\e810'; } /* 'î ' */
+.icon-user:before { content: '\e811'; } /* 'î ‘' */
+.icon-pencil:before { content: '\e812'; } /* 'î ’' */
+.icon-user-plus:before { content: '\e813'; } /* 'î “' */

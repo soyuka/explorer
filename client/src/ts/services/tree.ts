@@ -1,17 +1,17 @@
 import {AuthHttp} from 'angular2-jwt/angular2-jwt'
 import {Injectable} from 'angular2/core'
 import {Headers, URLSearchParams, RequestOptions} from 'angular2/http' 
-import {Tree} from 'models/tree'
 import * as Rx from 'rxjs/Rx'
+
+import {Tree} from '../models/tree'
 
 @Injectable()
 export class TreeService {
-  private headers: Headers
+  private headers: Headers = new Headers()
   public tree: Tree
   private search = ''
 
   constructor(private _http: AuthHttp) {
-    this.headers = new Headers()
     this.headers.append('Content-Type', 'application/json')
   }
 
@@ -23,7 +23,7 @@ export class TreeService {
     return search
   }
     
-  getItems(options) {
+  getItems(options: any) {
     let url = options.search ? 'search' : 'tree'
     options = this.optionsToURLSearchParams(options)
     return this._http.get(`/api/${url}?${options.toString()}`)
@@ -32,17 +32,17 @@ export class TreeService {
     })
   }
 
-  list(options: Observable<Object>, debounceTime = 400) {
+  list(options: Rx.Observable<Object>, debounceTime = 400) {
     return options
       .distinctUntilChanged()
-      .debounce(function(x) {
+      .debounce(function(options: any) {
         let debounce = false
 
         //new search
-        if(x.search && x.search != this.search) {
-          this.search = x.search
-          if(x.page != 1)
-            x.page = 1
+        if(options.search && options.search != this.search) {
+          this.search = options.search
+          if(options.page != 1)
+            options.page = 1
           debounce = true
         }
 
@@ -51,7 +51,7 @@ export class TreeService {
       .switchMap(options => this.getItems(options)) 
   }
 
-  actionHook(data) {
+  actionHook(data: string) {
     return this._http.post('/api/tree', JSON.stringify(data), {headers: this.headers}) 
   }
 }

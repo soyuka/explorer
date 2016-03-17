@@ -21,7 +21,7 @@ export class TokenService {
   }
 
   set token(token) {
-    return localStorage.setItem('id_token', token) 
+    localStorage.setItem('id_token', token) 
   }
 
   remove() {

@@ -1,20 +1,18 @@
-import {Component, Input, Output} from 'angular2/core'
-import {RouterLink} from 'angular2/router'
-import {NotificationsService} from 'services/notifications'
-import {UserService} from 'services/user'
-import {TokenService} from 'services/token'
+import {Component, OnInit, Input} from 'angular2/core'
+import {Router, RouterLink} from 'angular2/router'
 
-import {AppComponent} from 'components/app'
+import {NotificationsService} from '../services/notifications'
+import {UserService} from '../services/user'
 
 @Component({
   templateUrl: 'templates/menu.html',
   selector: 'explorer-menu',
   directives: [RouterLink],
-  providers: [NotificationsService, UserService, TokenService]
+  providers: [UserService]
 })
 
 export class MenuComponent {
-  constructor(public notifications: NotificationsService, private _user: UserService, public token: TokenService) {
+  constructor(private _notifications: NotificationsService, private _user: UserService, private _router: Router) {
   }
 
   @Input() open;
@@ -23,9 +21,19 @@ export class MenuComponent {
     return this._user.user
   }
 
+  get num() {
+    return this._notifications.num
+  }
+
   //logout click
   logout() {
     this._user.logout() 
-    this.router.navigate(['Login'])
+    .subscribe(() => {
+      this._router.navigate(['Login'])
+    })
+  }
+
+  ngOnInit() {
+    this._notifications.get() 
   }
 }

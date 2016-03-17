@@ -13,20 +13,11 @@ import {APP_BASE_HREF, ROUTER_PROVIDERS, LocationStrategy, PathLocationStrategy}
 import {HTTP_PROVIDERS, BaseResponseOptions, ResponseOptions, RequestOptions, RequestMethod} from 'angular2/http'
 import {AuthHttp, AuthConfig} from 'angular2-jwt/angular2-jwt'
 
-class ErrorResponseOptions extends BaseResponseOptions {
-}
-
-// class JsonRequestOptions extends RequestOptions {
-// }
-
 bootstrap(AppComponent, [
   HTTP_PROVIDERS,
-  // provide(RequestOptions, {useClass: JsonRequestOptions}),
   provide(AuthConfig, { useFactory: () => new AuthConfig() }),
   AuthHttp,
   ROUTER_PROVIDERS,
-  // PathLocationStrategy,
   provide(APP_BASE_HREF, {useValue: window.location.origin})
-  // provide(LocationStrategy, {useClass: HashLocationStrategy})
 ])
 .catch(err => console.error(err))

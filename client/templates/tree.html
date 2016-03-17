@@ -1,114 +1,118 @@
-<div class='expanded row'>
-  <form *ngIf='tree' [ngFormModel]='treeForm' class='large-12 columns'>
-    <div class='row expanded align-right'>
-      <div class='columns large-5 small-12'>
-        <div class='input-group'>
-          <input class='input-group-field' ngControl='search' type='search'>
-          <div class='input-group-button'>
-            <input class='button' type='submit' value='Search'>
-            <input [ngModel]='options.path' name='path' ngControl='path' type='hidden'>
+<div class="expanded row">
+  <form *ngIf='tree' [ngFormModel]='treeForm' class="large-12 columns">
+    <div class="row expanded align-right">
+      <div class="columns large-5 small-12">
+        <div class="input-group">
+          <input type='search' ngControl='search' class="input-group-field" />
+          <div class="input-group-button">
+            <input type='submit' value='Search' class="button" />
+            <input type='hidden' name='path' ngControl='path' />
           </div>
         </div>
       </div>
     </div>
-    <div class='row'>
-      <div class='columns small-12 medium-6'>
-        <div class='row'>
-          <div class='columns small-2 medium-2 large-1'>
-            <label class='middle' for='sort'>Sort</label>
+    <div class="row">
+      <div class="columns small-12 medium-6">
+        <div class="row">
+          <div class="columns small-2 medium-2 large-1">
+            <label for='sort' class="middle">Sort</label>
           </div>
-          <div class='columns small-4 medium-4 large-3'>
-            <select [ngModel]='options.sort' id='sort' name='sort' ngControl='sort'>
+          <div class="columns small-4 medium-4 large-3">
+            <select name='sort' id='sort' ngControl='sort' [ngModel]='options.sort'>
               <option *ngFor='#o of sortOptions' [value]='o'>{{o}}</option>
             </select>
           </div>
-          <div class='columns row'>
-            <div class='columns medium-expand large-3'>
-              <input (click)='setOrderValue("asc")' [checked]='options.order == "asc"' id='order_asc' name='order' ngControl='order' type='radio' value='asc'>
-              <label class='text-left middle' for='order_asc'>Asc</label>
+          <div class="columns row">
+            <div class="columns medium-expand large-3">
+              <input type='radio' id='order_asc' name='order' value='asc' (click)='setOrderValue("asc")' [checked]='options.order == "asc"' ngControl='order' />
+              <label for='order_asc' class="text-left middle">Asc</label>
             </div>
-            <div class='columns medium-expand large-3'>
-              <input (click)='setOrderValue("desc")' [checked]='options.order == "desc"' id='order_desc' name='order' ngControl='order' type='radio' value='desc'>
-              <label class='text-left middle' for='order_desc'>Desc</label>
+            <div class="columns medium-expand large-3">
+              <input type='radio' id='order_desc' name='order' value='desc' (click)='setOrderValue("desc")' [checked]='options.order == "desc"' ngControl='order' />
+              <label for='order_desc' class="text-left middle">Desc</label>
             </div>
           </div>
         </div>
       </div>
-      <div class='columns small-12 medium-6'>
-        <div class='row'>
-          <div class='columns row'>
-            <div class='columns small-2 medium-2 large-1'>
-              <label class='middle' for='limit'>Limit</label>
+      <div class="columns small-12 medium-6">
+        <div class="row">
+          <div class="columns row">
+            <div class="columns small-2 medium-2 large-1">
+              <label for='limit' class="middle">Limit</label>
             </div>
-            <div class='columns small-4 medium-4 large-3'>
-              <input [ngModel]='options.limit' id='limit' name='limit' ngControl='limit' type='number'>
+            <div class="columns small-4 medium-4 large-3">
+              <input type='number' id='limit' name='limit' ngControl='limit' [ngModel]='options.limit' value='10' />
             </div>
           </div>
         </div>
       </div>
     </div>
-    <ul class='breadcrumbs'>
+    <ul class="breadcrumbs">
       <li *ngFor='#bc of breadcrumb'>
         <a (click)='navigate({path: bc.path})'>{{bc.name}}</a>
       </li>
     </ul>
-    <div class='row'>
-      <div class='columns large-12'>
-      </div>
-    </div>
-    <form action='/api/tree' id='tree-form' method='POST'>
-      <table id='tree'>
+    <above-hooks [tree]='tree' [options]='options'>
+    </above-hooks>
+    <form method='POST' action='/api/tree' id="tree-form">
+      <table id="tree">
         <thead>
           <tr>
             <th>
-              <input onclick='checkAll(event)' type='checkbox'>
+              <input type='checkbox' onclick='checkAll(event)' />
             </th>
             <th>Name</th>
-            <th class='hide-for-small-only'>Last Modification</th>
-            <th class='hide-for-small-only'>Last Access</th>
-            <th class='hide-for-small-only'>Size</th>
-            <th></th>
+            <th class="hide-for-small-only">Last Modification</th>
+            <th class="hide-for-small-only">Last Access</th>
+            <th class="hide-for-small-only">Size</th>
+            <th>
+            </th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor='#element of tree | async | get:"tree"'>
             <td>
-              <input (change)='checkElement($event)' [attr.value]='element.path' name='path' type='checkbox'>
+              <input type='checkbox' [attr.value]='element.path' name='path' (change)='checkElement($event)' />
             </td>
             <td>
-              <a (click)='navigate({path: element.path})' *ngIf='element.directory'>
-                <i class='icon-folder'></i>
+              <a *ngIf='element.directory' (click)='navigate({path: element.path})'>
+                <i class="icon-folder">
+                </i>
                 {{element.name}}
               </a>
               <span *ngIf='!element.directory'>
-                <a href='/download?path={{element.path}}&amp;key={{user.key}}' target='_blank'>
-                  <i class='icon-file-{{element.type}}'></i>
+                <a href='/download?path={{element.path}}&key={{user.key}}' target='_blank'>
+                  <i class='icon-file-{{element.type}}'>
+                  </i>
                   {{element.name}}
                 </a>
-                <a (click)='navigate(element.dirname)' *ngIf='options.search'>
-                  <i class='icon-folder float-right' title='Jump to directory'></i>
+                <a *ngIf='options.search' (click)="navigate(element.dirname)">
+                  <i title='Jump to directory' class="icon-folder float-right">
+                  </i>
                 </a>
               </span>
             </td>
-            <td class='hide-for-small-only'>{{element.lastModified}}</td>
-            <td class='hide-for-small-only'>{{element.lastAccessed}}</td>
-            <td class='hide-for-small-only'>{{element.humanSize}}</td>
+            <td class="hide-for-small-only">{{element.lastModified}}</td>
+            <td class="hide-for-small-only">{{element.lastAccessed}}</td>
+            <td class="hide-for-small-only">{{element.humanSize}}</td>
             <td>
               <a *ngIf='options.canRemove'>
-                <i class='icon-trash'></i>
+                <i class="icon-trash">
+                </i>
               </a>
             </td>
           </tr>
         </tbody>
       </table>
-      <div class='row expanded'>
-        <div class='columns small-12 large-7'>
-          <action-hooks [paths]='paths' [tree]='tree'></action-hooks>
+      <div class="row expanded">
+        <div class="columns small-12 large-7">
+          <action-hooks [tree]='tree' [paths]='paths'>
+          </action-hooks>
         </div>
-        <div class='columns small-12 large-5 text-right'>
+        <div class="columns small-12 large-5 text-right">
           <p>
             {{options.num}}
-            <span *ngIf='options.num &gt; 1'>
+            <span *ngIf='options.num > 1'>
               results
             </span>
             <span *ngIf='options.num == 1'>
@@ -119,12 +123,12 @@
         </div>
       </div>
     </form>
-    <input ngControl='page' type='hidden'>
-    <ul class='pagination text-center'>
-      <li *ngIf='options.page == 1' class='pagination-previous disabled'>
+    <input type='hidden' ngControl='page' />
+    <ul class="pagination text-center">
+      <li *ngIf='options.page == 1' class="pagination-previous disabled">
         Previous
       </li>
-      <li class='pagination-previous'>
+      <li *ngIf='options.page > 1' class="pagination-previous">
         <a (click)='navigate({page: options.page - 1})'>
           Previous
         </a>
@@ -133,14 +137,14 @@
         <span *ngIf='options.page == i'>
           {{i}}
         </span>
-        <a (click)='navigate({page: i})' *ngIf='options.page != i'>
+        <a *ngIf='options.page != i' (click)='navigate({page: i})'>
           {{i}}
         </a>
       </li>
-      <li *ngIf='options.page &lt; options.pages' class='pagination-next'>
+      <li *ngIf='options.page < options.pages' class="pagination-next">
         <a (click)='navigate({page: options.page + 1})'>Next</a>
       </li>
-      <li *ngIf='options.page == options.pages' class='pagination-next disabled'>
+      <li *ngIf='options.page == options.pages' class="pagination-next disabled">
         Next
       </li>
     </ul>

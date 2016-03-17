@@ -1,38 +1,42 @@
-<ul [ngClass]='{vertical: open.left}' class='menu'>
+<ul [ngClass]='{vertical: open.left}' class="menu">
   <li *ngIf='open.left'>
     <a [routerLink]="['Tree', {path: ''}]">
-      <i class='icon-home'></i>
+      <i class="icon-home">
+      </i>
       Explorer
     </a>
   </li>
   <li>
     <a [routerLink]="['Settings']">
-      <i class='icon-user'></i>
+      <i class="icon-user">
+      </i>
       {{user.username}}
     </a>
   </li>
-  <li (click)='open.right = !open.right' class='has-badge'>
+  <li (click)='open.right = !open.right' class="has-badge">
     <a *ngIf='!open.left'>
-      <i aria_describedby='num-notifications' class='icon-bell'>
-        <div class='badge info' id='num-notifications'>{{notifications.num}}</div>
+      <i aria_describedby='num-notifications' class="icon-bell">
+        <div *ngIf='num > 0' class="badge info" id="num-notifications">{{num}}</div>
       </i>
     </a>
     <a *ngIf='open.left'>
-      <span class='badge info'>{{notifications.num}}</span>
+      <span class="badge info">{{num}}</span>
       notifications
     </a>
   </li>
   <li *ngIf='user.admin'>
     <a [routerLink]="['Admin']">
-      <i class='icon-cog'></i>
+      <i class="icon-cog">
+      </i>
       <span *ngIf='open.left'>
         Administration
       </span>
     </a>
   </li>
   <li>
-    <a (click)='logout()'>
-      <i class='icon-logout'></i>
+    <a (click)="logout()">
+      <i class="icon-logout">
+      </i>
       <span *ngIf='open.left'>
         Logout
       </span>

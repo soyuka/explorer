@@ -7,6 +7,12 @@
   "ascent": 850,
   "glyphs": [
     {
+      "uid": "1bafeeb1808a5fe24484c7890096901a",
+      "css": "user-plus",
+      "code": 59411,
+      "src": "fontawesome"
+    },
+    {
       "uid": "f9c8ea86275ca16128235c6452b67b8e",
       "css": "user",
       "code": 59409,
@@ -34,6 +40,12 @@
       "uid": "9a76bc135eac17d2c8b8ad4a5774fc87",
       "css": "download",
       "code": 59398,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "d35a1d35efeb784d1dc9ac18b9b6c2b6",
+      "css": "pencil",
+      "code": 59410,
       "src": "fontawesome"
     },
     {

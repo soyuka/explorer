@@ -11,9 +11,9 @@
     -# open notif
     %a{'*ngIf': '!open.left'}
       %i.icon-bell{aria_describedby: 'num-notifications'}
-        #num-notifications.badge.info {{notifications.num}}
+        #num-notifications.badge.info{'*ngIf': 'num > 0'} {{num}}
     %a{'*ngIf': 'open.left'}
-      %span.badge.info {{notifications.num}}
+      %span.badge.info {{num}}
       notifications
   %li{'*ngIf': 'user.admin'}
     %a{"[routerLink]": "['Admin']"}

@@ -1,36 +1,45 @@
 import {AuthHttp} from 'angular2-jwt/angular2-jwt'
 import {Injectable} from 'angular2/core'
-import {TokenService} from 'services/token'
+
+import {TokenService} from './token'
+import {MessagesService} from './messages'
+import * as Faye from 'faye'
 
 @Injectable()
 export class NotificationsService {
   private timeout: number = 1650
-  private _notifications = []
-  public _num = 0
+  public _notifications: Array<Object> = []
+  public _num: number = 0
+  private client: any
 
-  constructor(private token: TokenService, private http: AuthHttp) {
-    this.client = new Faye.Client(window.location.origin + '/socket', {timeout: this.timeout}) 
+  constructor(private token: TokenService, private http: AuthHttp, private messages: MessagesService) {
+  }
 
-    //@TODO
-    //http.get('/notif')
-
-    this.client.addExtension({
-      outgoing: function(message, callback) {
-        message.ext = message.ext || {}
-        message.ext.key = token.user.key
-        return callback(message)
-      } 
-    })
-    
-    let notify = '/notify/'+this.token.user.username
-    this.client.subscribe(notify, this.onNotifications)
-  
+  public get() {
     this.http.get('/api/notifications') 
     .map(res => res.json())
     .subscribe(response => {
       this._notifications = response.notifications
       this._num = response.num
+    }, error => this.messages.error(error), () => this.connect())
+  }
+
+  private connect() {
+    this.client = new Faye.Client(window.location.origin + '/socket', {timeout: this.timeout}) 
+
+    let notify = '/notify/'+this.token.user.username
+    let key = this.token.user.key
+
+    this.client.subscribe(notify, data => this.onNotifications(data))
+
+    this.client.addExtension({
+      outgoing: function(message, callback) {
+        message.ext = message.ext || {}
+        message.ext.key = key
+        return callback(message)
+      } 
     })
+    
   }
 
   get notifications() {
@@ -43,10 +52,19 @@ export class NotificationsService {
 
   private onNotifications(data) {
     this._notifications.push(data)
+    this._num++
+      console.log(data);
+    this.messages.info(data)
   }
 
   public removeAll() {
-    console.log(arguments);  
+    this.http.delete('/api/notifications') 
+    .map(res => res.json())
+    .subscribe(response => {
+      console.log(response);
+      this._num = 0
+      this._notifications = []
+    }, error => this.messages.error(error))
   }
 
   public remove(item) {

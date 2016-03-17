@@ -1,4 +1,4 @@
-//@TODO delete
+//@TODO close (remove from server) 1 notification
 import {Directive, ElementRef, Renderer} from 'angular2/core'
 
 @Directive({

@@ -1,13 +1,15 @@
-<ul *ngIf='messages.hasMessages()' id='messages'>
-  <li *ngFor='#error of messages.errors' class='callout alert'>
-    {{error.error}}
-    <a (click)='messages.removeError(error)' aria_hidden>
-      &times;
-    </a>
+<ul *ngIf="messages.hasMessages()" id="messages">
+  <li *ngFor="#error of messages.errors" (click)='messages.removeError(error)' class="callout alert">
+    <span *ngIf="!(error.error | isArray)">{{error.error}}</span>
+    <ol *ngIf="error.error | isArray">
+      <li *ngFor="#message of error.error">
+        {{message}}
+      </li>
+    </ol>
   </li>
-  <li *ngFor='#info of messages.infos' class='callout success'>
+  <li *ngFor="#info of messages.infos" class="callout success">
     {{info.info}}
-    <a (click)='messages.removeInfo(info)' aria_hidden>
+    <a aria_hidden (click)='messages.removeInfo(info)'>
       &times;
     </a>
   </li>

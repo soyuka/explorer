@@ -6,7 +6,9 @@ var infos = []
 
 @Injectable()
 export class MessagesService {
-  private timeout = 1650
+  private timeout: number = 2275
+  public infos: Array<Object>
+  public errors: Array<Object>
 
   constructor() {
     this.infos = infos
@@ -28,11 +30,19 @@ export class MessagesService {
   }
 
   public error(err) {
+    console.error(err)
     return this.handle(err, 'errors')
   }
 
   public info(info) {
     return this.handle(info, 'infos')
+  }
+
+  public notification(notification) {
+    if(notification.error) 
+      return this.error({error: notification.message})
+
+    return this.info({info: notification.message})
   }
 
   private remove(item, scope) {

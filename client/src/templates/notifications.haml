@@ -1,11 +1,12 @@
 %ul.vertical.menu
   %li
-    %form.right{action: '/notifications', method: 'POST'}
+    %form.right{action: '/notifications', method: 'POST', '(ngSubmit)': 'removeAll()'}
       %input.expanded.button.warning{type: 'submit', value: 'Remove notifications'}
       %input{type: 'hidden', name: '_method', value: 'DELETE'}
 
   %li{'*ngFor': '#notification of notifications'}
-    %div.callout{'[ngClass]': '{alert: notification.error, primary: !notification.error, success: notification.success}'}
+    %div.callout{'[ngClass]': '{alert: notification.error, 
+      primary: !notification.error, success: notification.success}'}
       %span 
         {{notification.message}}
       %div.text-right

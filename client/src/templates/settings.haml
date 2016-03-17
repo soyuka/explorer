@@ -1,1 +1,33 @@
-%h1 Settings
+.row{'*ngIf': 'user'}
+  .large-12.columns
+    %h2 Settings
+    %form{method: 'POST', action: '/settings'}
+      .row
+        .columns.medium-6.small-12
+          %label
+            Username 
+            %input.disabled{type: 'text', disabled: true, value: '{{user.username}}'}
+        .columns.medium-6.small-12
+          %label 
+            Password
+            %input{type: 'password', placeholder: 'Leave empty if it does not change', '[(ngModel)]': 'user.password'}
+      .row
+        .columns.medium-6.small-12
+          %input{type: 'checkbox', id: 'key', name: 'key', '[(ngModel)]': 'key'}
+          %label{for: 'key'}
+            Generate new key 
+            %span.hide-for-small-only (previous links will be unreachable)
+        .columns.medium-6.small-12
+          %input{type: 'hidden', name: '_method', value: 'put'}
+          %input.button.expanded{type: 'submit', value: 'Update', '(click)': 'save()'}
+
+      .row
+        .columns.large-12
+          %label.key
+            Your key:  
+            %code {{user.key}}
+        -# .columns.large-12
+          -# %form{method: 'post', action: '/trash'}.right
+          -#   %input.button.warning{type: 'submit', value: 'Empty trash (' + trashSize + ')', onclick: 'return confirmDeletion(event)'}
+
+    -# - if(canRemove && remove.method == 'mv' && user.trash)

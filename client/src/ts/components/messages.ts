@@ -1,10 +1,12 @@
 import {Component} from 'angular2/core'
-import {MessagesService} from 'services/messages'
+import {isArray} from '../pipes/isArray'
+
+import {MessagesService} from '../services/messages'
 
 @Component({
   templateUrl: 'templates/messages.html',
   selector: 'explorer-messages',
-  providers: [MessagesService]
+  pipes: [isArray]
 })
 
 export class MessagesComponent {

@@ -1,9 +1,30 @@
 table {
   min-width: 100%;
+
+  .button-group {
+    display: inline-block;
+    margin: 0;
+  }
+}
+
+#users-table {
+  tr td { text-align: center; }
+
+  th {
+    border: 1px solid $medium-gray; 
+  }
+
+  td, tr {
+    border: 1px solid $medium-gray; 
+  }
+
 }
 
 .top-bar {
   font-size: rem-calc(15);
+
+  .menu-text { padding: 0; }
+  a { color: $white; }
 }
 
 nav {
@@ -48,7 +69,7 @@ img.logo {
 #messages { 
   position: absolute;
   right: 10px;
-  bottom: 0px;
+  top: 70px;
   list-style-type: none;
 }
 
@@ -60,4 +81,12 @@ img.logo {
   .row {
       max-width: 93.5rem;
   }
+}
+
+.off-canvas-wrapper-inner {
+  height: 100vh;
+}
+
+a.title-bar-title {
+  color: $white;
 }

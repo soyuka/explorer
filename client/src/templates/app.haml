@@ -7,14 +7,23 @@
     %nav.title-bar.hide-for-medium
       .title-bar-left
         -# open canvas
-        %button.menu-icon{"(click)": 'open.left = !open.left'}
-        %span.title-bar-title Explorer
+        %button
+          %i.menu-icon{"(click)": 'open.left = !open.left'} menu
+      .title-bar-right
+        %a.title-bar-title{"[routerLink]": "['Tree', {path: '/'}]"}
+          Explorer
+          %i.icon-home
     %nav.top-bar.show-for-medium
       %section.top-bar-left
         %ul.menu
           %li.menu-text
             %a{"[routerLink]": "['Tree', {path: '/'}]"}
               Explorer 
+              %i.icon-home
       %section.top-bar-right{"*ngIf": '!token.expired()'}
         %explorer-menu{'[open]': 'open'}
     %router-outlet
+    %footer.text-center
+      %small
+        by soyuka with ♣ - 
+        %a{href: 'https://github.com/soyuka/explorer'} Github

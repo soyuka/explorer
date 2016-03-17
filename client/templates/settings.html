@@ -1,1 +1,42 @@
-<h1>Settings</h1>
+<div *ngIf='user' class="row">
+  <div class="large-12 columns">
+    <h2>Settings</h2>
+    <form method='POST' action='/settings'>
+      <div class="row">
+        <div class="columns medium-6 small-12">
+          <label>
+            Username 
+            <input type='text' disabled value='{{user.username}}' class="disabled" />
+          </label>
+        </div>
+        <div class="columns medium-6 small-12">
+          <label>
+            Password
+            <input type='password' placeholder='Leave empty if it does not change' [(ngModel)]='user.password' />
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="columns medium-6 small-12">
+          <input type='checkbox' id='key' name='key' [(ngModel)]='key' />
+          <label for='key'>
+            Generate new key 
+            <span class="hide-for-small-only">(previous links will be unreachable)</span>
+          </label>
+        </div>
+        <div class="columns medium-6 small-12">
+          <input type='hidden' name='_method' value='put' />
+          <input type='submit' value='Update' (click)='save()' class="button expanded" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="columns large-12">
+          <label class="key">
+            Your key: 
+            <code>{{user.key}}</code>
+          </label>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
