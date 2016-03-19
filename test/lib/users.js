@@ -1,6 +1,7 @@
 'use strict';
 var Users = require('../../lib/data/users.js')
 var User  = require('../../lib/data/user.js')
+var ReasonsError  = require('../../lib/errors/ReasonsError.js')
 
 describe('users', function() {
 
@@ -15,13 +16,23 @@ describe('users', function() {
   })
   
   it('should not be valid', function() {
-
     try{
       new User({username: 'test'})
     } catch(e) {
-      expect(e instanceof TypeError).to.be.true
+      console.log(e)
+      expect(e instanceof ReasonsError).to.be.true
+      expect(e.message).to.be.an.array
     }
+  })
 
+  it('cannot be empty', function() {
+    try{
+      new User({username: ''})
+    } catch(e) {
+      expect(e instanceof ReasonsError).to.be.true
+      expect(e.message).to.be.an.array
+      expect(e.message[0]).to.equal('username is required')
+    }
   })
 
   it('should be valid', function(cb) {

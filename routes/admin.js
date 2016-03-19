@@ -1,46 +1,16 @@
-'use strict';
-var Promise = require('bluebird')
-var p = require('path')
-var yaml = require('yamljs')
-var utils = require('../lib/utils.js')
-var User = require('../lib/data/user.js')
-var tree = require('../lib/tree.js').tree
-var HTTPError = require('../lib/HTTPError.js')
-var middlewares = require('../middlewares')
-var emptyTrash = require('./emptyTrash.js')
+'use strict'
+const Promise = require('bluebird')
+const p = require('path')
+const yaml = require('yamljs')
+const utils = require('../lib/utils.js')
+const User = require('../lib/data/user.js')
+const tree = require('../lib/tree.js').tree
+const HTTPError = require('../lib/errors/HTTPError.js')
+const middlewares = require('../middlewares')
+const emptyTrash = require('./emptyTrash.js')
 
-var fs = Promise.promisifyAll(require('fs'))
-var debug = require('debug')('explorer:routes:admin')
-
-/** 
- * validUser middleware
- */
-function validUser(req, res, next) {
-  try {
-    new User(req.body, false) 
-  } catch(e) {
-    return next(new HTTPError('User is not valid', 400))
-  }
-
-  return next()
-}
-
-/**
- * checks if user is admin
- * @param object config
- * @return function
- */
-function isAdmin(config) {
-  return function(req, res, next) {
-    if(!req.user.admin)
-      return next(new HTTPError('Forbidden', 403))
-
-    res.locals.config = config
-    res.locals.ymlConfig = yaml.stringify(config, 2, 4) 
-
-    return next()
-  }
-}
+const fs = Promise.promisifyAll(require('fs'))
+const debug = require('debug')('explorer:routes:admin')
 
 /**
  * @apiDefine UserSchema
@@ -55,36 +25,41 @@ function isAdmin(config) {
  * @apiParam (User) {string} archive
  * @apiParam (User) {string} upload
  */
-var Admin = function(app) {
-  var admin = require('express').Router()
-  var config = app.get('config')
-  var pt = middlewares.prepareTree(app)
+var Admin = function(app, router) {
+  const admin = require('express').Router()
+  const config = app.get('config')
+  const pt = middlewares.prepareTree(app)
+  const users = app.get('users')
 
-  admin.use(isAdmin(config))
-
-  admin.get('/', 
-    middlewares.trashSize(config), 
-    middlewares.prepareTree(app), 
-    function(req, res) {
-      return res.renderBody('admin', {
-        users: req.users.data
-      })
-    }
-  )
-
-  admin.get('/create', function(req, res) {
-    return res.renderBody('admin/user/create.haml')
-  })
-
-  admin.get('/update/:username', function(req, res, next) {
-    var u = req.users.get(req.params.username)
-
-    if(!u) {
-      return next(new HTTPError('User not found', 404))
+  /** 
+   * validUser middleware
+   */
+  function validUser(req, res, next) {
+    try {
+      new User(req.body, false) 
+    } catch(e) {
+      return next(e)
     }
 
-    return res.renderBody('admin/user/update.haml', {user: u})
-  })
+    return next()
+  }
+
+  /**
+   * checks if user is admin
+   * @param object config
+   * @return function
+   */
+  function isAdmin(req, res, next) {
+    if(!req.user.admin)
+      return next(new HTTPError('Forbidden', 403))
+
+    res.locals.config = config
+    res.locals.ymlConfig = yaml.stringify(config, 2, 4) 
+
+    return next()
+  }
+
+  admin.use(isAdmin)
 
   /**
    * @api {post} /a/trash Empty global trash
@@ -99,15 +74,14 @@ var Admin = function(app) {
    * @apiGroup Admin
    * @apiParam {String} username
    */
-  admin.get('/delete/:username', function(req, res, next) {
+  admin.delete('/delete/:username', function(req, res, next) {
     if(req.user.username == req.params.username) {
       return next(new HTTPError("You can't delete yourself", 400))
     }
 
-    req.users.delete(req.params.username)
+    users.delete(req.params.username)
     .then(function() {
-      req.flash('info', 'User '+req.params.username+' deleted')
-      return res.handle('/a') 
+      return res.handle({'info': 'User '+req.params.username+' deleted'}) 
     })
     .catch(utils.handleSystemError(next))
   })
@@ -120,20 +94,22 @@ var Admin = function(app) {
    */
   admin.post('/users', validUser, function(req, res, next) {
 
-    if(req.users.get(req.body.username)) {
+    if(users.get(req.body.username)) {
       return next(new HTTPError('User already exists', 400))
     }
+
+    let u = null
 
     return new User(req.body) 
     .then(function(user) {
       return user.generateKey()
     })
     .then(function(user) {
-      return req.users.put(user)
-      .then(function() {
-        req.flash('info', 'User '+user.username+' created')
-        return res.handle('/a', {user: user}, 201)
-      })
+      u = user
+      return users.put(user)
+    })
+    .then(function() {
+      return res.handle({info: 'User '+u.username+' created', user: u}, 201)
     })
     .catch(utils.handleSystemError(next))
   })
@@ -145,7 +121,7 @@ var Admin = function(app) {
    * @apiUse UserSchema
    */
   admin.put('/users', function(req, res, next) {
-    var u = req.users.get(req.body.username)
+    const u = users.get(req.body.username)
 
     if(!(u instanceof User)) {
       return next(new HTTPError('User not found', 404))
@@ -153,16 +129,47 @@ var Admin = function(app) {
     
     u.update(req.body)
     .then(function(user) {
-      return req.users.put(user)
-      .then(function() {
-        req.flash('info', 'User '+user.username+' updated')
-        return res.handle('/a')
-      })
+      return users.put(user)
+    })
+    .then(function() {
+      return res.handle({'info': 'User '+u.username+' updated'})
     })
     .catch(utils.handleSystemError(next))
   })
 
-  app.use('/a', admin)
+  /**
+   * @api {get} /a/users Get users
+   * @apiName listUsers
+   * @apiGroup Admin
+   * @apiUse UserSchema
+   */
+  admin.get('/users', function(req, res, next) {
+    return res.handle(users.data)
+  })
+
+  /**
+   * @api {get} /a/users Update user
+   * @apiName updateUser
+   * @apiGroup Admin
+   * @apiUse UserSchema
+   */
+  admin.get('/user/:username', function(req, res, next) {
+    const u = users.get(req.params.username)
+
+    return res.handle(u.getCookie())
+  })
+
+  /**
+   * @api {get} /a/trashSize Get trash size
+   * @apiName trashSize
+   * @apiGroup Admin
+   * @apiUse UserSchema
+   */
+  admin.get('/trashSize', middlewares.trashSize(config, true), function(req, res, next) {
+    return res.handle({trashSize: res.locals.trashSize})
+  })
+
+  router.use('/a', admin)
 }
 
 module.exports = Admin

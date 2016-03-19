@@ -28,9 +28,18 @@ var Move = function(router, job, utils, config) {
     if(!data || !data.length)
       return next(new HTTPError('Nothing to copy', 400))
 
-    debug('Copy paths %o', data)
+    memory.get(req.user.username)
+    .then(function(clipboard) {
+      if(clipboard)
+        data = data.filter(e => !clipboard.find(f => e.path == f.path && e.method == f.method)) 
+      console.log(data);
+      debug('Copy paths %o', data)
 
-    return memory.add(req.user.username, data)
+      if(data.length === 0)
+        return Promise.resolve()
+
+      return memory.add(req.user.username, data)
+    })
     .then(function() {
       return res.handle({info: 'Copy'}, 201)
     })
@@ -71,7 +80,7 @@ var Move = function(router, job, utils, config) {
   router.get('/clean', function(req, res, next) {
     return memory.remove(req.user.username)
     .then(function() {
-      return res.handle('back', {info: 'Clipboard emptied'}) 
+      return res.handle({info: 'Clipboard empty'}) 
     })
   })
 

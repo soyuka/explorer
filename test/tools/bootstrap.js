@@ -1,50 +1,66 @@
-'use strict';
-var p = require('path')
-var fs = require('fs')
-var util = require('util') 
-var expect = require('chai').expect
-var CallableTask = require('relieve').tasks.CallableTask
-var Promise = require('bluebird')
-var app = require('../../server.js')
-var Notify = require('../../lib/job/notify.js')
-var Worker = require('../../lib/job/worker.js')
+'use strict'
+const p = require('path')
+const fs = require('fs')
+const util = require('util') 
+const expect = require('chai').expect
+const CallableTask = require('relieve').tasks.CallableTask
+const Promise = require('bluebird')
+const app = require('../../server.js')
+const Notify = require('../../lib/job/notify.js')
+const Worker = require('../../lib/job/worker.js')
 
-var cwd = p.join(__dirname, '..')
+const cwd = p.join(__dirname, '..')
 
-var config_path = p.join(cwd, './fixtures/config.yml')
+const config_path = p.join(cwd, './fixtures/config.yml')
 
-var config = require('../../lib/config.js')(config_path)
+const config = require('../../lib/config.js')(config_path)
 config.database = p.join(cwd, './fixtures/users')
 
 if(!fs.existsSync(config.database)) {
   fs.writeFileSync(config.database, fs.readFileSync(p.join(cwd, '/../doc/examples/data/users')))
 }
 
-var cache = require('../../lib/cache')(config)
+const cache = require('../../lib/cache')(config)
 
-var options = {
+const options = {
   headers: []
 }
 
 //default test headers
 options.headers['X-Requested-With'] = 'XMLHttpRequest'
 options.headers['Accept'] = 'application/json'
+options.prefix = function(url) {
+  if(url === '/login')
+    return ''
+
+  return '/api'
+}
 
 module.exports = {
   config: config,
   options: options,
-  login: function(cb) {
+  login: function(user, cb) {
+    var self = this
+
+    if(typeof user == 'function') {
+      cb = user
+      user = {username: 'admin', password: 'admin'} 
+    }
+    
     this.request.post('/login')
-    .send({username: 'admin', password: 'admin'})
+    .send(user)
     .expect(function(res) {
-      options.headers['Authorization'] = res.body.token
-      expect(res.body.username).to.equal('admin')
-      expect(res.body.key).to.equal('key')
+      options.headers['Authorization'] = 'Bearer ' + res.body.token
+      expect(res.body.username).to.equal(user.username)
       expect(res.body.home).not.to.be.undefined
+      delete res.body.token
+      delete res.body.iat
+      self.user = res.body
     })
     .end(cb)
   },
   logout: function(cb) {
+    delete this.user
     this.request.get('/logout')
     .expect(200)
     .end(e => {
@@ -61,6 +77,10 @@ module.exports = {
       cb = opts
     } else {
       conf = util._extend(conf, opts) 
+
+      if(opts.disable_plugins) {
+        ;['move', 'archive', 'upload'].forEach(function(e, i) { delete conf.plugins[e] })
+      }
     }
 
     if(bootstrap.app) {
@@ -69,7 +89,7 @@ module.exports = {
 
     bootstrap.worker = bootstrap.worker === undefined ? new Worker() : bootstrap.worker
 
-    return app(config, bootstrap.worker).then(function(app) {
+    return app(conf, bootstrap.worker).then(function(app) {
       bootstrap.app = app
 
       return app.get('worker').run()

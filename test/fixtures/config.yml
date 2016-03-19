@@ -6,6 +6,9 @@ remove:
   path: './tree/trash'
 upload:
   path: './upload'
+plugins:
+  plugin-test: 
+    path: './plugin-test'
 database: './users'
 port: 4859
 https:

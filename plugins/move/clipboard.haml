@@ -1,8 +1,7 @@
-%form.row{method: 'POST', action: '/p/move?path=' + path}
+%form.row{method: 'POST', action: '/p/move?path={{options.path}}', *ngIf: 'move.clipboard', '(ngSubmit)': 'http("POST", "/p/move?path=" + options.path, model)'}
   .small-12.large-8.columns
-    %select{multiple: true, name: 'path'}
-      - each p in paths
-        %option{value: p.method + '-' + p.path}= p.path +' ('+p.method+')'
+    %select{multiple: true, name: 'path', '([ngModel])': 'model.path'}
+      %option{*ngFor: '#clip of move.clipboard', '[value]': 'clip.path + "-"+clip.method'} {{ clip.path + ' ('+clip.method+')'}}
   .small-12.large-4.columns
     %button.postfix{type: 'submit', style: 'margin-bottom: 10px'} Paste here
-    %a.button.secondary.postfix{href: '/p/move/clean'} Clean clipboard
+    %a.button.secondary.postfix{'(click)': 'http("GET", "/api/p/move/clean")'} Clean clipboard

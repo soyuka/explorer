@@ -7,7 +7,7 @@ var bodyParser = require('body-parser')
 var methodOverride = require('method-override')
 var morgan = require('morgan')
 var Promise = require('bluebird')
-var HTTPError = require('./lib/HTTPError.js')
+var HTTPError = require('./lib/errors/HTTPError.js')
 var plugins = require('./lib/plugins.js')
 
 var Users = require('./lib/data/users.js')
@@ -73,6 +73,10 @@ module.exports = function(config, worker) {
     return hamljs.renderFile(str, 'utf-8', options, fn)
   })
 
+  let isKeyAllowed = function(path) {
+    return config.allowKeyAccess.some(e => e == path)
+  }
+
   app.use(function(req, res, next) {
     if(req.query.key && isKeyAllowed(req.path)) {
       let user = users.getByKey(req.query.key)
@@ -104,27 +108,43 @@ module.exports = function(config, worker) {
   const router = express.Router()
   const jwt = middlewares.jwt(app)
 
-  //register plugins hooks
-  // app.use(middlewares.registerHooks(app))
   //register plugins routes
-  plugins.registerPluginsRoutes(app)
-
-  routes.Tree(app, router)
-  // routes.Settings(app)
-  // routes.Admin(app)
-  routes.Notifications(app, router)
-  routes.Hooks(app, router)
-  app.use('/api', jwt, router)
+  plugins.registerPluginsRoutes(app, router)
 
   //Load routes
-  routes.User(app)
+  routes.Tree(app, router)
+  routes.Admin(app, router)
+  routes.Notifications(app, router)
+  routes.Hooks(app, router)
+  routes.User(app, router)
+
+  app.use('/api', jwt, router)
+
+  //404
+  router.use(function(req, res, next) {
+    return res.status(404).send('put some cats here')
+  })
 
   app.use(middlewares.error(config))
 
   app.use('/', express.static('client'))
 
   app.get('/*', function(req, res, next) {
-    return res.render('index.haml')
+    let c = {
+      remove: config.remove, 
+      tree: config.tree,
+      plugins: config.plugins,
+      //@TODO deprecate these => plugins configurations
+      archive: config.archive,
+      upload: config.upload,
+      pagination: config.pagination,
+      config_path: config.config_path,
+      app_root: config.app_root
+    }
+
+    return res.render('index.haml', {
+      configuration: `window.explorer_config = JSON.parse('${JSON.stringify(c)}')`
+    })
   })
 
   app.use(function(req, res, next) {

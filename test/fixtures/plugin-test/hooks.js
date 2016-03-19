@@ -1,3 +1,5 @@
+const Promise = require('bluebird')
+
 /**
  * registerHooks
  * @param object config explorer configuration
@@ -8,11 +10,15 @@
 function registerHooks(config, user, utils) {
   return {
     //hooking on directory
-    below: function(tree, path) {
+    below: function() {
     },
-    above: function(tree, path) {
+    above: {
+      template: 'above',
+      scope: function(req, res) {
+        return {user: req.user}
+      }
     },
-    action: function(tree) {
+    action: function() {
     },
     element: function() {
     },

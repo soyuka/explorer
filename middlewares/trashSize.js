@@ -8,9 +8,10 @@ var debug = require('debug')('explorer:trashSize')
 /**
  * Gets the trash size
  * @param object config
+ * @param boolean main force global trash instead of user
  * @return function
  */
-function trashSize(config) {
+function trashSize(config, main) {
 
   return function (req, res, next) {
 
@@ -22,7 +23,7 @@ function trashSize(config) {
 
     var v = config.remove.path
 
-    if(req.user.trash) {
+    if(req.user.trash && !main) {
       v = p.resolve(req.user.home, req.user.trash)
     }
 

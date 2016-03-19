@@ -36,12 +36,12 @@ describe('tree', function() {
     tree(fixture, {page: 1, limit: 2, root: __dirname}) 
     .then(function(o) {
       expect(o.tree).to.have.length.of(2)
-      expect(o.pages).to.be.at.least(2)
+      expect(o.options.pages).to.be.at.least(2)
 
       tree(fixture, {page: 2, limit: 2})
       .then(function(o) {
         expect(o.tree).to.have.length.of(2)
-        expect(o.pages).to.be.at.least(2)
+        expect(o.options.pages).to.be.at.least(2)
         cb()
       })
       .catch(cb)

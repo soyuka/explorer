@@ -1,5 +1,6 @@
 'use strict'
-var HTTPError = require('../lib/HTTPError.js')
+const HTTPError = require('../lib/errors/HTTPError.js')
+const ReasonsError = require('../lib/errors/ReasonsError.js')
 
 /**
  * Error middleware
@@ -12,21 +13,35 @@ function getError(config) {
   return function error(err, req, res, next) {
 
     if(err.name === 'UnauthorizedError')
-      return res.status(401).send('Invalid token')
+      return res.status(401).send({error: 'Invalid token'})
 
     if(!err) {
       err = new HTTPError('No errors - please report', 500)
     }
 
-    var d = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')
+    let code = 500
+    let message
 
-    if(!config.quiet)
+    if(err instanceof HTTPError) {
+      code = err.code
+      message = err.code + ' - ' + err.message 
+    } else if(err instanceof ReasonsError) {
+      code = 400
+      message = err.message.toString()
+    } else {
+      message = err.message 
+    }
+
+    if(!config.quiet) {
+      let now = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')
+
+      console.error(now, message)
+
       if(config.dev)
-        console.error(d, err.stack);
-      else
-        console.error(d, err.code + ' - ' + err.message)
+        console.error(err.stack)
+    }
 
-    return res.status(err.code || 500).send({error: err.message})
+    return res.status(code).send({error: message})
   }
 }
 

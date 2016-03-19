@@ -6,7 +6,7 @@ var existsSync = require('../../lib/utils.js').existsSync
 var newName
 
 function testSort(params, modifiers, cb) {
-  var url = '/'
+  var url = '/tree'
   var start = true
   var previous = modifiers.previous
 
@@ -36,27 +36,35 @@ function testSort(params, modifiers, cb) {
   .end(cb)
 }
 
+function testTree(opts) {
+  if(!opts)
+    opts = {}
+
+  opts.length = opts.length === undefined ? 1 : opts.length
+
+  return function(res) {
+    let body = res.body
+
+    expect(body.options).not.to.be.undefined
+    expect(body.tree).to.be.an.array
+    expect(body.breadcrumb).to.be.an.array
+    expect(body.breadcrumb).to.have.length.of(opts.length)
+  }
+}
+
 describe('tree', function() {
   before(bootstrap.autoAgent)
   before(bootstrap.login)
 
   it('should get tree', function(cb) {
-    this.request.get('/')
-    .expect(function(res) {
-      expect(res.body.tree).to.be.an.array
-      expect(res.body.breadcrumb).to.be.an.array
-      expect(res.body.breadcrumb).to.have.length.of(1)
-    })
+    this.request.get('/tree')
+    .expect(testTree())
     .end(cb)
   })
 
   it('should get deepest tree', function(cb) {
-    this.request.get('/?path=dir')
-    .expect(function(res) {
-      expect(res.body.tree).to.be.an.array
-      expect(res.body.breadcrumb).to.be.an.array
-      expect(res.body.breadcrumb).to.have.length.of(2)
-    })
+    this.request.get('/tree?path=dir')
+    .expect(testTree({length: 2}))
     .end(cb)
   })
 
@@ -117,7 +125,7 @@ describe('tree', function() {
   var l = 0
 
   it('should get tree length', function(cb) {
-    this.request.get('/?limit=1000&page=1')
+    this.request.get('/tree?limit=1000&page=1')
     .expect(function(res) {
       expect(res.body.tree).to.be.an.array
       l = res.body.tree.length
@@ -126,19 +134,19 @@ describe('tree', function() {
   })
 
   it('should get 5 tree elements', function(cb) {
-    this.request.get('/?limit='+l)
+    this.request.get('/tree?limit='+l)
     .expect(function(res) {
-      expect(res.body.pages).to.equal(1)
       expect(res.body.tree).to.have.length.of(l)
+      expect(res.body.options.pages).to.equal(1)
     })
     .end(cb)
   })
 
   it('should limit tree by 1', function(cb) {
-    this.request.get('/?limit=1')
+    this.request.get('/tree?limit=1')
     .expect(function(res) {
       expect(res.body.tree).to.have.length.of(1)
-      expect(res.body.pages).to.equal(l)
+      expect(res.body.options.pages).to.equal(l)
     })
     .end(cb)
   })

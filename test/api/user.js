@@ -62,10 +62,37 @@ describe('user', function() {
     .end(cb)
   })
 
-  it('should get settings', function(cb) {
+  it('should get settings (DEPRECATED)', function(cb) {
+    this.skip()
     this.request.get('/settings') 
     .expect(200)
     .end(cb)
+  })
+
+  it('should get profile', function(cb) {
+   this.request.get('/me') 
+   .expect(function(res) {
+      expect(res.body.username).to.equal('admin')
+      expect(res.body.key).to.equal('key')
+
+      let notUndefined = [
+        'admin',
+        'home',
+        'readonly',
+        'ignore',
+        'trash',
+        'archive',
+        'upload',
+        'trashSize'
+      ]
+
+      for(let i in notUndefined) {
+        expect(res.body[notUndefined[i]]).not.to.be.undefined
+      }
+
+      expect(res.body.password).to.be.undefined
+   })
+   .end(cb)
   })
 
   it('should get 404', function(cb) {

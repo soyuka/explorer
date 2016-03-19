@@ -7,12 +7,14 @@
   %link{rel: 'stylesheet', href: app_root + 'dist/app.min.css'}
   %link{rel: 'icon', type: 'image/png', href: app_root + 'favicon-32x32.png', sizes: '32x32'}
   %link{rel: 'icon', type: 'image/png', href: app_root + 'favicon-16x16.png', sizes: '16x16'}
-  %script{type: 'text/javascript', src: app_root + 'socket/client.js'}
-  %script{type: 'text/javascript', src: app_root + 'dist/app.js'}
+  %script{type: 'text/javascript'}!= configuration
   :javascript
-    System.import('boot')
-    .then(null, console.error.bind(console))
+    // Fixes undefined module function in SystemJS bundle
+    function module() {}
 
+  %script{type: 'text/javascript', src: app_root + 'dist/explorer.js'}
+
+  :javascript
     //delete button confirm box
     var confirmDeletion = function(e) {
       return confirm('Are you sure?')

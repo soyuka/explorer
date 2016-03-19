@@ -2,7 +2,7 @@
 var p = require('path')
 var mm = require('micromatch')
 var fs = require('fs')
-var HTTPError = require('../lib/HTTPError.js')
+var HTTPError = require('../lib/errors/HTTPError.js')
 var sort = require('../lib/sort.js')
 
 var sort = require('../lib/sort.js')

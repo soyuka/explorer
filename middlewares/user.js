@@ -1,5 +1,5 @@
 'use strict';
-var HTTPError = require('../lib/HTTPError.js')
+var HTTPError = require('../lib/errors/HTTPError.js')
 var p = require('path')
 var util = require('util')
 
@@ -33,10 +33,7 @@ function getUser(app) {
     }
 
     if(req.url != '/login' && (!user || !user.username)) {
-      if(req.url == '/')
-        return res.redirect('/login')
-      else
-        return next(new HTTPError("Not authenticated", 401, '/login'))
+      return next(new HTTPError("Not authenticated", 401, '/login'))
     } 
     
     if(user && user.username && !req.user) {
@@ -48,17 +45,9 @@ function getUser(app) {
         return next(new HTTPError("Bad cookie", 400, '/login'))
       }
 
-      //populating locals
-      for(let i in req.user) {
-        if(i != 'password')
-          locals[i] = req.user[i]
-      }
-
     }
 
     debug('User %o', user)
-
-    res.locals.user = locals
 
     return next()
   } 

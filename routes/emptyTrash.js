@@ -34,7 +34,7 @@ function emptyTrash(app, path) {
       }))
     })
 
-    return res.handle('back', {}, 201)
+    return res.handle({info: 'Removing'}, 202)
   }
 }
 

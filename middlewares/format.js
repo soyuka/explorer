@@ -1,7 +1,7 @@
 'use strict';
 var util = require('util')
 var rss = require('../routes/rss.js')
-var HTTPError = require('../lib/HTTPError.js')
+var HTTPError = require('../lib/errors/HTTPError.js')
 
 /**
  * Handles Accept header to render the wanted format
@@ -44,7 +44,10 @@ function getFormat(app) {
       })
     }
 
-    res.handle = function(data) {
+    res.handle = function(data, code) {
+      if(code)
+        res.status(code)
+
       return res.json(data) 
     }
 

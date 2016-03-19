@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.0.0
+- new frontend with angular2
+- BC break GET /tree result
+- GET /logout => GET /api/logout
+- /settings => /api/me
+- BC break => plugins hooks
+
 ## 2.2.7-beta
 - add binary to help installing plugins and reloading explorer
 - refactor native search :

@@ -26,7 +26,7 @@ describe('archive', function() {
     }
 
     this.timeout(5000)
-    this.request.post('/')
+    this.request.post('/tree')
     .send({'path': p.join(__dirname, '../fixtures/tree/dir/1Mo.dat'), name: 'test', action: 'archive.compress'})
     .end(function() {
       bootstrap.worker.once('archive:notify', getNotification)
@@ -35,7 +35,7 @@ describe('archive', function() {
 
   it('should post and get file stream', function(cb) {
     this.timeout(5000)
-    this.request.post('/')
+    this.request.post('/tree')
     .send({'path': p.join(__dirname, '../fixtures/tree/dir'), name: 'test2', action: 'archive.download'})
     .expect('Content-Type', /zip/)
     .expect('Content-disposition', /test2/)

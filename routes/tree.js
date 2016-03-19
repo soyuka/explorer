@@ -3,7 +3,7 @@ const Promise = require('bluebird')
 const p = require('path')
 const moment = require('moment')
 const utils = require('../lib/utils.js')
-const HTTPError = require('../lib/HTTPError.js')
+const HTTPError = require('../lib/errors/HTTPError.js')
 const tree = require('../lib/tree.js')
 const searchMethod = require('../lib/search')
 const middlewares = require('../middlewares')
@@ -49,18 +49,21 @@ const Tree = function(app, router) {
     }
 
     //we're on POST /tree, /p/pluginName/action/actionName
-    req.url = `${req.url.replace('/tree', '')}/p/${plugin}/action/${actionName}`
+    req.url = `/api/${req.url.replace('/tree', '')}/p/${plugin}/action/${actionName}`
 
     return app._router.handle(req, res, next)
   })
 
   /**
-   * @api {get} / Get the tree
+   * @api {get} /tree Get the tree
    * @apiGroup Tree
    * @apiName Tree
    * @apiParam {string} path
    * @apiParam {string} sort
    * @apiParam {string} order
+   * @apiSuccess {Array} tree
+   * @apiSuccess {Object} options (pages, num, size)
+   * @apiSuccess {Array<String>} breadcrumb 
    */
   router.get('/tree', pt, function getTree(req, res, next) {
     tree(req.options.path, req.options)

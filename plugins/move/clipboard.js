@@ -68,9 +68,8 @@ Clipboard.prototype.parseFormData = function(data, username) {
   return this.memory.get(username)
   .then(function(clipboard) {
     //get items that are in the clipboard
-    clipboard = clipboard.filter(function(e) {
-      let exist = items.find(f => e.path == f.path && e.method == f.method)
-      return exist
+    clipboard = clipboard.filter(e => {
+      return items.find(f => e.path == f.path && e.method == f.method)
     })
 
     return clipboard
