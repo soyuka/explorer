@@ -17,6 +17,7 @@ module.exports = function(config) {
 
       // Loaded through the System loader, in `test-main.js`.
       {pattern: 'node_modules/angular2/**/*.js', included: false},
+      {pattern: 'node_modules/angular2-jwt/angular2-jwt.js', included: false}, // PhantomJS2 (and possibly others) might require it
       {pattern: 'node_modules/rxjs/**', included: false},
       {pattern: 'src/js/**/*.js', included: false},
       {pattern: 'node_modules/faye/browser/faye-browser.js', included: false},

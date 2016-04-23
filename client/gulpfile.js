@@ -42,6 +42,7 @@ function recurseUntil(path, l) {
 }
 
 const hamlPaths = recurseUntil('./src/templates/*.haml', 3)
+const typescriptTestsPaths = recurseUntil('./src/ts/*.spec.ts', 2)
 const typescriptPaths = recurseUntil('./src/ts/*.ts', 2)
 typescriptPaths.unshift('./node_modules/angular2-jwt/angular2-jwt.ts')
 typescriptPaths.unshift('./node_modules/angular2/typings/browser.d.ts')
@@ -127,6 +128,7 @@ gulp.task('default', ['styles', 'javascript', 'templates'])
 gulp.task('watch', ['default'], function() {
   livereload.listen();
   gulp.watch('./src/scss/*.scss', ['styles'])
-  gulp.watch(typescriptPaths, ['javascript'])
+  gulp.watch(typescriptTestsPaths, ['javascript:systemjs'])
+  gulp.watch(typescriptPaths.filter(e => /spec\.ts$/g.test(e)), ['javascript'])
   gulp.watch(hamlPaths, ['templates'])
 })

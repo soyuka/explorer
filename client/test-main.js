@@ -25,7 +25,8 @@ System.config({
   paths: {
     'angular2/*': 'node_modules/angular2/*.js',
     'rxjs/*': 'node_modules/rxjs/*.js',
-    'faye': 'node_modules/faye/browser/faye-browser.js'
+    'faye': 'node_modules/faye/browser/faye-browser.js',
+    'angular2-jwt/*': 'node_modules/angular2-jwt/angular2-jwt.js',
   }
 });
 

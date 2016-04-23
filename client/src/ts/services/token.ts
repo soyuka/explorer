@@ -40,6 +40,7 @@ export class TokenService {
       return this.userCache
 
     this.userCache = this.jwtHelper.decodeToken(token)
+
     return this.userCache
   }
 }
