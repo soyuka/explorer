@@ -70,7 +70,7 @@
                   %i.icon-folder
                   = item.name
               - else
-                %a{href: '/download?path='+item.path+'&key='+user.key}
+                %a{href: '/download?path='+encodeURIComponent(item.path)+'&key='+user.key}
                   %i{class: 'icon-file-' + item.type}
                   = item.name
                   - if (search)
