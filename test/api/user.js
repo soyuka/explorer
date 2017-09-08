@@ -128,7 +128,4 @@ describe('user', function() {
     .expect(401)
     .end(cb)
   })
-
-  after(bootstrap.removeAgent)
-
 })

@@ -5,8 +5,15 @@ describe('lib', function() {
   require('./lib/users.js')
   require('./lib/tree.js')
   require('./lib/search.js')
-  require('./lib/nativeSearch.js')
   require('./lib/filters.js')
+})
+
+describe('middlewares', function() {
+  require('./middlewares/sanitizeCheckboxes.js')  
+})
+
+describe('job', function() {
+  require('./job/notify.js')
 })
 
 describe('api', function() {
@@ -19,11 +26,6 @@ describe('api', function() {
   require('./api/upload.js')
   require('./api/archive.js')
   require('./api/move.js')
-})
-
-describe('job', function() {
-  require('./job/interactor.js')
-  require('./job/notify.js')
 })
 
 describe('cache', function() {

@@ -8,6 +8,8 @@ var agent = require('supertest').agent
 module.exports = function(app, options){
 
   var test = agent
+  if(!options)
+    options = {}
 
   //override methods to fix some stuff and add default headers
   methods.forEach(function(method){

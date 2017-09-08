@@ -4,11 +4,11 @@ var fs = require('fs')
 var p = require('path')
 var moment = require('moment')
 var multer = require('multer')
-var job = require('./job.js')
+var ArchiveJob = require('./job.js')
 
 var debug = require('debug')('explorer:routes:archive')
 
-var Upload = function(router, utils) {
+var Upload = function(router, job, utils, config) {
   
   function getData(req) {
     var name = req.body.name || 'archive'+new Date().getTime()
@@ -16,7 +16,7 @@ var Upload = function(router, utils) {
 
     return {
       name: name,
-      paths: req.options.paths,
+      files: req.options.files,
       temp: temp,
       directories: req.options.directories
     }
@@ -32,13 +32,13 @@ var Upload = function(router, utils) {
   router.post('/action/download', function(req, res, next) {
     var data = getData(req)
 
-    if(data.paths == 0 && data.directories == 0) {
+    if(data.files == 0 && data.directories == 0) {
       return next(new utils.HTTPError('No files to download', 400)) 
     }
 
     data.stream = res
 
-    var archive = new job(null)
+    var archive = new ArchiveJob()
     return archive.create(data, req.user, req.options)
   })
 
@@ -55,12 +55,12 @@ var Upload = function(router, utils) {
   
     var data = getData(req)
   
-    if(data.paths == 0 && data.directories == 0) {
+    if(data.files == 0 && data.directories == 0) {
       return next(new utils.HTTPError('No files to compress', 400)) 
     }
 
     data.stream = data.temp
-    utils.interactor.send('call', 'archive.create', data, req.user, req.options)
+    job.call('create', data, req.user, req.options)
     return res.handle('back', {info: 'Archive created'}, 201)
   })
 

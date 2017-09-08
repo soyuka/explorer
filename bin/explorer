@@ -89,7 +89,6 @@ function pluginCommand(args) {
 }
 
 function reload() {
-
   spawner.sp('pm2 jlist')
   .then(function() {
     

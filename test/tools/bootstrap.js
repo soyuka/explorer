@@ -3,8 +3,11 @@ var p = require('path')
 var fs = require('fs')
 var util = require('util') 
 var expect = require('chai').expect
+var CallableTask = require('relieve').tasks.CallableTask
 var Promise = require('bluebird')
 var app = require('../../server.js')
+var Notify = require('../../lib/job/notify.js')
+var Worker = require('../../lib/job/worker.js')
 
 var cwd = p.join(__dirname, '..')
 
@@ -48,6 +51,7 @@ module.exports = {
    .end(cb)
   },
   createAgent: function(opts, cb) {
+
     var conf = config
 
     if(typeof opts == 'function') {
@@ -56,37 +60,32 @@ module.exports = {
       conf = util._extend(conf, opts) 
     }
 
-    return app(config).then(function(app) {
-      return cb(require('./supertest')(app, options))
+    if(bootstrap.app) {
+      return cb(require('./supertest.js')(bootstrap.app, options)) 
+    }
+
+    bootstrap.worker = bootstrap.worker === undefined ? new Worker() : bootstrap.worker
+
+    return app(config, bootstrap.worker).then(function(app) {
+      bootstrap.app = app
+
+      return app.get('worker').run()
+      .then(e => app.get('worker').register([], app.get('plugins_cache')))
+      .then(function() {
+        return cb(require('./supertest')(app, options))
+      })
     })
   },
   autoAgent: function(cb) {
     var self = this
+    if(bootstrap.request) {
+      this.request = bootstrap.request
+      return cb()
+    }
 
     bootstrap.createAgent(function(r) {
-      self.request = r
+      bootstrap.request = self.request = r
       return cb()
     })
-  },
-  removeAgent: function(cb) {
-    this.request = null
-    return cb()
-  },
-  interactor: require('../../lib/job/interactor.js'),
-  runInteractor: function(plugins) {
-    var self = this
-
-    return function() {
-       return self.interactor
-      .run(plugins, self.config, cache)
-    }
-  },
-  killInteractor: function() {
-    var self = this
-
-    return function(cb) {
-      self.interactor.once('exit', cb)
-      self.interactor.kill()
-    }
   }
 }

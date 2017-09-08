@@ -1,5 +1,4 @@
 'use strict';
-var rimraf = require('rimraf')
 var Promise = require('bluebird')
 var p = require('path')
 var moment = require('moment')
@@ -8,7 +7,9 @@ var HTTPError = require('../lib/HTTPError.js')
 var tree = require('../lib/tree.js')
 var searchMethod = require('../lib/search')
 var middlewares = require('../middlewares')
-var interactor = require('../lib/job/interactor.js')
+var emptyTrash = require('./emptyTrash.js')
+var resolveSources = require('../lib/resolveSources.js')
+var getRemoveRoute = require('../plugins/move/removeRoute.js')
 
 var debug = require('debug')('explorer:routes:tree')
 var fs = Promise.promisifyAll(require('fs'))
@@ -94,41 +95,9 @@ function getTree(req, res, next) {
  * @apiName Remove
  * @apiParam {string} path
  */
-function deletePath(req, res, next) {
-
-  var opts = req.options
-  var path = opts.path
-
-  if(path == opts.root || path == req.user.home) {
-    return next(new HTTPError('Forbidden', 403))
-  }
-
-  if((!!req.user.readonly) === true || opts.remove.disabled || !~['mv', 'rm'].indexOf(opts.remove.method)) {
-    return next(new HTTPError('Unauthorized', 401))
-  }
-
-  if(~path.indexOf(opts.remove.path)) {
-    return next(new HTTPError("You can't delete from your trash, empty it instead", 406))
-  }
-
-  var cb = function(err, newPath) {
-    if(err) {
-      return utils.handleSystemError(next)(err)
-    }
-
-    return res.handle('back', newPath ? {path: newPath, moved: true} : {removed: true})
-  }
-
-  if(opts.remove.method == 'rm') {
-    debug('Deleting %s', path)
-    return rimraf(path, cb)
-  } else {
-    var t = p.join(opts.remove.path, p.basename(path) + '.' + moment().format('YYYYMMDDHHmmss'))
-    debug('Moving %s to %s', path, t)
-    return fs.rename(path, t, function(err) {
-      return cb(err, t)
-    }) 
-  }
+function deletePath(app) {
+  let move = app.get('worker').task('move') 
+  return getRemoveRoute(HTTPError, resolveSources, move) 
 }
 
 /**
@@ -138,20 +107,11 @@ function deletePath(req, res, next) {
  * @apiParam {string} search
  */
 function search(req, res, next) {
-  var config = req.config
+  let config = req.config
 
-  debug('Search %s with %s in %s', req.options.search, config.search.method, req.options.path)
-
-  var method = searchMethod(config.search.method, config.search)
+  debug('Search %s in %s', req.options.search, req.options.path)
   
-  return method(req.options.search, req.options.path, req.options)
-  .then(function(data) {
-    if(config.search.method == 'native') {
-      return data 
-    } else {
-      return tree([].concat.apply([], this.data.out), req.options)
-    }
-  })
+  return searchMethod(req.options.search, req.options.path, req.options)
   .then(function(e) {
     res.locals = utils.extend(res.locals, e, {search: req.query.search})
     return next()
@@ -168,26 +128,10 @@ function render(req, res, next) {
  * @apiGroup User
  * @apiName emptyTrash
  */
-function emptyTrash(req, res, next) {
-
-  var opts = req.options
-
-  if(opts.remove.disabled || opts.remove.method !== 'mv') {
-    return utils.handleSystemError(next)('Forbidden', 403)
+function emptyUserTrash(app) {
+  return function(req, res, next) {
+    return emptyTrash(app, req.options.remove.path)(req, res, next)
   }
-
-  if(opts.remove.path == opts.root) {
-    return utils.handleSystemError(next)("Won't happend", 417)
-  }
-
-  debug('Empty trash %s', opts.remove.path)
-
-  utils.removeDirectoryContent(opts.remove.path)
-  .then(function() {
-    req.flash('info', 'Trash is now empty!')
-    return res.handle('back')
-  })
-  .catch(utils.handleSystemError(next))
 }
 
 /**
@@ -238,8 +182,8 @@ var Tree = function(app) {
   app.get('/', pt, getTree, render)
   app.get('/search', pt, search, render)
   app.get('/download', pt, download)
-  app.post('/trash', pt, emptyTrash)
-  app.get('/remove', pt, deletePath)
+  app.post('/trash', pt, emptyUserTrash(app))
+  app.get('/remove', pt, middlewares.sanitizeCheckboxes, deletePath(app))
 
   return app
 }

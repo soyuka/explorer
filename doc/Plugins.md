@@ -59,7 +59,7 @@ function Router(router, utils) {
  * @param router express.Router
  * @param object utils explorer utils 
  **/
-function Router(router, utils) {
+function Router(router, job, utils, config) {
 
   function myRoute(req, res, next) {
 
@@ -89,7 +89,7 @@ A router can call a Job method through the interactor [(see more below)](https:/
 ```javascript
   router.post('/action/longjob', function(req, res) {
     //interactor allows us to call the create method of our job (see below)
-    utils.interactor.send('call', 'pluginName.longjob', req.user, req.query.path)
+    job.call('longjob', req.user, req.query.path)
     return res.handle('back', {info: 'Launched'}, 201)
   })
 ```
@@ -107,7 +107,6 @@ router.get('/mytree', utils.prepareTree, function(req, res, next) {
 ```
 
 Here, `utils` is an object with: 
-- `.interactor` the [job interactor](https://github.com/soyuka/explorer/blob/master/lib/job/interactor.js)
 - `.prepareTree` the [prepareTree middleware](https://github.com/soyuka/explorer/blob/master/middlewares/prepareTree.js) already instantiated
 - `.HTTPError` used to end the request with a code/error (`return next(new HTTPError("Something is wrong", 500))`)
 - `.tree` is the [main tree algorithm](https://github.com/soyuka/explorer/blob/master/lib/tree.js)
@@ -118,7 +117,8 @@ Here, `utils` is an object with:
 
 ### Available hooks
 
-- `directory` expects `<dd><a href="#"></a></dd>` shows below the tree
+- `above` expects `<div class="row"></div>` shows above the tree
+- `below` expects `<a class="button small" href="#"></a>` shows below the tree
 - `action` expects `<option value="plugin.method">Action</option>` shows in the select box. It behaves differently than normal hooks (see below)
 - `element` expects a `<a href="#"></a>` shows next to the trash icon 
 - `menu` expects a `<li><a href="#"></a></li>` shows on the left of the top menu bar 
@@ -136,9 +136,13 @@ The hooks structure must return an object or a promise which results in a hooks 
  */
 function registerHooks(config, user, utils) {
   return {
-    directory: function(tree, path) {
+    above: function(tree, path) {
       dosomethingwith(config.plugins.pluginName.myConfigValue)
-      return '' //expects a <dd><a href="#"></a></dd> element
+      return '' //expects a <div class="row"></div> element
+    },
+    below: function(tree, path) {
+      dosomethingwith(config.plugins.pluginName.myConfigValue)
+      return '' //expects a <a class="button small"> element
     },
     action: function(tree) {
       return '' //expects a <option value="plugin.method">Action</option>

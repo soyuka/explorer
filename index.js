@@ -3,18 +3,20 @@ var p = require('path')
 var http = require('http')
 var https = require('https')
 var Promise = require('bluebird')
-var interactor = require('./lib/job/interactor.js')
 var fs = Promise.promisifyAll(require('fs'))
 
 var config = require('./lib/config.js')()
+var Worker = require('./lib/job/worker.js')
 
 var https_options = {
   key: fs.readFileSync(config.https.key),
   cert: fs.readFileSync(config.https.cert)
 }
 
-require('./server.js')(config)
+require('./server.js')(config, new Worker())
 .then(function(app) {
+  var plugins = app.get('plugins')
+  var cache = app.get('cache')
 
   var server = http.createServer(app)
   .listen(config.port, function() {
@@ -33,45 +35,16 @@ require('./server.js')(config)
 
     var httpssocket = require('./lib/socket.js')(server, app)
   }
-  
-  var plugins = app.get('plugins')
-  var plugins_paths = []
 
-  for(let i in plugins) {
-    if('job' in plugins[i]) {
-      plugins_paths.push(plugins[i].path) 
-    }
-  }
+  let worker = app.get('worker')
 
-  if(interactor.job) {
-    console.error('Interactor already launched')
-    return Promise.resolve()
-  }
-
-  interactor.on('error', function(err) {
+  worker.on('error', function(err) {
     console.error('Interactor errored'); 
     console.error(err); 
   })
 
-  var cache = app.get('cache')
-
-  return interactor.run(plugins_paths, config, cache)
-  .then(function() {
-    interactor.ipc.on('notify:*', function(data) {
-      var event = this.event
-      setTimeout(function() {
-        let num = data.length
-        let d = data.pop()
-        d.num = num
-
-        socket.publish('/'+event.replace(':', '/'), d)
-
-        if(httpssocket) {
-          httpssocket.publish('/'+event.replace(':', '/'), d) 
-        }
-      }, 1000)
-    }) 
-  })
+  return worker.run()
+  .then(e => worker.register([socket, httpssocket], app.get('plugins_cache')))
 }) 
 .catch(function(err) {
   console.error('Error while initializing explorer') 

@@ -16,13 +16,12 @@ var plugins = require('./lib/plugins.js')
 var Users = require('./lib/data/users.js')
 var routes = require('./routes')
 var middlewares = require('./middlewares')
-var parallelMiddlewares = require('./lib/utils.js').parallelMiddlewares
 
 var fs = Promise.promisifyAll(require('fs'))
 var debug = require('debug')('explorer:server')
 var app = express()
 
-module.exports = function(config) {
+module.exports = function(config, worker) {
 
   if(!config.quiet)
     app.use(morgan(config.dev ? 'dev' : 'tiny'))
@@ -35,6 +34,7 @@ module.exports = function(config) {
   app.use(bodyParser.json({limit: config.upload.maxSize}))
 
   app.set('config', config)
+  app.set('worker', worker)
 
   let cache = require('./lib/cache')(config)
 
@@ -58,7 +58,7 @@ module.exports = function(config) {
     return hamljs.renderFile(str, 'utf-8', options, fn)
   })
 
-  app.use(parallelMiddlewares([
+  app.use([
     methodOverride(function(req, res) {
         if (req.body && typeof req.body === 'object' && '_method' in req.body) {
           var method = req.body._method
@@ -71,7 +71,7 @@ module.exports = function(config) {
     session({secret: config.session_secret || 'MEOW', resave: false, saveUninitialized: false}),
     flash(),
     express.static('client')
-  ]))
+  ])
 
   app.use(function(req, res, next) {
     req.config = config
@@ -91,11 +91,11 @@ module.exports = function(config) {
 
   app.use(middlewares.user(app))
 
-  app.use(parallelMiddlewares([
+  app.use([
     middlewares.format(app),
     middlewares.notify(app),
     middlewares.optionsCookie
-  ]))
+  ])
 
   app.use(middlewares.registerHooks(app))
 

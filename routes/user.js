@@ -1,7 +1,6 @@
 'use strict';
 var util = require('util')
 var HTTPError = require('../lib/HTTPError.js')
-var interactor = require('../lib/job/interactor.js')
 var handleSystemError = require('../lib/utils.js').handleSystemError
 var Promise = require('bluebird')
 
@@ -80,11 +79,6 @@ function getDeleteNotifications(app) {
 
   return function deleteNotifications(req, res, next) {
     
-    if(!interactor.ipc) {
-      debug('No interactor')
-      return next(new HTTPError('No Interactor', 400))
-    }
-
     var notifications = {}
 
     for(let i in plugins_cache) {

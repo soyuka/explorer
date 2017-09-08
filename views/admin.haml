@@ -1,6 +1,6 @@
 .row.container
   .large-12.columns
-    %a.button.tiny.right{href: '/a/create'} New user
+    %a.button.small.right{href: '/a/create'} New user
     %h2 Users
     %table.admin
       %thead
@@ -45,7 +45,7 @@
     - if(remove)
       %form{method: 'post', action: '/a/trash'}.row
         .columns.large-4.small-8
-          %input.button.warning.tiny.left{type: 'submit', value: 'Empty trash (' + trashSize + ')', onclick: 'return confirmDeletion(event)'}
+          %input.button.warning.small.left{type: 'submit', value: 'Empty trash (' + trashSize + ')', onclick: 'return confirmDeletion(event)'}
 
     %h2 Configuration
 

@@ -6,7 +6,7 @@ var multer = require('multer')
 
 var debug = require('debug')('explorer:routes:upload')
 
-var Upload = function(app, utils, config) {
+var Upload = function(app, job, utils, config) {
   
   function canUpload(req, res, next) {
     var opts = req.options.upload
@@ -41,7 +41,7 @@ var Upload = function(app, utils, config) {
       return next(new utils.HTTPError('No links to download', 400)) 
     }
 
-    utils.interactor.send('call', 'upload.create', links, req.user, req.options)
+    job.call('create', links, req.user, req.options)
 
     return res.handle('back', {info: 'Upload launched'}, 201)
   }
@@ -75,6 +75,7 @@ var Upload = function(app, utils, config) {
   var upload = multer({storage: storage})
 
   app.get('/', utils.prepareTree, canUpload, getUpload)
+
   app.post('/', utils.prepareTree, canUpload, 
     upload.array('files', config.upload.maxCount),
     function(req, res, next) {

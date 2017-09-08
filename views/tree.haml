@@ -40,10 +40,16 @@
               %label.inline{for: 'limit'} Limit
             .columns.large-9
               %input{type: 'number', id: 'limit', name: 'limit', value: limit}
-        .columns.large-offset-2.large-2
+        .columns.large-2
           %button.postfix.secondary{type: 'submit'} Update
           %input{type: 'hidden', name: 'search', value: search}
           %input{type: 'hidden', name: 'path', value: path}
+
+    .row
+      .columns.large-12
+        - each p in hooks
+          - if('above' in p)
+            != p.above(tree, path)
 
     -# Tree
     %form{method: 'POST', action: '/'}
@@ -117,10 +123,14 @@
                   = num + ' results'
                 = ' (' + size + ')'
 
-    %dl#directory-hooks
-      - each p in hooks
-        - if('directory' in p)
-          != p.directory(tree, path)
+      .row
+        .columns.large-12
+          .button-bar
+            %ul.button-group
+              - each p in hooks
+                - if('below' in p)
+                  %li
+                    != p.below(tree, path)
 
     -# Pagination
     .pagination-centered

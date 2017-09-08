@@ -7,6 +7,7 @@ var User = require('../lib/data/user.js')
 var tree = require('../lib/tree.js').tree
 var HTTPError = require('../lib/HTTPError.js')
 var middlewares = require('../middlewares')
+var emptyTrash = require('./emptyTrash.js')
 
 var fs = Promise.promisifyAll(require('fs'))
 var debug = require('debug')('explorer:routes:admin')
@@ -57,6 +58,7 @@ function isAdmin(config) {
 var Admin = function(app) {
   var admin = require('express').Router()
   var config = app.get('config')
+  var pt = middlewares.prepareTree(app)
 
   admin.use(isAdmin(config))
 
@@ -89,16 +91,7 @@ var Admin = function(app) {
    * @apiName emptyTrash
    * @apiGroup Admin
    */
-  admin.post('/trash', function(req, res, next) {
-
-    debug('Empty trash %s', config.remove.path)
-
-    utils.removeDirectoryContent(config.remove.path)
-    .then(function() {
-      return res.handle('back')
-    })
-    .catch(utils.handleSystemError(next))
-  })
+  admin.post('/trash', pt, emptyTrash(app, config.remove.path))
 
   /**
    * @api {get} /a/delete/:username Delete user

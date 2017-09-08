@@ -15,7 +15,7 @@
     "files"
   ],
   "scripts": {
-    "test": "mocha --harmony",
+    "test": "mocha -b --harmony",
     "coverage": "istanbul cover _mocha -- --harmony",
     "postinstall": "bash scripts/postinstall.sh",
     "docs": "apidoc -i routes -o doc/api",
@@ -41,9 +41,8 @@
   "license": "MIT",
   "dependencies": {
     "archiver": "^0.14.4",
-    "async": "^1.4.2",
     "bcrypt": "^0.8.5",
-    "bluebird": "^2.9.34",
+    "bluebird": "^3.0.6",
     "body-parser": "^1.13.3",
     "connect-flash": "^0.1.1",
     "content-disposition": "^0.5.0",
@@ -54,9 +53,9 @@
     "faye": "^1.1.2",
     "filenamify": "^1.2.0",
     "got": "^4.2.0",
+    "gulp": "^3.9.0",
     "hamljs": "^0.6.2",
     "ioredis": "^1.9.1",
-    "ipcee": "^1.0.4",
     "is-glob": "^2.0.0",
     "memory-cache": "^0.1.4",
     "method-override": "^2.3.5",
@@ -67,19 +66,17 @@
     "moment": "^2.10.6",
     "morgan": "^1.6.1",
     "multer": "^1.0.3",
-    "mv": "^2.1.1",
-    "natural": "^0.2.1",
-    "ncp": "^2.0.0",
     "pretty-bytes": "^2.0.1",
     "promise-spawner": "^1.1.3",
-    "rimraf": "^2.4.2",
+    "relieve": "^1.0.2",
     "rss": "^1.1.1",
-    "yamljs": "^0.2.3"
+    "vinyl": "^1.1.0",
+    "yamljs": "^0.2.3",
+    "rimraf": "^2.4.2"
   },
   "devDependencies": {
     "chai": "^3.2.0",
     "chai-as-promised": "^5.1.0",
-    "gulp": "^3.9.0",
     "gulp-add-src": "^0.2.0",
     "gulp-concat": "^2.6.0",
     "gulp-minify-css": "^1.2.0",
@@ -89,7 +86,8 @@
     "methods": "^1.1.1",
     "mocha": "^2.2.5",
     "superagent": "^1.3.0",
-    "supertest": "^1.0.1"
+    "supertest": "^1.0.1",
+    "async": "^1.4.2"
   },
   "optionalDependencies": {
     "hiredis": "^0.4.1"

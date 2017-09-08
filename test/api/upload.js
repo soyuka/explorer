@@ -3,7 +3,6 @@ var p = require('path')
 var fs = require('fs')
 var rimraf = require('rimraf')
 var async = require('async')
-var interactor = bootstrap.interactor
 
 var upload_path = p.join(__dirname, '../fixtures/upload')
 var list
@@ -18,7 +17,6 @@ describe('upload', function() {
 
   before(bootstrap.autoAgent)
   before(bootstrap.login)
-  before(bootstrap.runInteractor([p.resolve(__dirname, '../../plugins/upload')]))
 
   it('should get upload', function(cb) {
     this.request.get('/p/upload')
@@ -45,28 +43,26 @@ describe('upload', function() {
   })
 
   it('should post remote-upload', function(cb) {
-    var getNotification = function(notifications) {
-      if(notifications.length < 2) { return }
+    this.timeout(5000)
+    var getNotification = function(username, notifications) {
       expect(getList()).to.have.length.of(3)
-      interactor.ipc.removeListener('notify:admin', getNotification)
       return cb()
     }
 
-    this.timeout(5000)
     this.request.post('/p/upload/remote')
     .send({links: 'https://www.google.fr/images/srpr/logo11w.png'})
     .expect(201)
     .end(function() {
-      interactor.ipc.addListener('notify:admin', getNotification)
+      bootstrap.worker.once('upload:notify', getNotification)
     })
   })
 
   it('should get notifications', function(cb) {
     this.request.get('/notifications')
     .expect(function(res) {
-      expect(res.body.notifications.num).to.eql(2)
+      expect(res.body.notifications.num).to.eql(1)
       expect(res.body.notifications.upload).to.be.an('array')
-      expect(res.body.notifications.upload).to.have.length.of(2)
+      expect(res.body.notifications.upload).to.have.length.of(1)
       expect(res.body.notifications.upload[0]).to.have.property('fromNow')
     })
     .end(cb)
@@ -84,6 +80,7 @@ describe('upload', function() {
     })
     .end(cb)
   })
+
   after(function(cb) {
     return async.each(getList(), function(f, next) {
       return rimraf(p.join(upload_path, f), next)
@@ -91,6 +88,4 @@ describe('upload', function() {
   })
 
   after(bootstrap.logout)
-  after(bootstrap.removeAgent)
-  after(bootstrap.killInteractor())
 })

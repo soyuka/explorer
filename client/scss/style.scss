@@ -5,6 +5,7 @@
 @import 'foundation/components/grid';
 @import 'foundation/components/breadcrumbs';
 @import 'foundation/components/buttons';
+@import 'foundation/components/button-groups';
 @import 'foundation/components/forms';
 @import 'foundation/components/pagination';
 @import 'foundation/components/tables';
@@ -100,10 +101,6 @@ img.logo {
         content: '\e80e';
     } 
   }
-}
-
-#directory-hooks {
-    @include sub-nav();
 }
 
 #options {
