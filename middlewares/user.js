@@ -15,9 +15,23 @@ function getUser(app) {
   /**
    * Middleware that handles the user cookie
    * on error end @see HTTPError
-   * on success populates req.user 
+   * on success populates req.user
    */
   return function userMiddleware(req, res, next) {
+
+    if (config.auth === false) {
+      req.user = req.users.get(config.user)
+      var locals = {}
+      for(let i in req.user) {
+        if(i != 'password') {
+          locals[i] = req.user[i]
+        }
+      }
+
+      res.locals.user = locals
+
+      return next()
+    }
 
     var locals =  {}
     var user = req.cookies.user
@@ -25,8 +39,8 @@ function getUser(app) {
     var isKeyAllowed = config.allowKeyAccess.some(e => e == req.path)
 
     if((!user || !user.username) && req.query.key && isKeyAllowed) {
-      user = req.user = req.users.getByKey(req.query.key) 
-      
+      user = req.user = req.users.getByKey(req.query.key)
+
       if(!req.user) {
         return res.status(401).send('Key is not valid')
       }
@@ -37,8 +51,8 @@ function getUser(app) {
         return res.redirect('/login')
       else
         return next(new HTTPError("Not authenticated", 401, '/login'))
-    } 
-    
+    }
+
     if(user && user.username && !req.user) {
       req.user = req.users.get(user.username)
 
@@ -61,7 +75,7 @@ function getUser(app) {
     res.locals.user = locals
 
     return next()
-  } 
+  }
 
 }
 

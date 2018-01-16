@@ -16,7 +16,7 @@ Explore and share. Highly-configurable directory listing made with nodejs.
 
 ## Requirements
 
-- nodejs (v4 with harmony support) 
+- nodejs (v4 with harmony support)
 
 0.12 and iojs are no longer supported as of v3.0.0
 
@@ -48,10 +48,10 @@ You may want to create your own HTTPS certs or disable it ([see below](#certs)).
 
 ```yaml
 ---
-search: 
+search:
   # Available: pt, ack, find, mdfind, custom, native
-  method: 'native' 
-  # Custom search command (${search} will be replaced by the string) 
+  method: 'native'
+  # Custom search command (${search} will be replaced by the string)
   command: "pt --nocolor --nogroup -l -i '${search}' ." # not used by native
   maxDepth: 10 # Default 10
   concurrency: 100 # Default 100 (only used with native search)
@@ -67,7 +67,7 @@ tree:
   concurrency: 100 #Default 100
   cache: true # set to false to disable size caching
   cacheTTL: 86400 # dir size cache duration in second
-remove: 
+remove:
   # 'mv' will move files to a trash directory
   # 'rm' will delete files
   # empty to disable deletion
@@ -83,7 +83,7 @@ upload:
   path: './upload'
   concurrency: 10
   maxSize: '50mb' # default to 50mb see https://github.com/expressjs/body-parser#limit
-  maxCount: 10 # max number of files 
+  maxCount: 10 # max number of files
 # note that path values will be overridden by the user path if set
 # path will be created if non-existant
 database: './data/users' # don't touch if you don't know what you're doing
@@ -99,10 +99,12 @@ plugins: # those are enable by default, use below options to disable them
   upload: {}
   archive: {}
 cache: 'memory' # redis is available too
-redis: 
+redis:
   host: 'redis://127.0.0.1:6379'
   # host: 'somesocket.sock'
 dev: false # more verbose error (stack)
+auth: false # disable auth
+user: admin # user to use without auth
 ```
 
 The `config.yml` will be searched in:
@@ -140,7 +142,7 @@ server {
   listen 80;
 
   location / { #if you want to change this, change `app_root` in the config.yml
-    proxy_pass http://explorer/ 
+    proxy_pass http://explorer/
   }
 }
 ```
@@ -153,12 +155,12 @@ server {
     ServerName explorer.com
 
     ProxyRequests off
- 
+
     <Proxy *>
         Order deny,allow
         Allow from all
     </Proxy>
- 
+
     <Location />
         ProxyPass http://localhost:4859/
         ProxyPassReverse http://localhost:4859/
@@ -196,11 +198,11 @@ curl -L https://github.com/soyuka/explorer/archive/vx.x.x.tar.gz | tar xz --stri
 npm rebuild
 ```
 
-## More installation methods 
+## More installation methods
 
 ### Docker
 
-```bash 
+```bash
 git clone https://github.com/soyuka/explorer.git
 cd explorer
 docker build -t explorer .
@@ -255,7 +257,7 @@ pm2 restart xplorer
 
 ## Run
 
-Installed as a pm2 module explorer will already be daemonized. 
+Installed as a pm2 module explorer will already be daemonized.
 
 ### Development
 
@@ -298,7 +300,7 @@ plugins:
 ```
 plugins:
   unrar:
-    module: 'explorer-unrar' 
+    module: 'explorer-unrar'
 ```
 
 - [explorer-cksfv](https://github.com/soyuka/explorer-cksfv)
@@ -314,7 +316,7 @@ plugins:
 ```
 plugins:
   unrar:
-    module: 'explorer-m3u' 
+    module: 'explorer-m3u'
 ```
 
 ### Development
@@ -329,13 +331,13 @@ Clone [see From git](#from-git)
 DEBUG="explorer:*" node --harmony index.js -c config.example.dev.yml
 ```
 
-Sass is compiled with gulp: 
+Sass is compiled with gulp:
 
 ```bash
 gulp watch
 ```
 
-To get stack traces from errors use `dev: true` in your configuration file. 
+To get stack traces from errors use `dev: true` in your configuration file.
 
 ### Tests
 
@@ -366,14 +368,14 @@ reading files: 9ms
 
 See [bluebird docs](https://github.com/petkaantonov/bluebird/blob/master/API.md#option-concurrency), `tree.concurrency` and `search.concurrency` configuration options.
 
-In the configuration there is a `tree.maxDepth` parameter. It's used when *estimating* the size of a directory, we'll stop recursivity when depth is more than 10. 
+In the configuration there is a `tree.maxDepth` parameter. It's used when *estimating* the size of a directory, we'll stop recursivity when depth is more than 10.
 10 is a lot actually, to improve performances you should lower the number. To get a more precise number increase it.
 
-The `search.maxDepth` indicates wether to search in the directory or not if it's too deep. Search will go faster but you'll get less results. 
+The `search.maxDepth` indicates wether to search in the directory or not if it's too deep. Search will go faster but you'll get less results.
 
 ## Why?
 
-I did this because I could not find a light file explorer. It had to be simple, easy to install and fast. 
+I did this because I could not find a light file explorer. It had to be simple, easy to install and fast.
 I tried [pydio](https://pyd.io) but it's heavy and long to install. I also tried [h5ai](http://larsjung.de/h5ai/) but it does not have user support and has a lot of client-side javascript. I also have the feeling that it's slow.
 
 KISS.
