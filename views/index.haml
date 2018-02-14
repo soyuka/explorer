@@ -3,9 +3,10 @@
   %meta{charset: 'utf-8'}
   %meta{name: 'viewport', content: 'width=device-width, initial-scale=1.0'}
   %title Explorer
-  %link{rel: 'stylesheet', href: app_root + 'css/app.min.css'}
-  %link{rel: 'icon', type: 'image/png', href: app_root + 'favicon-32x32.png', sizes: '32x32'}
-  %link{rel: 'icon', type: 'image/png', href: app_root + 'favicon-16x16.png', sizes: '16x16'}
+  %link{rel: 'stylesheet', href: 'css/app.min.css'}
+  %link{rel: 'icon', type: 'image/png', href: 'favicon-32x32.png', sizes: '32x32'}
+  %link{rel: 'icon', type: 'image/png', href: 'favicon-16x16.png', sizes: '16x16'}
+  %base{href: app_root}
 
 %body
   - if(user.username)
@@ -14,7 +15,7 @@
         %li.name
           %h1
             %a{href: '/'}
-              Explorer 
+              Explorer
       %section.top-bar-section
         %ul.right
           %li
@@ -53,20 +54,20 @@
         %a{href: 'https://github.com/soyuka/explorer'} Github
 
 - if(user)
-  %script{type: 'text/javascript', src: app_root + 'socket/client.js'}
+  %script{type: 'text/javascript', src: 'socket/client.js'}
   %script{type: 'text/javascript'}!= 'var user = { username: "'+user.username+'", key: "'+user.key+'"}'
-  %script{type: 'text/javascript', src: app_root + 'js/main.min.js'}
+  %script{type: 'text/javascript', src: 'js/main.min.js'}
   :javascript
     //delete button confirm box
     var confirmDeletion = function(e) {
       return confirm('Are you sure?')
     }
-    
+
     //checkbox to check every checkbox
     var checkAll = function(event) {
       var checkboxes = document.getElementById('tree').querySelectorAll('input[type="checkbox"]')
       for(var i in checkboxes) {
-        checkboxes[i].checked = event.currentTarget.checked 
+        checkboxes[i].checked = event.currentTarget.checked
       }
     }
 
